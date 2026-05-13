@@ -1,0 +1,23 @@
+{
+  "hotelName": "LUXE GRAND HOTEL",
+  "language": "Idioma",
+  "languageLabel": "Idioma",
+  "english": "Inglês",
+  "portuguese": "Português",
+  "spanish": "Espanhol",
+  "error": "Erro",
+  "success": "Sucesso",
+  "loading": "Carregando...",
+  "tryAgain": "Tentar Novamente",
+  "back": "Voltar",
+  "next": "Próximo",
+  "cancel": "Cancelar",
+  "submit": "Enviar",
+  "continue": "Continuar",
+  "confirm": "Confirmar",
+  "close": "Fechar",
+  "privacyPolicy": "Política de Privacidade",
+  "termsOfService": "Termos de Serviço",
+  "contact": "Contato Concierge",
+  "copyright": "© 2024 LUXE HOTEL GROUP"
+}

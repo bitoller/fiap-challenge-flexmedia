@@ -1,0 +1,88 @@
+services:
+  checkin-service:
+    build:
+      context: ./backend/services/checkin-service
+    image: flexcheck/checkin-service:demo
+    container_name: flexcheck-checkin-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8080
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      PMS_MODE: ${PMS_MODE:-MOCK}
+      PAYMENT_MODE: ${PAYMENT_MODE:-MOCK}
+      BIOMETRY_MODE: ${BIOMETRY_MODE:-MOCK}
+      KEY_ISSUER_MODE: ${KEY_ISSUER_MODE:-MOCK}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
+    ports:
+      - "${CHECKIN_PORT:-8081}:8080"
+    networks:
+      - flexcheck-net
+
+  api-gateway:
+    build:
+      context: ./backend/services/api-gateway
+    image: flexcheck/api-gateway:demo
+    container_name: flexcheck-api-gateway
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8088
+      CHECKIN_SERVICE_URL: http://checkin-service:8080
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
+    ports:
+      - "${GATEWAY_PORT:-8088}:8088"
+    depends_on:
+      - checkin-service
+    networks:
+      - flexcheck-net
+
+  kiosk-web:
+    build:
+      context: ./frontend/kiosk-web
+      args:
+        VITE_API_URL: ${KIOSK_API_URL:-/api/v1}
+    image: flexcheck/kiosk-web:demo
+    container_name: flexcheck-kiosk-web
+    restart: unless-stopped
+    ports:
+      - "${KIOSK_PORT:-3000}:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - flexcheck-net
+
+  oracle-db:
+    profiles:
+      - oracle-local
+    image: ${ORACLE_IMAGE:-container-registry.oracle.com/database/free:latest-lite}
+    container_name: flexcheck-oracle
+    restart: unless-stopped
+    environment:
+      ORACLE_PWD: ${ORACLE_SYS_PASSWORD:-Oracle_12345}
+      ORACLE_PDB: ${ORACLE_PDB:-FREEPDB1}
+    ports:
+      - "${ORACLE_PORT:-1521}:1521"
+      - "${ORACLE_EM_PORT:-5500}:5500"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./database/oracle:/workspace/oracle:ro
+      - ./database/oracle/init:/opt/oracle/scripts/setup:ro
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM dual;' | sqlplus -s system/${ORACLE_SYS_PASSWORD:-Oracle_12345}@localhost:1521/${ORACLE_PDB:-FREEPDB1} || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    networks:
+      - flexcheck-net
+
+volumes:
+  oracle-data:
+
+networks:
+  flexcheck-net:
+    driver: bridge

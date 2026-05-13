@@ -1,0 +1,10 @@
+{
+  "apiError": "Could not complete request to server",
+  "validationError": "Please check your input",
+  "timeoutError": "Request took too long. Please try again.",
+  "notFoundError": "Resource not found",
+  "reservationNotFound": "Reservation not found. Please check the code and try again.",
+  "invalidDocument": "The document provided does not match the reservation",
+  "paymentDeclined": "Payment was declined. Please try another payment method.",
+  "sessionExpired": "Your session has expired. Please start over."
+}

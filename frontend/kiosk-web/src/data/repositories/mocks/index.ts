@@ -1,0 +1,8 @@
+export * from './reservations';
+
+export const MOCK_SCENARIOS = {
+  SUCCESS: 'SUCCESS',
+  NOT_FOUND: 'NOT_FOUND',
+  INVALID_DOCUMENT: 'INVALID_DOCUMENT',
+  PAYMENT_DECLINED: 'PAYMENT_DECLINED',
+} as const;

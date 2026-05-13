@@ -1,0 +1,699 @@
+.checkin-layout {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  color: #2a241b;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(212, 191, 150, 0.22), transparent 18%),
+    linear-gradient(180deg, #fbf8f2 0%, #f8f2e8 48%, #faf8f3 100%);
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.checkin-layout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(189, 153, 73, 0.08), transparent 16%),
+    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.58), transparent 28%);
+  opacity: 0.9;
+}
+
+.checkin-topbar,
+.checkin-layout__main,
+.checkin-bottom-nav {
+  position: relative;
+  z-index: 1;
+}
+
+.checkin-topbar {
+  min-height: 86px;
+  padding: 0 clamp(1.3rem, 2.4vw, 2.6rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(191, 177, 146, 0.26);
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 1px 12px rgba(77, 64, 45, 0.05);
+}
+
+.checkin-topbar__brand {
+  color: #9a7318;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.1rem, 1.75vw, 1.65rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.checkin-topbar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.checkin-language-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7f6320;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.checkin-language-pill__icon,
+.checkin-topbar__utility-icon {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkin-language-pill__icon svg,
+.checkin-topbar__utility-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.checkin-language-pill__label {
+  transform: translateY(1px);
+}
+
+.checkin-topbar__confirmation-label {
+  color: #8a6b21;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.84rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.checkin-layout__main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.55rem, 1vh, 0.95rem) clamp(1rem, 2.1vw, 1.8rem) clamp(0.6rem, 1.1vh, 1rem);
+}
+
+.checkin-bottom-nav {
+  min-height: 92px;
+  padding: 0.7rem clamp(1.1rem, 2vw, 2rem) 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1rem;
+  border-top: 1px solid rgba(191, 177, 146, 0.3);
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
+.checkin-bottom-nav__item {
+  min-width: 118px;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  border: 0;
+  background: transparent;
+  color: rgba(125, 105, 73, 0.78);
+  font-family: "Georgia", "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.checkin-bottom-nav__item.is-active {
+  color: #8d6a17;
+}
+
+.checkin-bottom-nav__icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: grid;
+  place-items: center;
+}
+
+.checkin-bottom-nav__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.checkin-bottom-nav__label {
+  font-size: 0.67rem;
+  line-height: 1;
+}
+
+.checkin-step-header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.35rem;
+}
+
+.checkin-step-header__step {
+  margin: 0;
+  color: #91713a;
+  font-size: 0.85rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.checkin-step-header__rule {
+  width: min(220px, 30vw);
+  height: 1px;
+  display: grid;
+  place-items: center;
+}
+
+.checkin-step-header__rule span {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.45), transparent);
+}
+
+.checkin-step-header__title {
+  margin: 0;
+  color: #1e1c1a;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.95rem, 3vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.checkin-step-header__subtitle {
+  width: min(760px, 100%);
+  margin: 0.25rem auto 0;
+  color: rgba(92, 78, 61, 0.82);
+  font-size: clamp(0.84rem, 0.95vw, 1rem);
+  line-height: 1.6;
+}
+
+.checkin-identification,
+.checkin-not-found,
+.checkin-confirmation {
+  width: min(100%, 1200px);
+  display: grid;
+  gap: clamp(0.85rem, 1.4vw, 1.25rem);
+}
+
+.checkin-identification__layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.92fr) minmax(360px, 1.28fr);
+  gap: clamp(0.8rem, 1.2vw, 1.1rem);
+  align-items: stretch;
+}
+
+.checkin-identification__methods {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(172px, 1fr);
+  gap: 0.75rem;
+}
+
+.checkin-method-card {
+  padding: 0.85rem;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(205, 187, 149, 0.45);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.checkin-method-card.is-selected {
+  border-color: rgba(157, 119, 35, 0.58);
+  box-shadow:
+    0 12px 26px rgba(97, 79, 45, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+.checkin-method-card.is-disabled {
+  opacity: 0.72;
+}
+
+.checkin-method-card__icon {
+  width: 2.45rem;
+  height: 2.45rem;
+  display: grid;
+  place-items: center;
+  color: #996f16;
+}
+
+.checkin-method-card__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.checkin-method-card__title {
+  color: #6f5a31;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.checkin-method-card__subtitle {
+  max-width: 16ch;
+  color: rgba(126, 110, 87, 0.78);
+  font-size: 0.58rem;
+  line-height: 1.35;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.checkin-identification__entry {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.checkin-identification__field-label {
+  color: #8c6b2a;
+  font-size: 0.86rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.checkin-identification__field {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem 0 1.1rem;
+  border-bottom: 1px solid rgba(160, 142, 110, 0.7);
+  background: rgba(248, 244, 236, 0.72);
+}
+
+.checkin-identification__field.is-invalid {
+  border-bottom-color: rgba(165, 89, 70, 0.78);
+}
+
+.checkin-identification__field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #2a241b;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+  letter-spacing: 0.12em;
+}
+
+.checkin-identification__field input::placeholder {
+  color: rgba(158, 143, 118, 0.58);
+}
+
+.checkin-identification__fingerprint {
+  width: 1.65rem;
+  height: 1.65rem;
+  display: grid;
+  place-items: center;
+  color: rgba(138, 109, 47, 0.82);
+}
+
+.checkin-identification__fingerprint svg {
+  width: 100%;
+  height: 100%;
+}
+
+.checkin-keypad {
+  width: min(100%, 390px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+  padding: 0.55rem;
+  border: 1px solid rgba(204, 186, 151, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 30px rgba(93, 77, 53, 0.08);
+}
+
+.checkin-keypad__key {
+  min-height: 68px;
+  border: 0;
+  border-radius: 4px;
+  color: #252220;
+  background: #efede8;
+  font-family: "Arial", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.checkin-keypad__key svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.checkin-keypad__key--soft {
+  font-size: 0;
+}
+
+.checkin-keypad__key--confirm {
+  color: #4c3b12;
+  background: linear-gradient(180deg, #d3ad5e, #c79e49);
+}
+
+.checkin-keypad__key--confirm.is-disabled {
+  opacity: 0.62;
+}
+
+.checkin-keypad__key:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.checkin-not-found {
+  justify-items: center;
+  text-align: center;
+  padding-top: clamp(1rem, 4vh, 3rem);
+}
+
+.checkin-not-found__icon {
+  width: 4.6rem;
+  height: 4.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(205, 187, 149, 0.55);
+  border-radius: 12px;
+  color: #9a7120;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 18px rgba(92, 75, 47, 0.08);
+}
+
+.checkin-not-found__icon svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.checkin-not-found .checkin-step-header__subtitle {
+  width: min(500px, 100%);
+  font-size: 1.02rem;
+}
+
+.checkin-not-found__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.checkin-action-button {
+  min-height: 88px;
+  padding: 1rem 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px solid rgba(165, 139, 95, 0.5);
+  border-radius: 4px;
+  color: #4b3d21;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.94rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.checkin-action-button--primary {
+  color: #4d3c14;
+  background: linear-gradient(180deg, #d7b062, #c9a04d);
+  border-color: rgba(165, 139, 95, 0.3);
+}
+
+.checkin-action-button--secondary {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.checkin-action-button--ghost {
+  min-height: 72px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.checkin-action-button--wide {
+  min-width: min(360px, 100%);
+}
+
+.checkin-action-button__icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-grid;
+  place-items: center;
+}
+
+.checkin-action-button__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.checkin-confirmation__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.95fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.checkin-confirmation__details {
+  padding: 1.9rem;
+  border: 1px solid rgba(220, 204, 176, 0.62);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 28px rgba(92, 76, 50, 0.08);
+}
+
+.checkin-confirmation__details h2 {
+  margin: 0;
+  color: #1f1b18;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.55rem, 2.5vw, 2.2rem);
+  font-weight: 500;
+}
+
+.checkin-confirmation__divider {
+  height: 1px;
+  margin: 1.2rem 0;
+  background: linear-gradient(90deg, transparent, rgba(205, 186, 150, 0.56), transparent);
+}
+
+.checkin-confirmation__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.checkin-confirmation__field span,
+.checkin-confirmation__mini-field span,
+.checkin-confirmation__total-card span,
+.checkin-confirmation__image-copy span {
+  color: #8c7b65;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.checkin-confirmation__field strong {
+  color: #7f5f13;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+  font-weight: 500;
+}
+
+.checkin-confirmation__field small {
+  color: rgba(86, 76, 63, 0.8);
+  font-size: 0.92rem;
+}
+
+.checkin-confirmation__grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.checkin-confirmation__mini-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.checkin-confirmation__mini-field strong {
+  color: #23201d;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.checkin-confirmation__notes {
+  margin-top: 1.1rem;
+  color: rgba(78, 67, 53, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.checkin-confirmation__aside {
+  display: grid;
+  gap: 1rem;
+}
+
+.checkin-confirmation__image-card {
+  position: relative;
+  min-height: 330px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(220, 204, 176, 0.62);
+  background:
+    linear-gradient(180deg, rgba(12, 21, 28, 0.32), rgba(12, 21, 28, 0.78)),
+    radial-gradient(circle at 55% 34%, rgba(255, 180, 104, 0.7), transparent 16%),
+    linear-gradient(135deg, #162028 0%, #243845 42%, #4c5f6b 58%, #d7b78e 100%);
+  box-shadow: 0 14px 26px rgba(92, 76, 50, 0.08);
+}
+
+.checkin-confirmation__image-card::before {
+  content: "";
+  position: absolute;
+  inset: 16px 12px 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 214, 140, 0.26);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+    inset 0 -40px 80px rgba(255, 255, 255, 0.04);
+}
+
+.checkin-confirmation__image-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 44%, rgba(248, 246, 240, 0.88) 95%),
+    radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.2), transparent 18%);
+}
+
+.checkin-confirmation__image-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 24%, transparent 76%, rgba(0, 0, 0, 0.18)),
+    linear-gradient(180deg, transparent 62%, rgba(240, 236, 228, 0.55) 100%);
+}
+
+.checkin-confirmation__image-copy {
+  position: absolute;
+  left: 1.2rem;
+  bottom: 1.1rem;
+  z-index: 1;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.checkin-confirmation__image-copy strong {
+  color: #1f1c18;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.55rem, 2.2vw, 2rem);
+  font-weight: 500;
+}
+
+.checkin-confirmation__total-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.3rem;
+  border: 1px solid rgba(220, 204, 176, 0.62);
+  border-radius: 8px;
+  background: rgba(248, 243, 229, 0.95);
+  box-shadow: 0 10px 20px rgba(92, 76, 50, 0.06);
+}
+
+.checkin-confirmation__total-card small {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(128, 108, 82, 0.8);
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.checkin-confirmation__total-card strong {
+  color: #8f6a19;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.4rem, 2.1vw, 1.95rem);
+  font-weight: 500;
+}
+
+.checkin-confirmation__actions {
+  padding-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (max-width: 1180px) {
+  .checkin-identification__layout,
+  .checkin-confirmation__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-identification__methods {
+    grid-template-rows: repeat(2, minmax(180px, 1fr));
+  }
+
+  .checkin-keypad {
+    width: 100%;
+    max-width: 520px;
+  }
+}
+
+@media (orientation: portrait) {
+  .checkin-layout {
+    border: 0;
+  }
+
+  .checkin-topbar {
+    min-height: 76px;
+  }
+
+  .checkin-layout__main {
+    padding: clamp(1rem, 1.6vh, 1.25rem) clamp(0.95rem, 2vw, 1.35rem) clamp(1rem, 1.8vh, 1.25rem);
+  }
+
+  .checkin-identification,
+  .checkin-not-found,
+  .checkin-confirmation {
+    gap: 1rem;
+  }
+
+  .checkin-identification__layout {
+    gap: 0.9rem;
+  }
+
+  .checkin-identification__methods {
+    grid-auto-rows: minmax(156px, 1fr);
+  }
+
+  .checkin-method-card {
+    padding: 0.95rem;
+  }
+
+  .checkin-keypad__key {
+    min-height: 68px;
+    font-size: 1.2rem;
+  }
+
+  .checkin-confirmation__details {
+    padding: 1.4rem;
+  }
+
+  .checkin-confirmation__image-card {
+    min-height: 270px;
+  }
+}

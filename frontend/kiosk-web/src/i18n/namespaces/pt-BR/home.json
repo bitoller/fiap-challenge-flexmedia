@@ -1,0 +1,17 @@
+{
+  "welcomeTitle": "Bem-vindo",
+  "selectOption": "SELECIONE UMA OPÇÃO PARA COMEÇAR",
+  "checkin": "Check-in",
+  "checkinSubtitle": "Chegando para sua hospedagem",
+  "checkout": "Check-out",
+  "checkoutSubtitle": "Finalize sua visita",
+  "services": "Serviços",
+  "servicesSubtitle": "Solicite ajuda da concierge",
+  "checkinComingSoonTitle": "Fluxo de check-in",
+  "checkinComingSoonBody": "A próxima etapa da experiência de check-in está pronta para se conectar ao fluxo real de reservas.",
+  "checkoutComingSoonTitle": "Fluxo de check-out",
+  "checkoutComingSoonBody": "Esta tela cuidará das cobranças finais e da liberação do quarto.",
+  "servicesComingSoonTitle": "Serviços de concierge",
+  "servicesComingSoonBody": "Esta área encaminhará os hóspedes para serviços e suporte do hotel.",
+  "backToHome": "Voltar para a Home"
+}

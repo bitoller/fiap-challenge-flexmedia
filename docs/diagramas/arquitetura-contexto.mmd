@@ -1,0 +1,11 @@
+flowchart LR
+    Hospede["Hospede"] --> Totem["Totem de autoatendimento"]
+    Recepcao["Recepcao"] --> Admin["Painel administrativo"]
+    Totem --> Plataforma["Plataforma FlexCheck Hotel"]
+    Admin --> Plataforma
+    Plataforma --> PMS["Sistema PMS"]
+    Plataforma --> Pagamento["Gateway de pagamento"]
+    Plataforma --> Chaves["Emissor de chaves"]
+    Plataforma --> Biometria["Validador facial"]
+    Plataforma --> Notificacao["E-mail/WhatsApp"]
+

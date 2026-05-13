@@ -1,0 +1,42 @@
+/* Bootstrap 5 Customizations for Kiosk */
+
+$primary: #b8860b;
+$secondary: #8b7355;
+$success: #28a745;
+$danger: #dc3545;
+$warning: #ffc107;
+$info: #17a2b8;
+$light: #faf8f3;
+$dark: #1a1410;
+$font-family-base: "Georgia", "Times New Roman", serif;
+$font-size-base: 1rem;
+$line-height-base: 1.6;
+$spacer: 1rem;
+$border-radius: 0.5rem;
+
+@import "bootstrap/scss/bootstrap";
+
+body {
+  background-color: var(--kiosk-bg-light);
+  color: var(--kiosk-text-primary);
+}
+
+.btn-lg {
+  min-height: 70px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+}
+
+.card {
+  border-width: 2px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--kiosk-text-primary);
+  font-weight: 600;
+}

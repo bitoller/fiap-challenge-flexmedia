@@ -1,0 +1,17 @@
+.DS_Store
+.env
+
+# Java
+target/
+*.class
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/

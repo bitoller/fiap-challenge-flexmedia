@@ -1,0 +1,520 @@
+{
+  "info": {
+    "_postman_id": "7f5c0b56-4e4c-4f90-a1ef-2b2e3a9c8a21",
+    "name": "FlexCheck Hotel MVP",
+    "description": "Collection para validar o MVP do FlexCheck Hotel. O fluxo principal cria uma sessao, associa uma reserva, confirma dados, registra consentimentos, conclui check-in e executa checkout.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8081/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "gatewayUrl",
+      "value": "http://127.0.0.1:8088",
+      "type": "string"
+    },
+    {
+      "key": "reservationCode",
+      "value": "RSV-2026-0001",
+      "type": "string"
+    },
+    {
+      "key": "documentNumber",
+      "value": "12345678909",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "guestId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "stayId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Checkin Service Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('health retorna 200', () => pm.response.to.have.status(200));",
+                  "pm.test('servico esta UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/gateway/health",
+              "host": [
+                "{{gatewayUrl}}"
+              ],
+              "path": [
+                "gateway",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('gateway retorna 200', () => pm.response.to.have.status(200));",
+                  "pm.test('gateway esta UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gateway Proxy Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/health",
+              "host": [
+                "{{gatewayUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('proxy retorna 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reservation",
+      "item": [
+        {
+          "name": "Search Reservation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reservations/search?type=RESERVATION_CODE&value={{reservationCode}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reservations",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "RESERVATION_CODE"
+                },
+                {
+                  "key": "value",
+                  "value": "{{reservationCode}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('reserva encontrada', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('guestId', json.guest.id);",
+                  "pm.test('reserva elegivel', () => pm.expect(json.eligible).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Check-in Flow",
+      "item": [
+        {
+          "name": "Create Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kioskId\": 1,\n  \"flowType\": \"CHECKIN\",\n  \"language\": \"pt-BR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkin-sessions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkin-sessions"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('sessao criada', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('sessionId', json.sessionId);",
+                  "pm.test('status STARTED', () => pm.expect(json.status).to.eql('STARTED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Attach Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"searchType\": \"RESERVATION_CODE\",\n  \"searchValue\": \"{{reservationCode}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkin-sessions/{{sessionId}}/reservation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkin-sessions",
+                "{{sessionId}}",
+                "reservation"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('reserva associada', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('guestId', json.reservation.guest.id);",
+                  "pm.test('status RESERVATION_FOUND', () => pm.expect(json.status).to.eql('RESERVATION_FOUND'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm Guest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guestId\": {{guestId}},\n  \"fullName\": \"Lucas Henrique Rodrigues\",\n  \"documentType\": \"CPF\",\n  \"documentNumber\": \"{{documentNumber}}\",\n  \"birthDate\": \"1995-08-15\",\n  \"email\": \"lucas@example.com\",\n  \"phone\": \"+5511999999999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkin-sessions/{{sessionId}}/guest-confirmation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkin-sessions",
+                "{{sessionId}}",
+                "guest-confirmation"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('dados confirmados', () => pm.response.to.have.status(200));",
+                  "pm.test('status DATA_CONFIRMED', () => pm.expect(pm.response.json().status).to.eql('DATA_CONFIRMED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Consents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"type\": \"PRIVACY_POLICY\",\n      \"accepted\": true,\n      \"version\": \"2026.05\"\n    },\n    {\n      \"type\": \"HOSTING_TERMS\",\n      \"accepted\": true,\n      \"version\": \"2026.05\"\n    },\n    {\n      \"type\": \"BIOMETRY\",\n      \"accepted\": false,\n      \"version\": \"2026.05\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkin-sessions/{{sessionId}}/consents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkin-sessions",
+                "{{sessionId}}",
+                "consents"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('consentimentos registrados', () => pm.response.to.have.status(200));",
+                  "pm.test('status CONSENTS_REGISTERED', () => pm.expect(pm.response.json().status).to.eql('CONSENTS_REGISTERED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Complete Check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"TEST_CARD_APPROVED\",\n  \"keyType\": \"DIGITAL\",\n  \"documentStatus\": \"APPROVED\",\n  \"biometryStatus\": \"SKIPPED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkin-sessions/{{sessionId}}/complete-checkin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkin-sessions",
+                "{{sessionId}}",
+                "complete-checkin"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('check-in concluido', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('stayId', json.stayId);",
+                  "pm.test('status CHECKED_IN', () => pm.expect(json.status).to.eql('CHECKED_IN'));",
+                  "pm.test('chave emitida', () => pm.expect(json.key.value).to.match(/^KEY-/));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "item": [
+        {
+          "name": "Checkout Stay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"TEST_CARD_APPROVED\",\n  \"confirmCharges\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stays/{{stayId}}/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stays",
+                "{{stayId}}",
+                "checkout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('checkout concluido', () => pm.response.to.have.status(200));",
+                  "pm.test('status CHECKED_OUT', () => pm.expect(pm.response.json().status).to.eql('CHECKED_OUT'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "dashboard"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('dashboard responde', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('campos de dashboard existem', () => {",
+                  "  pm.expect(json).to.have.property('reservationsToday');",
+                  "  pm.expect(json).to.have.property('recentSessions');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

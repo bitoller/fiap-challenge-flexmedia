@@ -1,0 +1,10 @@
+{
+  "apiError": "Não foi possível completar a solicitação ao servidor",
+  "validationError": "Por favor, verifique sua entrada",
+  "timeoutError": "A solicitação demorou muito. Por favor, tente novamente.",
+  "notFoundError": "Recurso não encontrado",
+  "reservationNotFound": "Reserva não encontrada. Por favor, verifique o código e tente novamente.",
+  "invalidDocument": "O documento informado não corresponde à reserva",
+  "paymentDeclined": "O pagamento foi recusado. Por favor, tente outro método de pagamento.",
+  "sessionExpired": "Sua sessão expirou. Por favor, comece novamente."
+}

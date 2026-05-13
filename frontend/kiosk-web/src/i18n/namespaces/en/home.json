@@ -1,0 +1,17 @@
+{
+  "welcomeTitle": "Welcome Home",
+  "selectOption": "SELECT AN OPTION TO BEGIN",
+  "checkin": "Check-in",
+  "checkinSubtitle": "Arriving at your stay",
+  "checkout": "Check-out",
+  "checkoutSubtitle": "Finalize your visit",
+  "services": "Services",
+  "servicesSubtitle": "Request concierge help",
+  "checkinComingSoonTitle": "Check-in flow",
+  "checkinComingSoonBody": "The next step of the check-in experience is ready to connect to the live reservation workflow.",
+  "checkoutComingSoonTitle": "Check-out flow",
+  "checkoutComingSoonBody": "This screen will handle final charges and room release.",
+  "servicesComingSoonTitle": "Concierge services",
+  "servicesComingSoonBody": "This area will route guests to hotel services and support.",
+  "backToHome": "Back to Home"
+}

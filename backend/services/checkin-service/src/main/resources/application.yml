@@ -1,0 +1,34 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../../../.env[.properties]
+      - optional:file:backend/services/checkin-service/.env[.properties]
+  application:
+    name: checkin-service
+  datasource:
+    url: ${ORACLE_URL:jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL}
+    username: ${ORACLE_USER:rm552726}
+    password: ${ORACLE_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
+  sql:
+    init:
+      mode: never
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000}
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

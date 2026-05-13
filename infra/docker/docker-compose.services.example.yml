@@ -1,0 +1,16 @@
+# Exemplo de override para evolucoes futuras.
+# A demo atual usa o docker-compose.yml da raiz.
+
+services:
+  checkin-service:
+    environment:
+      JPA_DDL_AUTO: update
+
+  api-gateway:
+    environment:
+      CHECKIN_SERVICE_URL: http://checkin-service:8080
+
+  kiosk-web:
+    build:
+      args:
+        VITE_API_URL: /api/v1
