@@ -2,6 +2,9 @@ package br.com.fiap.flexcheck.checkin.mapper;
 
 import br.com.fiap.flexcheck.checkin.dto.AttachReservationRequest;
 import br.com.fiap.flexcheck.checkin.dto.CheckoutRequest;
+import br.com.fiap.flexcheck.checkin.dto.CheckoutChargeResponse;
+import br.com.fiap.flexcheck.checkin.dto.CheckoutLookupRequest;
+import br.com.fiap.flexcheck.checkin.dto.CheckoutLookupResponse;
 import br.com.fiap.flexcheck.checkin.dto.CheckoutResponse;
 import br.com.fiap.flexcheck.checkin.dto.CompleteCheckinRequest;
 import br.com.fiap.flexcheck.checkin.dto.CompleteCheckinResponse;
@@ -17,11 +20,14 @@ import br.com.fiap.flexcheck.checkin.dto.SessionReservationResponse;
 import br.com.fiap.flexcheck.checkin.dto.SessionResponse;
 import br.com.fiap.flexcheck.checkin.service.command.AttachReservationCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutCommand;
+import br.com.fiap.flexcheck.checkin.service.command.CheckoutLookupCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.command.ConsentCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckoutChargeResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import br.com.fiap.flexcheck.checkin.service.result.DashboardResult;
 import br.com.fiap.flexcheck.checkin.service.result.KeyResult;
@@ -73,6 +79,15 @@ public final class ApiMapper {
         return new CheckoutCommand(request.paymentMethod(), request.confirmCharges());
     }
 
+    public static CheckoutLookupCommand toCommand(CheckoutLookupRequest request) {
+        return new CheckoutLookupCommand(
+                request.hotelId(),
+                request.roomNumber(),
+                request.documentType(),
+                request.documentNumber()
+        );
+    }
+
     public static SessionResponse toResponse(SessionResult result) {
         return new SessionResponse(result.sessionId(), result.status(), result.expiresAt(), result.correlationId());
     }
@@ -121,6 +136,16 @@ public final class ApiMapper {
         return new CheckoutResponse(result.stayId(), result.status(), result.totalPaid(), result.receiptCode());
     }
 
+    public static CheckoutLookupResponse toResponse(CheckoutPreviewResult result) {
+        return new CheckoutLookupResponse(
+                result.stayId(),
+                result.stayStatus(),
+                toResponse(result.reservation()),
+                result.totalDue(),
+                result.charges().stream().map(ApiMapper::toResponse).toList()
+        );
+    }
+
     public static DashboardResponse toResponse(DashboardResult result) {
         return new DashboardResponse(
                 result.reservationsToday(),
@@ -138,5 +163,9 @@ public final class ApiMapper {
 
     private static KeyResponse toResponse(KeyResult key) {
         return new KeyResponse(key.keyId(), key.type(), key.status(), key.value(), key.expiresAt());
+    }
+
+    private static CheckoutChargeResponse toResponse(CheckoutChargeResult charge) {
+        return new CheckoutChargeResponse(charge.code(), charge.description(), charge.amount());
     }
 }

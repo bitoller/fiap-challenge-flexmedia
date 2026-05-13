@@ -1,6 +1,6 @@
 # api-gateway
 
-Gateway Spring Boot do MVP. Ele oferece uma entrada unica para o frontend e encaminha `/api/v1/**` para o `checkin-service`.
+Gateway Spring Boot do MVP. Ele oferece uma entrada unica para o frontend e encaminha `/api/v1/**` para os microservicos corretos.
 
 ## Status
 
@@ -9,7 +9,7 @@ Implementado.
 ## Responsabilidades
 
 - Expor health check proprio.
-- Encaminhar requisicoes de API para o `checkin-service`.
+- Encaminhar requisicoes de API para os microservicos corretos.
 - Propagar cabecalhos relevantes.
 - Criar `X-Correlation-Id` quando a chamada nao enviar um.
 - Centralizar a URL consumida pelo frontend.
@@ -17,7 +17,8 @@ Implementado.
 ## Rotas
 
 - `GET /gateway/health`: health do gateway.
-- `/api/v1/**`: proxy para o `checkin-service`.
+- `/api/v1/**`: proxy para os microservicos corretos.
+- `/api/v1/stays/**`: proxy para o `checkin-service` para lookup e checkout.
 
 ## Como Rodar
 

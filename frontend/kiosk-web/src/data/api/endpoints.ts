@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   SEARCH_RESERVATIONS: '/reservations/search',
 
   // Check-out Flow
+  CHECKOUT_LOOKUP: '/stays/lookup',
   CHECKOUT: (stayId: number | string) => `/stays/${stayId}/checkout`,
 
   // Admin & Dashboard

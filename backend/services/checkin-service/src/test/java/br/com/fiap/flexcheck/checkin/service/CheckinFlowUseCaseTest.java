@@ -2,11 +2,13 @@ package br.com.fiap.flexcheck.checkin.service;
 
 import br.com.fiap.flexcheck.checkin.service.command.AttachReservationCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutCommand;
+import br.com.fiap.flexcheck.checkin.service.command.CheckoutLookupCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.command.ConsentCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import br.com.fiap.flexcheck.checkin.service.result.GuestResult;
 import br.com.fiap.flexcheck.checkin.service.result.KeyResult;
@@ -52,6 +54,8 @@ class CheckinFlowUseCaseTest {
     private RegisterConsentsUseCase registerConsentsUseCase;
     @Autowired
     private CompleteCheckinUseCase completeCheckinUseCase;
+    @Autowired
+    private CheckoutLookupUseCase checkoutLookupUseCase;
     @Autowired
     private CheckoutUseCase checkoutUseCase;
     @MockBean
@@ -143,6 +147,16 @@ class CheckinFlowUseCaseTest {
 
         assertThat(checkin.status()).isEqualTo("CHECKED_IN");
         assertThat(checkin.key().value()).startsWith("KEY-");
+
+        CheckoutPreviewResult checkoutPreview = checkoutLookupUseCase.execute(new CheckoutLookupCommand(
+                1L,
+                "1204",
+                "CPF",
+                "12345678909"
+        ));
+
+        assertThat(checkoutPreview.stayId()).isEqualTo(checkin.stayId());
+        assertThat(checkoutPreview.charges()).isNotEmpty();
 
         CheckoutResult checkout = checkoutUseCase.execute(checkin.stayId(), new CheckoutCommand("TEST_CARD_APPROVED", true));
 

@@ -45,6 +45,7 @@ As tabelas `FC_*` sao criadas via `database/oracle/schema.sql` e populadas por `
 - `POST /api/v1/checkin-sessions/{sessionId}/guest-confirmation`
 - `POST /api/v1/checkin-sessions/{sessionId}/consents`
 - `POST /api/v1/checkin-sessions/{sessionId}/complete-checkin`
+- `POST /api/v1/stays/lookup`
 - `POST /api/v1/stays/{stayId}/checkout`
 
 ## Servicos Integrados

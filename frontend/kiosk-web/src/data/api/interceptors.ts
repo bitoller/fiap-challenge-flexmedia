@@ -1,4 +1,4 @@
-import { Session, SessionReservation, CompleteCheckinResponse, CheckoutResponse } from "../../domain/models";
+import { CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, Reservation, Room, Session, SessionReservation } from "../../domain/models";
 
 /**
  * API Response Interceptors
@@ -11,6 +11,18 @@ export const checkoutResponseInterceptor = (data: any): CheckoutResponse => {
     status: data.status,
     totalPaid: data.totalPaid,
     receiptCode: data.receiptCode,
+  };
+};
+
+export const checkoutLookupResponseInterceptor = (data: any): CheckoutStayPreview => {
+  return {
+    stayId: data.stayId,
+    stayStatus: data.stayStatus,
+    totalDue: data.totalDue ?? data.reservation?.totalAmount ?? 0,
+    reservation: reservationResponseInterceptor(data.reservation),
+    charges: Array.isArray(data.charges)
+      ? data.charges.map((charge: any) => checkoutChargeResponseInterceptor(charge))
+      : [],
   };
 };
 
@@ -44,6 +56,53 @@ export const sessionReservationResponseInterceptor = (data: any): SessionReserva
   return {
     ...sessionResponseInterceptor(data),
     reservation: data.reservation,
+  };
+};
+
+const checkoutChargeResponseInterceptor = (data: any): CheckoutCharge => {
+  return {
+    code: data.code,
+    description: data.description,
+    amount: data.amount,
+  };
+};
+
+const reservationResponseInterceptor = (data: any): Reservation => {
+  return {
+    id: data.id,
+    hotelId: data.hotelId,
+    code: data.code,
+    status: data.status,
+    hotelName: data.hotelName,
+    arrivalDate: data.arrivalDate,
+    departureDate: data.departureDate,
+    totalAmount: data.totalAmount,
+    currency: data.currency,
+    eligible: data.eligible,
+    eligibilityReasons: Array.isArray(data.eligibilityReasons) ? data.eligibilityReasons : [],
+    guest: guestResponseInterceptor(data.guest),
+    room: roomResponseInterceptor(data.room),
+  };
+};
+
+const guestResponseInterceptor = (data: any): Guest => {
+  return {
+    id: data.id,
+    fullName: data.fullName,
+    documentType: data.documentType,
+    maskedDocument: data.maskedDocument,
+    birthDate: data.birthDate,
+    email: data.email,
+    phone: data.phone,
+  };
+};
+
+const roomResponseInterceptor = (data: any): Room => {
+  return {
+    id: data.id,
+    number: data.number,
+    type: data.type,
+    status: data.status,
   };
 };
 

@@ -2,6 +2,7 @@ package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 
 import br.com.fiap.flexcheck.checkin.domain.entity.Stay;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
+import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -21,9 +22,11 @@ import java.util.Optional;
 public class JdbcStayRepository implements StayRepository {
     private final JdbcTemplate jdbc;
     private final SimpleJdbcInsert stayInsert;
+    private final CheckoutPreviewRowMapper checkoutPreviewRowMapper;
 
-    public JdbcStayRepository(JdbcTemplate jdbc, DataSource dataSource) {
+    public JdbcStayRepository(JdbcTemplate jdbc, DataSource dataSource, CheckoutPreviewRowMapper checkoutPreviewRowMapper) {
         this.jdbc = jdbc;
+        this.checkoutPreviewRowMapper = checkoutPreviewRowMapper;
         this.stayInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("fc_stay")
                 .usingGeneratedKeyColumns("id");
@@ -58,6 +61,51 @@ public class JdbcStayRepository implements StayRepository {
                 rs.getBigDecimal("total_amount")
         ), stayId);
         return stays.stream().findFirst();
+    }
+
+    @Override
+    public Optional<CheckoutPreviewResult> findCheckoutPreview(Long hotelId, String roomNumber, String documentType, String documentNumber) {
+        String sql = """
+                SELECT st.id AS stay_id,
+                       st.status AS stay_status,
+                       r.id AS reservation_id,
+                       r.hotel_id,
+                       r.reservation_code,
+                       r.status AS reservation_status,
+                       h.name AS hotel_name,
+                       r.arrival_date,
+                       r.departure_date,
+                       r.total_amount,
+                       r.currency,
+                       g.id AS guest_id,
+                       g.full_name,
+                       g.document_type,
+                       g.document_number,
+                       g.birth_date,
+                       g.email,
+                       g.phone,
+                       room.id AS room_id,
+                       room.room_number,
+                       room.room_type,
+                       room.status AS room_status
+                  FROM fc_stay st
+                  JOIN fc_reservation r ON r.id = st.reservation_id
+                  JOIN fc_hotel h ON h.id = r.hotel_id
+                  JOIN fc_room room ON room.id = st.room_id
+                  JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                  JOIN fc_guest g ON g.id = rg.guest_id
+                 WHERE h.id = ?
+                   AND room.room_number = ?
+                   AND UPPER(g.document_type) = UPPER(?)
+                   AND g.document_number = ?
+                   AND UPPER(st.status) IN ('ACTIVE', 'PENDING_KEY')
+                   AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
+                 FETCH FIRST 1 ROWS ONLY
+                """;
+
+        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, roomNumber, documentType, documentNumber)
+                .stream()
+                .findFirst();
     }
 
     @Override

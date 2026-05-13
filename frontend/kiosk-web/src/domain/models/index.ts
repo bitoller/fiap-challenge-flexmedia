@@ -64,4 +64,18 @@ export interface CheckoutResponse {
   receiptCode: string;
 }
 
+export interface CheckoutCharge {
+  code: string;
+  description: string;
+  amount: number;
+}
+
+export interface CheckoutStayPreview {
+  stayId: number;
+  stayStatus: string;
+  totalDue: number;
+  reservation: Reservation;
+  charges: CheckoutCharge[];
+}
+
 export * from "./hotel";

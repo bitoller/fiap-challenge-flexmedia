@@ -151,6 +151,9 @@ public class ProxyController {
         if (path.startsWith("/api/v1/pms")) {
             return pmsServiceUrl;
         }
+        if (path.startsWith("/api/v1/stays")) {
+            return checkinServiceUrl;
+        }
         return checkinServiceUrl;
     }
 

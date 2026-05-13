@@ -12,8 +12,17 @@ import { TermsPage } from "./presentation/features/checkin-flow/pages/TermsPage"
 import { PaymentPage } from "./presentation/features/checkin-flow/pages/PaymentPage";
 import { SuccessPage } from "./presentation/features/checkin-flow/pages/SuccessPage";
 import { RecoveryPage } from "./presentation/features/checkin-flow/pages/RecoveryPage";
+import { CheckoutFlowProvider } from "./presentation/features/checkout-flow/context/CheckoutFlowContext";
+import { IdentificationPage as CheckoutIdentificationPage } from "./presentation/features/checkout-flow/pages/IdentificationPage";
+import { SummaryPage as CheckoutSummaryPage } from "./presentation/features/checkout-flow/pages/SummaryPage";
+import { ReconciliationPage as CheckoutReconciliationPage } from "./presentation/features/checkout-flow/pages/ReconciliationPage";
+import { PaymentPage as CheckoutPaymentPage } from "./presentation/features/checkout-flow/pages/PaymentPage";
+import { CardPage as CheckoutCardPage } from "./presentation/features/checkout-flow/pages/CardPage";
+import { ReceiptPage as CheckoutReceiptPage } from "./presentation/features/checkout-flow/pages/ReceiptPage";
+import { SuccessPage as CheckoutSuccessPage } from "./presentation/features/checkout-flow/pages/SuccessPage";
+import { RecoveryPage as CheckoutRecoveryPage } from "./presentation/features/checkout-flow/pages/RecoveryPage";
 
-type FlowName = "checkin" | "checkout" | "services";
+type FlowName = "checkin" | "services";
 
 const FLOW_COPY: Record<
   FlowName,
@@ -25,10 +34,6 @@ const FLOW_COPY: Record<
   checkin: {
     titleKey: "checkinComingSoonTitle",
     bodyKey: "checkinComingSoonBody",
-  },
-  checkout: {
-    titleKey: "checkoutComingSoonTitle",
-    bodyKey: "checkoutComingSoonBody",
   },
   services: {
     titleKey: "servicesComingSoonTitle",
@@ -61,21 +66,30 @@ function FlowPlaceholderPage({ flow }: { flow: FlowName }) {
 
 export default function App() {
   return (
-    <CheckinFlowProvider>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/checkin" element={<IdentificationPage />} />
-        <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
-        <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />
-        <Route path="/checkin/contact" element={<ContactReviewPage />} />
-        <Route path="/checkin/terms" element={<TermsPage />} />
-        <Route path="/checkin/payment" element={<PaymentPage />} />
-        <Route path="/checkin/success" element={<SuccessPage />} />
-        <Route path="/checkin/recovery" element={<RecoveryPage />} />
-        <Route path="/checkout" element={<FlowPlaceholderPage flow="checkout" />} />
-        <Route path="/services" element={<FlowPlaceholderPage flow="services" />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </CheckinFlowProvider>
+    <CheckoutFlowProvider>
+      <CheckinFlowProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/checkin" element={<IdentificationPage />} />
+          <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
+          <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />
+          <Route path="/checkin/contact" element={<ContactReviewPage />} />
+          <Route path="/checkin/terms" element={<TermsPage />} />
+          <Route path="/checkin/payment" element={<PaymentPage />} />
+          <Route path="/checkin/success" element={<SuccessPage />} />
+          <Route path="/checkin/recovery" element={<RecoveryPage />} />
+          <Route path="/checkout" element={<CheckoutIdentificationPage />} />
+          <Route path="/checkout/summary" element={<CheckoutSummaryPage />} />
+          <Route path="/checkout/reconciliation" element={<CheckoutReconciliationPage />} />
+          <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+          <Route path="/checkout/card" element={<CheckoutCardPage />} />
+          <Route path="/checkout/receipt" element={<CheckoutReceiptPage />} />
+          <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+          <Route path="/checkout/recovery" element={<CheckoutRecoveryPage />} />
+          <Route path="/services" element={<FlowPlaceholderPage flow="services" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </CheckinFlowProvider>
+    </CheckoutFlowProvider>
   );
 }
