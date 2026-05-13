@@ -27,7 +27,7 @@ cp .env.demo.example .env
 Preencha:
 
 ```text
-ORACLE_PASSWORD=<sua-senha>
+ORACLE_PASSWORD=060892
 ```
 
 ## Subir Tudo

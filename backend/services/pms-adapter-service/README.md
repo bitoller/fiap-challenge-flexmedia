@@ -1,24 +1,23 @@
 # pms-adapter-service
 
-Microservico planejado para isolar a integracao com PMS hoteleiro.
+Microservico de integracao com PMS hoteleiro.
 
 ## Status
 
-Planejado. No MVP, o PMS opera em modo `MOCK` com dados no Oracle.
+Implementado.
 
 ## Responsabilidades
 
-- Traduzir contratos externos de PMS para o dominio FlexCheck.
-- Buscar reservas e hospedes.
-- Sincronizar check-in e checkout.
-- Registrar eventos pendentes e tentativas.
-- Reprocessar falhas.
+- Registrar eventos de check-in e check-out recebidos pelos demais servicos.
+- Persistir o historico de sincronizacao com o PMS.
+- Expor pendencias e reprocessamento de eventos.
 
-## Endpoints Planejados
+## Endpoints
 
-- `GET /api/v1/pms/reservations/{code}`
+- `POST /api/v1/pms/events`
 - `POST /api/v1/pms/checkins`
 - `POST /api/v1/pms/checkouts`
+- `GET /api/v1/pms/events/{eventId}`
 - `GET /api/v1/pms/events/pending`
 - `POST /api/v1/pms/events/{eventId}/retry`
 
@@ -26,6 +25,6 @@ Planejado. No MVP, o PMS opera em modo `MOCK` com dados no Oracle.
 
 - `fc_pms_event`
 
-## MVP Atual
+## Observacao
 
-Os dados de PMS sao representados por `seed.sql` e pelas tabelas Oracle do projeto. A integracao externa real fica encapsulada aqui na evolucao.
+O `checkin-service` envia os eventos de sincronizacao para este servico por HTTP.

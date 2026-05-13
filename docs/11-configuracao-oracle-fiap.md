@@ -8,7 +8,7 @@ Pelo print da IDE, a conexao Oracle da FIAP usa:
 Host: oracle.fiap.com.br
 Porta: 1521
 SID: ORCL
-Usuario: rm552726
+Usuario: rm553134
 URL JDBC: jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
 ```
 
@@ -40,7 +40,7 @@ No `.env`, mantenha:
 
 ```env
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm552726
+ORACLE_USER=rm553134
 JPA_DDL_AUTO=update
 ```
 
@@ -92,7 +92,7 @@ Se preferir passar direto no terminal:
 
 ```bash
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL \
-ORACLE_USER=rm552726 \
+ORACLE_USER=rm553134 \
 ORACLE_PASSWORD=sua-senha-real \
 mvn spring-boot:run
 ```

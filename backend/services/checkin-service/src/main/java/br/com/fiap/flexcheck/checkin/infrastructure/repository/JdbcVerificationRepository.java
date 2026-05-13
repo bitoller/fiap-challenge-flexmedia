@@ -4,7 +4,6 @@ import br.com.fiap.flexcheck.checkin.repository.VerificationRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -22,14 +21,5 @@ public class JdbcVerificationRepository implements VerificationRepository {
                 INSERT INTO fc_document_verification (session_id, guest_id, status, provider, reference_code, verified_at)
                 VALUES (?, ?, ?, 'MOCK', ?, ?)
                 """, sessionId, guestId, status, "DOC-" + sessionId, Timestamp.valueOf(LocalDateTime.now()));
-    }
-
-    @Override
-    public void insertBiometryVerification(Long sessionId, Long guestId, String status) {
-        jdbc.update("""
-                INSERT INTO fc_biometry_verification (session_id, guest_id, status, provider, template_reference, score, verified_at)
-                VALUES (?, ?, ?, 'MOCK', ?, ?, ?)
-                """, sessionId, guestId, status, status.equals("APPROVED") ? "BIO-" + sessionId : null,
-                status.equals("APPROVED") ? BigDecimal.valueOf(98.50) : null, Timestamp.valueOf(LocalDateTime.now()));
     }
 }

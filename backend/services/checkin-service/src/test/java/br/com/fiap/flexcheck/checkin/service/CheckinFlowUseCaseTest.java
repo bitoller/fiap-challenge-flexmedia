@@ -8,25 +8,38 @@ import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
+import br.com.fiap.flexcheck.checkin.service.result.GuestResult;
+import br.com.fiap.flexcheck.checkin.service.result.KeyResult;
+import br.com.fiap.flexcheck.checkin.service.result.PaymentResult;
+import br.com.fiap.flexcheck.checkin.service.result.ReservationResult;
+import br.com.fiap.flexcheck.checkin.service.result.RoomResult;
 import br.com.fiap.flexcheck.checkin.service.result.SessionReservationResult;
 import br.com.fiap.flexcheck.checkin.service.result.SessionResult;
+import br.com.fiap.flexcheck.checkin.service.result.BiometryVerificationResult;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.BiometryServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("h2")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestExecutionListeners(
-        listeners = DependencyInjectionTestExecutionListener.class,
-        mergeMode = TestExecutionListeners.MergeMode.REPLACE_DEFAULTS
-)
 class CheckinFlowUseCaseTest {
     @Autowired
     private CreateSessionUseCase createSessionUseCase;
@@ -40,9 +53,59 @@ class CheckinFlowUseCaseTest {
     private CompleteCheckinUseCase completeCheckinUseCase;
     @Autowired
     private CheckoutUseCase checkoutUseCase;
+    @MockBean
+    private ReservationServiceClient reservationServiceClient;
+    @MockBean
+    private PaymentServiceClient paymentServiceClient;
+    @MockBean
+    private KeyServiceClient keyServiceClient;
+    @MockBean
+    private AuditServiceClient auditServiceClient;
+    @MockBean
+    private BiometryServiceClient biometryServiceClient;
+    @MockBean
+    private PmsAdapterServiceClient pmsAdapterServiceClient;
 
     @Test
     void shouldCompleteCheckinAndCheckoutThroughUseCases() {
+        ReservationResult reservationResult = new ReservationResult(
+                1L,
+                "RSV-2026-0001",
+                "CONFIRMED",
+                "Flex Hotel Paulista",
+                java.time.LocalDate.now(),
+                java.time.LocalDate.now().plusDays(2),
+                BigDecimal.valueOf(780.00),
+                "BRL",
+                true,
+                List.of(),
+                new GuestResult(1L, "Lucas Henrique Rodrigues", "CPF", "****8909", java.time.LocalDate.of(1995, 8, 15), "lucas@example.com", "+5511999999999"),
+                new RoomResult(1L, "1204", "STANDARD", "AVAILABLE")
+        );
+
+        when(reservationServiceClient.search("RESERVATION_CODE", "RSV-2026-0001")).thenReturn(reservationResult);
+        when(reservationServiceClient.findById(1L)).thenReturn(reservationResult);
+        doNothing().when(reservationServiceClient).confirmGuest(anyLong(), any());
+        doNothing().when(auditServiceClient).record(any());
+        when(paymentServiceClient.recordPayment(any(), any(), anyString(), anyString(), org.mockito.ArgumentMatchers.any(BigDecimal.class), any()))
+                .thenReturn(new PaymentResult(1L, "PRE_AUTH", "APPROVED", BigDecimal.valueOf(780.00), "AUTH-1"));
+        when(keyServiceClient.issueKey(anyLong(), anyLong(), anyString(), org.mockito.ArgumentMatchers.any(java.time.LocalDate.class)))
+                .thenReturn(new KeyResult(1L, "DIGITAL", "ACTIVE", "KEY-1-1", java.time.LocalDateTime.now().plusDays(2)));
+        doNothing().when(keyServiceClient).revokeKeys(anyLong());
+        when(biometryServiceClient.recordVerification(anyLong(), anyLong(), anyString()))
+                .thenReturn(new BiometryVerificationResult(
+                        1L,
+                        1L,
+                        1L,
+                        "APPROVED",
+                        "MOCK",
+                        "BIO-1",
+                        BigDecimal.valueOf(98.5),
+                        java.time.LocalDateTime.now()
+                ));
+        doNothing().when(pmsAdapterServiceClient).syncCheckin(anyLong(), anyLong(), anyLong(), anyString(), anyString(), any(BigDecimal.class));
+        doNothing().when(pmsAdapterServiceClient).syncCheckout(anyLong(), anyLong(), anyLong(), any(BigDecimal.class));
+
         SessionResult session = createSessionUseCase.execute(new CreateSessionCommand(1L, "CHECKIN", "pt-BR"));
         SessionReservationResult reservation = attachReservationUseCase.execute(
                 session.sessionId(),

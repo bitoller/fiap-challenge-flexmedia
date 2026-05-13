@@ -12,6 +12,13 @@ services:
       ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
       ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
       ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL:-http://reservation-service:8082}
+      PAYMENT_SERVICE_URL: ${PAYMENT_SERVICE_URL:-http://payment-service:8083}
+      KEY_SERVICE_URL: ${KEY_SERVICE_URL:-http://key-service:8084}
+      ADMIN_SERVICE_URL: ${ADMIN_SERVICE_URL:-http://admin-service:8085}
+      DEVICE_SERVICE_URL: ${DEVICE_SERVICE_URL:-http://device-service:8089}
+      BIOMETRY_SERVICE_URL: ${BIOMETRY_SERVICE_URL:-http://biometry-service:8086}
+      PMS_SERVICE_URL: ${PMS_SERVICE_URL:-http://pms-adapter-service:8087}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
       PMS_MODE: ${PMS_MODE:-MOCK}
       PAYMENT_MODE: ${PAYMENT_MODE:-MOCK}
@@ -20,6 +27,14 @@ services:
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "${CHECKIN_PORT:-8081}:8080"
+    depends_on:
+      - reservation-service
+      - payment-service
+      - key-service
+      - admin-service
+      - device-service
+      - biometry-service
+      - pms-adapter-service
     networks:
       - flexcheck-net
 
@@ -32,11 +47,25 @@ services:
     environment:
       SERVER_PORT: 8088
       CHECKIN_SERVICE_URL: http://checkin-service:8080
+      RESERVATION_SERVICE_URL: http://reservation-service:8082
+      PAYMENT_SERVICE_URL: http://payment-service:8083
+      KEY_SERVICE_URL: http://key-service:8084
+      ADMIN_SERVICE_URL: http://admin-service:8085
+      DEVICE_SERVICE_URL: http://device-service:8089
+      BIOMETRY_SERVICE_URL: http://biometry-service:8086
+      PMS_SERVICE_URL: http://pms-adapter-service:8087
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "${GATEWAY_PORT:-8088}:8088"
     depends_on:
       - checkin-service
+      - reservation-service
+      - payment-service
+      - key-service
+      - admin-service
+      - device-service
+      - biometry-service
+      - pms-adapter-service
     networks:
       - flexcheck-net
 
@@ -52,6 +81,132 @@ services:
       - "${KIOSK_PORT:-3000}:80"
     depends_on:
       - api-gateway
+    networks:
+      - flexcheck-net
+
+  reservation-service:
+    build:
+      context: ./backend/services/reservation-service
+    image: flexcheck/reservation-service:demo
+    container_name: flexcheck-reservation-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8082
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+    ports:
+      - "${RESERVATION_PORT:-8082}:8082"
+    networks:
+      - flexcheck-net
+
+  payment-service:
+    build:
+      context: ./backend/services/payment-service
+    image: flexcheck/payment-service:demo
+    container_name: flexcheck-payment-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8083
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+    ports:
+      - "${PAYMENT_PORT:-8083}:8083"
+    networks:
+      - flexcheck-net
+
+  key-service:
+    build:
+      context: ./backend/services/key-service
+    image: flexcheck/key-service:demo
+    container_name: flexcheck-key-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8084
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+    ports:
+      - "${KEY_PORT:-8084}:8084"
+    networks:
+      - flexcheck-net
+
+  admin-service:
+    build:
+      context: ./backend/services/admin-service
+    image: flexcheck/admin-service:demo
+    container_name: flexcheck-admin-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8085
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      DEVICE_SERVICE_URL: http://device-service:8089
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+    ports:
+      - "${ADMIN_PORT:-8085}:8085"
+    networks:
+      - flexcheck-net
+
+  device-service:
+    build:
+      context: ./backend/services/device-service
+    image: flexcheck/device-service:demo
+    container_name: flexcheck-device-service
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8089
+    ports:
+      - "${DEVICE_PORT:-8089}:8089"
+    networks:
+      - flexcheck-net
+
+  biometry-service:
+    build:
+      context: ./backend/services/biometry-service
+    image: flexcheck/biometry-service:demo
+    container_name: flexcheck-biometry-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8086
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+    ports:
+      - "${BIOMETRY_PORT:-8086}:8086"
+    networks:
+      - flexcheck-net
+
+  pms-adapter-service:
+    build:
+      context: ./backend/services/pms-adapter-service
+    image: flexcheck/pms-adapter-service:demo
+    container_name: flexcheck-pms-adapter-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8087
+      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
+      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+    ports:
+      - "${PMS_PORT:-8087}:8087"
     networks:
       - flexcheck-net
 

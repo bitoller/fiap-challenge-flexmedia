@@ -8,6 +8,16 @@ spring:
 services:
   checkin:
     url: ${CHECKIN_SERVICE_URL:http://localhost:8080}
+  reservation:
+    url: ${RESERVATION_SERVICE_URL:http://localhost:8082}
+  payment:
+    url: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+  key:
+    url: ${KEY_SERVICE_URL:http://localhost:8084}
+  admin:
+    url: ${ADMIN_SERVICE_URL:http://localhost:8085}
+  device:
+    url: ${DEVICE_SERVICE_URL:http://localhost:8089}
 
 app:
   cors:

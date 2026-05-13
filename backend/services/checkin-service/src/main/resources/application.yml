@@ -11,23 +11,34 @@ spring:
     name: checkin-service
   datasource:
     url: ${ORACLE_URL:jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL}
-    username: ${ORACLE_USER:rm552726}
+    username: ${ORACLE_USER:rm553134}
     password: ${ORACLE_PASSWORD:}
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 0
+      connection-timeout: 10000
   sql:
     init:
       mode: never
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    properties:
-      hibernate:
-        format_sql: true
 
 app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000}
+
+services:
+  reservation:
+    url: ${RESERVATION_SERVICE_URL:http://localhost:8082}
+  payment:
+    url: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+  key:
+    url: ${KEY_SERVICE_URL:http://localhost:8084}
+  admin:
+    url: ${ADMIN_SERVICE_URL:http://localhost:8085}
+  biometry:
+    url: ${BIOMETRY_SERVICE_URL:http://localhost:8086}
+  pms:
+    url: ${PMS_SERVICE_URL:http://localhost:8087}
 
 logging:
   level:

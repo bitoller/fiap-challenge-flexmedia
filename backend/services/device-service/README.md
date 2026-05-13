@@ -1,31 +1,22 @@
 # device-service
 
-Microservico planejado para monitoramento dos totens e dispositivos fisicos.
+Servico responsavel pelo estado dos totens e equipamentos do hotel.
 
 ## Status
 
-Planejado como servico independente. No MVP atual, dados do kiosk sao usados pelo `checkin-service`.
+Implementado com armazenamento em memoria para o MVP.
 
 ## Responsabilidades
 
-- Cadastrar totens.
-- Receber heartbeat.
-- Monitorar camera, leitor de documento, impressora e emissor de chave.
-- Registrar eventos de falha.
-- Disponibilizar status operacional para o painel administrativo.
+- Registrar heartbeat de totems.
+- Listar dispositivos cadastrados.
+- Expor status consolidado para o painel administrativo.
+- Ajudar a identificar totens online, offline, em manutencao ou em erro.
 
-## Endpoints Planejados
+## Endpoints
 
-- `POST /api/v1/devices/{kioskId}/heartbeat`
+- `POST /api/v1/devices/heartbeats`
 - `GET /api/v1/devices`
-- `GET /api/v1/devices/{kioskId}`
-- `POST /api/v1/devices/{kioskId}/events`
+- `GET /api/v1/devices/{deviceCode}`
+- `GET /api/v1/devices/status`
 
-## Tabelas
-
-- `fc_kiosk_device`
-- `fc_device_event`
-
-## Valor de Produto
-
-Esse servico conecta a solucao ao dominio real da Flexmedia: o totem e um equipamento monitorado, com disponibilidade e suporte operacional.

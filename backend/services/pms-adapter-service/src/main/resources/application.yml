@@ -1,0 +1,19 @@
+server:
+  port: ${SERVER_PORT:8087}
+
+spring:
+  application:
+    name: pms-adapter-service
+  datasource:
+    url: ${ORACLE_URL:jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL}
+    username: ${ORACLE_USER:rm553134}
+    password: ${ORACLE_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 0
+      connection-timeout: 10000
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

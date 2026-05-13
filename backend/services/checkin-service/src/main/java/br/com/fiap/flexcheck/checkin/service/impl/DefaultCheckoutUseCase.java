@@ -1,10 +1,11 @@
 package br.com.fiap.flexcheck.checkin.service.impl;
 
-import br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent;
 import br.com.fiap.flexcheck.checkin.domain.entity.Stay;
 import br.com.fiap.flexcheck.checkin.domain.exception.BusinessException;
-import br.com.fiap.flexcheck.checkin.repository.AuditRepository;
-import br.com.fiap.flexcheck.checkin.repository.PaymentRepository;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
 import br.com.fiap.flexcheck.checkin.service.CheckoutUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutCommand;
@@ -15,13 +16,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DefaultCheckoutUseCase implements CheckoutUseCase {
     private final StayRepository stayRepository;
-    private final PaymentRepository paymentRepository;
-    private final AuditRepository auditRepository;
+    private final PaymentServiceClient paymentServiceClient;
+    private final KeyServiceClient keyServiceClient;
+    private final PmsAdapterServiceClient pmsAdapterServiceClient;
+    private final AuditServiceClient auditServiceClient;
 
-    public DefaultCheckoutUseCase(StayRepository stayRepository, PaymentRepository paymentRepository, AuditRepository auditRepository) {
+    public DefaultCheckoutUseCase(
+            StayRepository stayRepository,
+            PaymentServiceClient paymentServiceClient,
+            KeyServiceClient keyServiceClient,
+            PmsAdapterServiceClient pmsAdapterServiceClient,
+            AuditServiceClient auditServiceClient
+    ) {
         this.stayRepository = stayRepository;
-        this.paymentRepository = paymentRepository;
-        this.auditRepository = auditRepository;
+        this.paymentServiceClient = paymentServiceClient;
+        this.keyServiceClient = keyServiceClient;
+        this.pmsAdapterServiceClient = pmsAdapterServiceClient;
+        this.auditServiceClient = auditServiceClient;
     }
 
     @Override
@@ -39,13 +50,15 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
-            paymentRepository.insertPayment(stayId, stay.reservationId(), "CAPTURE", "DECLINED", stay.totalAmount(), null);
+            paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "DECLINED", stay.totalAmount(), null);
             throw new BusinessException("PAYMENT_DECLINED", "Pagamento recusado. Procure a recepcao.", 409);
         }
 
-        paymentRepository.insertPayment(stayId, stay.reservationId(), "CAPTURE", "APPROVED", stay.totalAmount(), "CAP-" + stayId);
+        paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "APPROVED", stay.totalAmount(), "CAP-" + stayId);
+        keyServiceClient.revokeKeys(stayId);
         stayRepository.checkout(stay);
-        auditRepository.record(new AuditEvent("KIOSK", null, "CHECKOUT_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
+        pmsAdapterServiceClient.syncCheckout(stay.reservationId(), stayId, stay.roomId(), stay.totalAmount());
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CHECKOUT_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 
         return new CheckoutResult(stayId, "CHECKED_OUT", stay.totalAmount(), "RCP-" + stayId);
     }

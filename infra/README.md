@@ -19,8 +19,8 @@ Configure `.env` na raiz:
 
 ```text
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm552726
-ORACLE_PASSWORD=<sua-senha>
+ORACLE_USER=rm553134
+ORACLE_PASSWORD=060892
 JPA_DDL_AUTO=update
 PMS_MODE=MOCK
 PAYMENT_MODE=MOCK

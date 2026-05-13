@@ -1,8 +1,7 @@
 package br.com.fiap.flexcheck.checkin.service.impl;
 
-import br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent;
-import br.com.fiap.flexcheck.checkin.repository.AuditRepository;
-import br.com.fiap.flexcheck.checkin.repository.GuestRepository;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
 import br.com.fiap.flexcheck.checkin.service.ConfirmGuestUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
@@ -11,21 +10,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DefaultConfirmGuestUseCase implements ConfirmGuestUseCase {
-    private final GuestRepository guestRepository;
     private final SessionRepository sessionRepository;
-    private final AuditRepository auditRepository;
+    private final ReservationServiceClient reservationServiceClient;
+    private final AuditServiceClient auditServiceClient;
 
-    public DefaultConfirmGuestUseCase(GuestRepository guestRepository, SessionRepository sessionRepository, AuditRepository auditRepository) {
-        this.guestRepository = guestRepository;
+    public DefaultConfirmGuestUseCase(
+            SessionRepository sessionRepository,
+            ReservationServiceClient reservationServiceClient,
+            AuditServiceClient auditServiceClient
+    ) {
         this.sessionRepository = sessionRepository;
-        this.auditRepository = auditRepository;
+        this.reservationServiceClient = reservationServiceClient;
+        this.auditServiceClient = auditServiceClient;
     }
 
     @Override
     @Transactional
     public void execute(Long sessionId, GuestConfirmationCommand command) {
-        guestRepository.updateGuest(command);
+        Long reservationId = sessionRepository.findReservationIdBySession(sessionId);
+        reservationServiceClient.confirmGuest(reservationId, command);
         sessionRepository.updateSessionStatus(sessionId, "DATA_CONFIRMED");
-        auditRepository.record(new AuditEvent("KIOSK", null, "GUEST_DATA_CONFIRMED", "GUEST", String.valueOf(command.guestId()), "SUCCESS", null));
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "GUEST_DATA_CONFIRMED", "GUEST", String.valueOf(command.guestId()), "SUCCESS", null));
     }
 }

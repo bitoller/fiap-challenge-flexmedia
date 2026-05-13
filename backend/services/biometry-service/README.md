@@ -1,20 +1,19 @@
 # biometry-service
 
-Microservico planejado para validacao facial opcional.
+Microservico de validacao facial do FlexCheck.
 
 ## Status
 
-Planejado como servico independente. No MVP atual, o resultado biometrico simulado e registrado pelo `checkin-service`.
+Implementado.
 
 ## Responsabilidades
 
-- Verificar consentimento antes da validacao.
-- Simular aprovacao ou pular biometria.
-- Registrar resultado sem armazenar imagem bruta.
-- Suportar fallback para atendimento humano.
-- Preservar rastreabilidade LGPD.
+- Registrar verificacoes biometrica com ou sem consentimento.
+- Permitir revisao manual do resultado.
+- Persistir rastreabilidade sem guardar imagem bruta.
+- Manter o fluxo de check-in desacoplado do dominio biometrico.
 
-## Endpoints Planejados
+## Endpoints
 
 - `POST /api/v1/biometry/verifications`
 - `GET /api/v1/biometry/verifications/{id}`
@@ -24,24 +23,6 @@ Planejado como servico independente. No MVP atual, o resultado biometrico simula
 
 - `fc_biometry_verification`
 
-## LGPD
+## Observacao
 
-Biometria e dado pessoal sensivel. O fluxo deve exigir consentimento explicito, permitir recusa sem bloquear a hospedagem e evitar armazenamento de imagem bruta.
-
-## MVP Atual
-
-No endpoint `complete-checkin`, use:
-
-```json
-{
-  "biometryStatus": "APPROVED"
-}
-```
-
-ou:
-
-```json
-{
-  "biometryStatus": "SKIPPED"
-}
-```
+O `checkin-service` consome este servico por HTTP e deixa de gravar biometria localmente.

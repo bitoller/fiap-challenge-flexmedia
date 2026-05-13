@@ -90,7 +90,7 @@ O container usa a imagem oficial do Oracle Database Free:
 container-registry.oracle.com/database/free:latest-lite
 ```
 
-Ao subir pela primeira vez com volume vazio, os scripts em `database/oracle/init` sao montados em `/opt/oracle/scripts/setup`, criam o usuario `FLEXCHECK`, executam o schema e carregam os dados de teste.
+Ao subir pela primeira vez com volume vazio, os scripts em `database/oracle/init` sao montados em `/opt/oracle/scripts/setup`, criam o usuario `rm553134`, executam o schema e carregam os dados de teste.
 
 ## 7. Risco e Plano B
 

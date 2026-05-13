@@ -14,6 +14,8 @@ public interface SessionRepository {
 
     void updateSessionStatus(Long sessionId, String status);
 
+    Long findReservationIdBySession(Long sessionId);
+
     Long findGuestIdBySession(Long sessionId);
 
     Optional<SessionContext> findSessionContext(Long sessionId);

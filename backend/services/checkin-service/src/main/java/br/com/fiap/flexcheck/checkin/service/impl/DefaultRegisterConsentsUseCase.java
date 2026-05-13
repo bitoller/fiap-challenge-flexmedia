@@ -1,7 +1,6 @@
 package br.com.fiap.flexcheck.checkin.service.impl;
 
-import br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent;
-import br.com.fiap.flexcheck.checkin.repository.AuditRepository;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
 import br.com.fiap.flexcheck.checkin.repository.ConsentRepository;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
 import br.com.fiap.flexcheck.checkin.service.RegisterConsentsUseCase;
@@ -13,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultRegisterConsentsUseCase implements RegisterConsentsUseCase {
     private final SessionRepository sessionRepository;
     private final ConsentRepository consentRepository;
-    private final AuditRepository auditRepository;
+    private final AuditServiceClient auditServiceClient;
 
-    public DefaultRegisterConsentsUseCase(SessionRepository sessionRepository, ConsentRepository consentRepository, AuditRepository auditRepository) {
+    public DefaultRegisterConsentsUseCase(SessionRepository sessionRepository, ConsentRepository consentRepository, AuditServiceClient auditServiceClient) {
         this.sessionRepository = sessionRepository;
         this.consentRepository = consentRepository;
-        this.auditRepository = auditRepository;
+        this.auditServiceClient = auditServiceClient;
     }
 
     @Override
@@ -28,6 +27,6 @@ public class DefaultRegisterConsentsUseCase implements RegisterConsentsUseCase {
         for (ConsentCommand.ConsentItemCommand item : command.items()) {
             consentRepository.saveConsent(sessionId, guestId, item);
         }
-        auditRepository.record(new AuditEvent("KIOSK", null, "CONSENTS_REGISTERED", "CHECKIN_SESSION", String.valueOf(sessionId), "SUCCESS", null));
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CONSENTS_REGISTERED", "CHECKIN_SESSION", String.valueOf(sessionId), "SUCCESS", null));
     }
 }

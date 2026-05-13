@@ -25,7 +25,14 @@ public class ProxyController {
             "host",
             "connection",
             "content-length",
-            "transfer-encoding"
+            "transfer-encoding",
+            "expect",
+            "keep-alive",
+            "proxy-authenticate",
+            "proxy-authorization",
+            "te",
+            "trailer",
+            "upgrade"
     );
 
     private static final Set<String> SKIPPED_RESPONSE_HEADERS = new HashSet<>(Set.of(
@@ -36,9 +43,32 @@ public class ProxyController {
 
     private final HttpClient httpClient;
     private final String checkinServiceUrl;
+    private final String reservationServiceUrl;
+    private final String paymentServiceUrl;
+    private final String keyServiceUrl;
+    private final String adminServiceUrl;
+    private final String deviceServiceUrl;
+    private final String biometryServiceUrl;
+    private final String pmsServiceUrl;
 
-    public ProxyController(@Value("${services.checkin.url:http://localhost:8080}") String checkinServiceUrl) {
+    public ProxyController(
+            @Value("${services.checkin.url:http://localhost:8080}") String checkinServiceUrl,
+            @Value("${services.reservation.url:http://localhost:8082}") String reservationServiceUrl,
+            @Value("${services.payment.url:http://localhost:8083}") String paymentServiceUrl,
+            @Value("${services.key.url:http://localhost:8084}") String keyServiceUrl,
+            @Value("${services.admin.url:http://localhost:8085}") String adminServiceUrl,
+            @Value("${services.device.url:http://localhost:8089}") String deviceServiceUrl,
+            @Value("${services.biometry.url:http://localhost:8086}") String biometryServiceUrl,
+            @Value("${services.pms.url:http://localhost:8087}") String pmsServiceUrl
+    ) {
         this.checkinServiceUrl = checkinServiceUrl;
+        this.reservationServiceUrl = reservationServiceUrl;
+        this.paymentServiceUrl = paymentServiceUrl;
+        this.keyServiceUrl = keyServiceUrl;
+        this.adminServiceUrl = adminServiceUrl;
+        this.deviceServiceUrl = deviceServiceUrl;
+        this.biometryServiceUrl = biometryServiceUrl;
+        this.pmsServiceUrl = pmsServiceUrl;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
@@ -49,7 +79,7 @@ public class ProxyController {
             throws IOException, InterruptedException {
         URI targetUri = buildTargetUri(servletRequest);
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(targetUri)
-                .timeout(Duration.ofSeconds(20));
+                .timeout(Duration.ofSeconds(60));
 
         Collections.list(servletRequest.getHeaderNames()).forEach(headerName -> {
             if (!SKIPPED_REQUEST_HEADERS.contains(headerName.toLowerCase())) {
@@ -83,8 +113,33 @@ public class ProxyController {
     private URI buildTargetUri(HttpServletRequest request) {
         String path = request.getRequestURI();
         String query = request.getQueryString();
-        String target = checkinServiceUrl + path + (query == null ? "" : "?" + query);
+        String target = resolveServiceBaseUrl(path) + path + (query == null ? "" : "?" + query);
         return URI.create(target);
+    }
+
+    private String resolveServiceBaseUrl(String path) {
+        if (path.startsWith("/api/v1/reservations")) {
+            return reservationServiceUrl;
+        }
+        if (path.startsWith("/api/v1/payments")) {
+            return paymentServiceUrl;
+        }
+        if (path.startsWith("/api/v1/keys")) {
+            return keyServiceUrl;
+        }
+        if (path.startsWith("/api/v1/admin")) {
+            return adminServiceUrl;
+        }
+        if (path.startsWith("/api/v1/devices")) {
+            return deviceServiceUrl;
+        }
+        if (path.startsWith("/api/v1/biometry")) {
+            return biometryServiceUrl;
+        }
+        if (path.startsWith("/api/v1/pms")) {
+            return pmsServiceUrl;
+        }
+        return checkinServiceUrl;
     }
 
     private boolean hasBody(String method) {

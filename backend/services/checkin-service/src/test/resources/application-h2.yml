@@ -13,14 +13,6 @@ spring:
     init:
       mode: always
       data-locations: classpath:db/h2/data.sql
-  jpa:
-    open-in-view: false
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
 
 app:
   cors:

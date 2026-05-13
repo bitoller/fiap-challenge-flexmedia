@@ -6,17 +6,18 @@ Microservicos do backend FlexCheck Hotel.
 
 - [api-gateway](api-gateway/README.md)
 - [checkin-service](checkin-service/README.md)
+- [reservation-service](reservation-service/README.md)
+- [payment-service](payment-service/README.md)
+- [key-service](key-service/README.md)
+- [admin-service](admin-service/README.md)
+- [device-service](device-service/README.md)
+- [biometry-service](biometry-service/README.md)
+- [pms-adapter-service](pms-adapter-service/README.md)
 
 ## Planejados
 
 - [identity-service](identity-service/README.md)
-- [reservation-service](reservation-service/README.md)
-- [payment-service](payment-service/README.md)
-- [key-service](key-service/README.md)
-- [biometry-service](biometry-service/README.md)
 - [notification-service](notification-service/README.md)
-- [device-service](device-service/README.md)
-- [pms-adapter-service](pms-adapter-service/README.md)
 
 ## Execucao Recomendada
 
@@ -47,6 +48,13 @@ Isso sobe:
 
 - `checkin-service`
 - `api-gateway`
+- `reservation-service`
+- `payment-service`
+- `key-service`
+- `admin-service`
+- `device-service`
+- `biometry-service`
+- `pms-adapter-service`
 - `kiosk-web`
 
 ## Contrato de API

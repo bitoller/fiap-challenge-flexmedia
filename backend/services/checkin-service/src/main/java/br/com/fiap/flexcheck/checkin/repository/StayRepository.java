@@ -1,12 +1,13 @@
 package br.com.fiap.flexcheck.checkin.repository;
 
-import br.com.fiap.flexcheck.checkin.domain.entity.Reservation;
 import br.com.fiap.flexcheck.checkin.domain.entity.Stay;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface StayRepository {
-    Long createStay(Reservation reservation);
+    Long createStay(Long reservationId, Long roomId, LocalDate departureDate, BigDecimal totalAmount);
 
     Optional<Stay> findStay(Long stayId);
 

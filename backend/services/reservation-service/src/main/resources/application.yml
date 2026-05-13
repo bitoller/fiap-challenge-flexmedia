@@ -1,0 +1,27 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../../../.env[.properties]
+  application:
+    name: reservation-service
+  datasource:
+    url: ${ORACLE_URL:jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL}
+    username: ${ORACLE_USER:rm553134}
+    password: ${ORACLE_PASSWORD:}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 0
+      connection-timeout: 10000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

@@ -1,5 +1,5 @@
 -- FlexCheck Hotel - setup completo para Oracle FIAP
--- Execute este arquivo conectado no usuario do projeto, por exemplo rm552726.
+-- Execute este arquivo conectado no usuario do projeto, por exemplo rm553134.
 --
 -- Ordem:
 -- 1. Remove tabelas antigas FC_*.

@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../../../.env[.properties]
+  application:
+    name: key-service
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

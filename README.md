@@ -8,6 +8,10 @@ Implementado:
 
 - `checkin-service`: API principal do MVP em Spring Boot.
 - `api-gateway`: proxy simples para entrada unica em `/api/v1/**`.
+- `reservation-service`: busca e confirmacao de reserva.
+- `payment-service`: gravacao de transacoes de pagamento.
+- `key-service`: emissao e revogacao de chaves.
+- `admin-service`: dashboard e auditoria operacional.
 - `kiosk-web`: frontend React do totem.
 - Oracle FIAP como banco principal, com tabelas criadas por JPA/Hibernate.
 - Collection Postman para validar o fluxo completo.
@@ -15,9 +19,6 @@ Implementado:
 Planejado/documentado:
 
 - `identity-service`
-- `reservation-service`
-- `payment-service`
-- `key-service`
 - `biometry-service`
 - `notification-service`
 - `device-service`
@@ -53,6 +54,10 @@ Este e o fluxo recomendado para a demo e para padronizar a equipe. Ele sobe:
 
 - `checkin-service`
 - `api-gateway`
+- `reservation-service`
+- `payment-service`
+- `key-service`
+- `admin-service`
 - `kiosk-web`
 
 O banco usado e o Oracle FIAP remoto configurado no `.env`.
@@ -79,7 +84,7 @@ cp .env.demo.example .env
 Edite `.env` e preencha:
 
 ```text
-ORACLE_PASSWORD=<sua-senha>
+ORACLE_PASSWORD=060892
 ```
 
 As portas padrao da demo sao:
@@ -133,7 +138,7 @@ O backend usa Oracle FIAP por padrao:
 
 ```text
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm552726
+ORACLE_USER=rm553134
 JPA_DDL_AUTO=update
 ```
 

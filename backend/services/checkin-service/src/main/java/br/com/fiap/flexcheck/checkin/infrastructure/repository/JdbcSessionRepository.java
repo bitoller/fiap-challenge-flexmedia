@@ -91,6 +91,15 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     @Override
+    public Long findReservationIdBySession(Long sessionId) {
+        return jdbc.queryForObject("""
+                SELECT reservation_id
+                  FROM fc_checkin_session
+                 WHERE id = ?
+                """, Long.class, sessionId);
+    }
+
+    @Override
     public Optional<SessionContext> findSessionContext(Long sessionId) {
         String sql = """
                 SELECT s.id AS session_id,

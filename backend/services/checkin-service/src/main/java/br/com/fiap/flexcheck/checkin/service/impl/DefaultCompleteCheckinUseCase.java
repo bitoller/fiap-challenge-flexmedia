@@ -1,69 +1,66 @@
 package br.com.fiap.flexcheck.checkin.service.impl;
 
-import br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent;
-import br.com.fiap.flexcheck.checkin.domain.entity.KeyCredential;
-import br.com.fiap.flexcheck.checkin.domain.entity.Reservation;
-import br.com.fiap.flexcheck.checkin.domain.entity.ReservationEligibility;
-import br.com.fiap.flexcheck.checkin.domain.entity.SessionContext;
 import br.com.fiap.flexcheck.checkin.domain.exception.BusinessException;
-import br.com.fiap.flexcheck.checkin.domain.service.ReservationEligibilityPolicy;
-import br.com.fiap.flexcheck.checkin.mapper.ResultMapper;
-import br.com.fiap.flexcheck.checkin.repository.AuditRepository;
-import br.com.fiap.flexcheck.checkin.repository.KeyRepository;
-import br.com.fiap.flexcheck.checkin.repository.PaymentRepository;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.BiometryServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
 import br.com.fiap.flexcheck.checkin.repository.VerificationRepository;
+import br.com.fiap.flexcheck.checkin.service.result.BiometryVerificationResult;
 import br.com.fiap.flexcheck.checkin.service.CompleteCheckinUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-
 @Service
 public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
     private final SessionRepository sessionRepository;
     private final VerificationRepository verificationRepository;
-    private final PaymentRepository paymentRepository;
+    private final BiometryServiceClient biometryServiceClient;
+    private final PaymentServiceClient paymentServiceClient;
     private final StayRepository stayRepository;
-    private final KeyRepository keyRepository;
-    private final AuditRepository auditRepository;
-    private final ReservationEligibilityPolicy eligibilityPolicy;
+    private final KeyServiceClient keyServiceClient;
+    private final PmsAdapterServiceClient pmsAdapterServiceClient;
+    private final AuditServiceClient auditServiceClient;
+    private final ReservationServiceClient reservationServiceClient;
 
     public DefaultCompleteCheckinUseCase(
             SessionRepository sessionRepository,
             VerificationRepository verificationRepository,
-            PaymentRepository paymentRepository,
+            BiometryServiceClient biometryServiceClient,
+            PaymentServiceClient paymentServiceClient,
             StayRepository stayRepository,
-            KeyRepository keyRepository,
-            AuditRepository auditRepository,
-            ReservationEligibilityPolicy eligibilityPolicy
+            KeyServiceClient keyServiceClient,
+            PmsAdapterServiceClient pmsAdapterServiceClient,
+            AuditServiceClient auditServiceClient,
+            ReservationServiceClient reservationServiceClient
     ) {
         this.sessionRepository = sessionRepository;
         this.verificationRepository = verificationRepository;
-        this.paymentRepository = paymentRepository;
+        this.biometryServiceClient = biometryServiceClient;
+        this.paymentServiceClient = paymentServiceClient;
         this.stayRepository = stayRepository;
-        this.keyRepository = keyRepository;
-        this.auditRepository = auditRepository;
-        this.eligibilityPolicy = eligibilityPolicy;
+        this.keyServiceClient = keyServiceClient;
+        this.pmsAdapterServiceClient = pmsAdapterServiceClient;
+        this.auditServiceClient = auditServiceClient;
+        this.reservationServiceClient = reservationServiceClient;
     }
 
     @Override
     @Transactional
     public CompleteCheckinResult execute(Long sessionId, CompleteCheckinCommand command) {
-        SessionContext context = sessionRepository.findSessionContext(sessionId)
-                .orElseThrow(() -> new BusinessException("SESSION_NOT_FOUND", "Sessao nao encontrada.", 404));
-
-        Reservation reservation = context.reservation();
-        ReservationEligibility eligibility = eligibilityPolicy.evaluate(reservation);
-        if (!eligibility.eligible()) {
+        Long reservationId = sessionRepository.findReservationIdBySession(sessionId);
+        var reservation = reservationServiceClient.findById(reservationId);
+        if (!reservation.eligible()) {
             throw new BusinessException(
                     "RESERVATION_NOT_ELIGIBLE",
                     "Essa reserva nao pode concluir check-in automaticamente.",
-                    409,
-                    Map.of("reasons", eligibility.reasons())
+                    409
             );
         }
 
@@ -75,19 +72,36 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         }
 
         verificationRepository.insertDocumentVerification(sessionId, reservation.guest().id(), documentStatus);
-        verificationRepository.insertBiometryVerification(sessionId, reservation.guest().id(), defaultValue(command.biometryStatus(), "SKIPPED").toUpperCase());
+        String biometryStatus = defaultValue(command.biometryStatus(), "SKIPPED").toUpperCase();
+        BiometryVerificationResult biometryVerification = biometryServiceClient.recordVerification(
+                sessionId,
+                reservation.guest().id(),
+                biometryStatus
+        );
+        if ("REJECTED".equalsIgnoreCase(biometryVerification.status())) {
+            sessionRepository.failSession(sessionId, "BIOMETRY_REJECTED");
+            throw new BusinessException("BIOMETRY_REJECTED", "Biometria rejeitada. Procure a recepcao.", 409);
+        }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
-            paymentRepository.insertPayment(null, reservation.id(), "PRE_AUTH", "DECLINED", reservation.totalAmount(), null);
+            paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "DECLINED", reservation.totalAmount(), null);
             sessionRepository.failSession(sessionId, "PAYMENT_DECLINED");
             throw new BusinessException("PAYMENT_DECLINED", "Pagamento recusado. Tente outro cartao ou procure a recepcao.", 409);
         }
 
-        paymentRepository.insertPayment(null, reservation.id(), "PRE_AUTH", "APPROVED", reservation.totalAmount(), "AUTH-" + sessionId);
-        Long stayId = stayRepository.createStay(reservation);
-        KeyCredential key = keyRepository.createKey(stayId, reservation.room().id(), command.keyType(), reservation.departureDate());
+        paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "APPROVED", reservation.totalAmount(), "AUTH-" + sessionId);
+        Long stayId = stayRepository.createStay(reservation.id(), reservation.room().id(), reservation.departureDate(), reservation.totalAmount());
+        var key = keyServiceClient.issueKey(stayId, reservation.room().id(), command.keyType(), reservation.departureDate());
         stayRepository.markCheckedIn(sessionId, reservation.id(), reservation.room().id());
-        auditRepository.record(new AuditEvent("KIOSK", null, "CHECKIN_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", context.correlationId()));
+        pmsAdapterServiceClient.syncCheckin(
+                reservation.id(),
+                stayId,
+                reservation.room().id(),
+                reservation.room().number(),
+                reservation.guest().fullName(),
+                reservation.totalAmount()
+        );
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CHECKIN_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 
         return new CompleteCheckinResult(
                 sessionId,
@@ -95,7 +109,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                 stayId,
                 reservation.room().number(),
                 reservation.totalAmount(),
-                ResultMapper.toKeyResult(key)
+                key
         );
     }
 

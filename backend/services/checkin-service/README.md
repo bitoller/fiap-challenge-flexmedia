@@ -1,6 +1,6 @@
 # checkin-service
 
-Servico principal do MVP. Orquestra check-in, checkout, consentimentos, pagamento simulado, emissao de chave, auditoria e dashboard.
+Servico principal do MVP. Orquestra o fluxo de check-in e checkout, coordenando reserva, biometria, pagamento, chave, PMS e auditoria via servicos dedicados.
 
 ## Status
 
@@ -22,7 +22,7 @@ Pacotes principais:
 - `service.impl`: implementacoes dos casos de uso.
 - `repository`: contratos de persistencia.
 - `infrastructure/repository`: adapters JDBC.
-- `infrastructure/persistence/entity`: entidades JPA com `@Table`, usadas pelo Hibernate para criar/atualizar tabelas.
+- `infrastructure/client`: contratos HTTP para os outros microservicos.
 - `domain`: entidades de dominio, politicas e excecoes.
 
 ## Banco
@@ -31,12 +31,11 @@ Oracle FIAP por padrao. O `application.yml` importa o `.env` da raiz.
 
 ```text
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm552726
-ORACLE_PASSWORD=<sua-senha>
-JPA_DDL_AUTO=update
+ORACLE_USER=rm553134
+ORACLE_PASSWORD=060892
 ```
 
-O Hibernate cria/atualiza as tabelas `FC_*` a partir das entidades JPA.
+As tabelas `FC_*` sao criadas via `database/oracle/schema.sql` e populadas por `database/oracle/seed.sql`.
 
 ## Endpoints
 
@@ -47,9 +46,15 @@ O Hibernate cria/atualiza as tabelas `FC_*` a partir das entidades JPA.
 - `POST /api/v1/checkin-sessions/{sessionId}/consents`
 - `POST /api/v1/checkin-sessions/{sessionId}/complete-checkin`
 - `POST /api/v1/stays/{stayId}/checkout`
-- `GET /api/v1/reservations/search?type=RESERVATION_CODE&value=RSV-2026-0001`
-- `GET /api/v1/admin/dashboard`
 
+## Servicos Integrados
+
+- `reservation-service`
+- `biometry-service`
+- `payment-service`
+- `key-service`
+- `pms-adapter-service`
+- `admin-service`
 ## Como Rodar
 
 ```bash

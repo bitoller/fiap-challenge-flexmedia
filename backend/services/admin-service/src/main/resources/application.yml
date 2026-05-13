@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8085}
+
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../../../.env[.properties]
+  application:
+    name: admin-service
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

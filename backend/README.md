@@ -6,8 +6,12 @@ Backend Java/Spring do FlexCheck Hotel.
 
 Implementados:
 
-- `checkin-service`: orquestra check-in, checkout, dashboard e persistencia Oracle.
+- `checkin-service`: orquestra check-in e checkout, coordenando os demais servicos.
 - `api-gateway`: proxy HTTP para centralizar entrada em `/api/v1/**`.
+- `reservation-service`: busca e confirmacao de reserva.
+- `payment-service`: gravacao de transacoes de pagamento.
+- `key-service`: emissao e revogacao de chaves.
+- `admin-service`: dashboard e auditoria operacional.
 
 Planejados:
 
@@ -55,6 +59,10 @@ docker compose up --build
 Servicos expostos:
 
 - `checkin-service`: `http://127.0.0.1:8081/api/v1`
+- `reservation-service`: `http://127.0.0.1:8082/api/v1`
+- `payment-service`: `http://127.0.0.1:8083/api/v1`
+- `key-service`: `http://127.0.0.1:8084/api/v1`
+- `admin-service`: `http://127.0.0.1:8085/api/v1`
 - `api-gateway`: `http://127.0.0.1:8088`
 - `kiosk-web`: `http://127.0.0.1:3000`
 
@@ -66,8 +74,8 @@ Variaveis principais:
 
 ```text
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm552726
-ORACLE_PASSWORD=<sua-senha>
+ORACLE_USER=rm553134
+ORACLE_PASSWORD=060892
 JPA_DDL_AUTO=update
 ```
 

@@ -1,0 +1,10 @@
+server:
+  port: ${SERVER_PORT:8089}
+
+spring:
+  application:
+    name: device-service
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

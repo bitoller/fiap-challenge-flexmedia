@@ -24,6 +24,10 @@ SID: ORCL
 JDBC: jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
 ```
 
+## Usuario Oracle
+
+O bootstrap local usa `rm553134` com senha `060892`.
+
 ## Criar Tabelas pelo Backend
 
 1. Configure `.env` na raiz.
