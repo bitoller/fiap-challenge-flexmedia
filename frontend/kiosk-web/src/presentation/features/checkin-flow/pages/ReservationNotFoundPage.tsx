@@ -22,6 +22,14 @@ function ErrorRightContent() {
   );
 }
 
+function isForbiddenMessage(message: string | undefined) {
+  if (!message) {
+    return false;
+  }
+
+  return message.toLowerCase() === "forbidden" || message.toLowerCase() === "access denied";
+}
+
 export function ReservationNotFoundPage() {
   const { t } = useTranslation("checkin");
   const navigate = useNavigate();
@@ -39,7 +47,9 @@ export function ReservationNotFoundPage() {
 
   const bodyCopy = isNotFound
     ? t("notFoundBody")
-    : currentError?.message || t("genericLookupBody");
+    : isForbiddenMessage(currentError?.message)
+      ? t("genericLookupBody")
+      : currentError?.message || t("genericLookupBody");
 
   const retry = () => {
     clearFlow();

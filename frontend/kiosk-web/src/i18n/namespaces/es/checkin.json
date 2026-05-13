@@ -27,6 +27,7 @@
   "cpfPlaceholder": "Ingrese su CPF",
   "reservationLabel": "Número de reserva",
   "reservationPlaceholder": "Ingrese su número de reserva",
+  "searchingReservation": "Buscando reserva...",
   "bottomHome": "INICIO",
   "bottomAssistant": "ASISTENTE",
   "bottomEmergency": "EMERGENCIA",

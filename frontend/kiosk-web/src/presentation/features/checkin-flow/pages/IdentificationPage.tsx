@@ -208,6 +208,12 @@ export function IdentificationPage() {
                 </svg>
               </span>
             </div>
+            {isLoading ? (
+              <div className="checkin-identification__loading" role="status" aria-live="polite">
+                <span className="checkin-identification__loading-spinner" aria-hidden="true" />
+                <p>{t("searchingReservation")}</p>
+              </div>
+            ) : null}
             <NumericKeypad
               onDigit={appendDigit}
               onBackspace={removeDigit}
