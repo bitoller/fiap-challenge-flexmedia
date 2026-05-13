@@ -15,9 +15,10 @@ public class HttpReservationServiceClient implements ReservationServiceClient {
     }
 
     @Override
-    public ReservationResult search(String type, String value) {
+    public ReservationResult search(Long kioskId, String type, String value) {
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/api/v1/reservations/search")
+                        .queryParamIfPresent("kioskId", java.util.Optional.ofNullable(kioskId))
                         .queryParam("type", type)
                         .queryParam("value", value)
                         .build())

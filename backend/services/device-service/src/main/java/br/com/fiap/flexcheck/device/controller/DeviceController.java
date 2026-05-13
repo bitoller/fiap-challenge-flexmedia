@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,21 +42,21 @@ public class DeviceController {
     }
 
     @GetMapping
-    public List<KioskDeviceResult> list() {
-        return listDevicesUseCase.execute();
+    public List<KioskDeviceResult> list(@RequestParam(required = false) Long hotelId) {
+        return listDevicesUseCase.execute(hotelId);
     }
 
     @GetMapping("/{deviceCode}")
     public KioskDeviceResult findByCode(@PathVariable String deviceCode) {
-        return listDevicesUseCase.execute().stream()
+        return listDevicesUseCase.execute(null).stream()
                 .filter(device -> device.deviceCode().equalsIgnoreCase(deviceCode))
                 .findFirst()
                 .orElseThrow(() -> new DeviceNotFoundException(deviceCode));
     }
 
     @GetMapping("/status")
-    public DeviceStatusResult status() {
-        return getDeviceStatusUseCase.execute();
+    public DeviceStatusResult status(@RequestParam(required = false) Long hotelId) {
+        return getDeviceStatusUseCase.execute(hotelId);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

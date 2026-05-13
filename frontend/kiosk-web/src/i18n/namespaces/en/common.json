@@ -19,5 +19,5 @@
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
   "contact": "Concierge Contact",
-  "copyright": "© 2024 LUXE HOTEL GROUP"
+  "copyright": "© 2024 {{hotelName}}"
 }

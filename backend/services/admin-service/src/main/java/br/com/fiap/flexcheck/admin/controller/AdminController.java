@@ -6,6 +6,7 @@ import br.com.fiap.flexcheck.admin.domain.entity.AuditEvent;
 import br.com.fiap.flexcheck.admin.service.result.DashboardResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,8 @@ public class AdminController {
     }
 
     @GetMapping("/dashboard")
-    public DashboardResult dashboard() {
-        return showDashboardUseCase.execute();
+    public DashboardResult dashboard(@RequestParam(required = false) Long hotelId) {
+        return showDashboardUseCase.execute(hotelId);
     }
 
     @PostMapping("/audit-events")

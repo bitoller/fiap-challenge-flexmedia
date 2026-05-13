@@ -27,6 +27,8 @@ export const API_ENDPOINTS = {
   CHECKOUT: (stayId: number | string) => `/stays/${stayId}/checkout`,
 
   // Admin & Dashboard
+  ADMIN_HOTELS: '/admin/hotels',
+  ADMIN_HOTEL_PROFILE: (hotelId: number | string) => `/admin/hotels/${hotelId}`,
   ADMIN_DASHBOARD: '/admin/dashboard',
 } as const;
 

@@ -14,9 +14,11 @@ public class HttpDeviceServiceClient implements DeviceServiceClient {
     }
 
     @Override
-    public DeviceStatusResult status() {
+    public DeviceStatusResult status(Long hotelId) {
         return restClient.get()
-                .uri("/api/v1/devices/status")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/devices/status")
+                        .queryParamIfPresent("hotelId", java.util.Optional.ofNullable(hotelId))
+                        .build())
                 .retrieve()
                 .body(DeviceStatusResult.class);
     }

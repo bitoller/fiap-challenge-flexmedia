@@ -38,8 +38,14 @@ VITE_API_URL=http://127.0.0.1:8081/api/v1 npm run dev
 Via gateway:
 
 ```bash
-VITE_API_URL=http://127.0.0.1:8088/api/v1 npm run dev
+VITE_API_URL=http://127.0.0.1:8088/api/v1 VITE_ACTIVE_HOTEL_ID=1 npm run dev
 ```
+
+Exemplo de ambiente local:
+
+- [frontend/kiosk-web/.env.example](./kiosk-web/.env.example)
+
+O kiosk busca o hotel ativo por `VITE_ACTIVE_HOTEL_ID` e usa o perfil retornado pelo `admin-service` para nome, cores e conteúdo de marca.
 
 ## Demo com Docker
 

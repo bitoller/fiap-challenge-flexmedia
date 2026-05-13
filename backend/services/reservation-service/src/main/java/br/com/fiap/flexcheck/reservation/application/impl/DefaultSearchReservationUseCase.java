@@ -26,8 +26,8 @@ public class DefaultSearchReservationUseCase implements SearchReservationUseCase
     }
 
     @Override
-    public ReservationResult execute(String type, String value) {
-        Reservation reservation = reservationRepository.searchReservation(type, value)
+    public ReservationResult execute(Long kioskId, Long hotelId, String type, String value) {
+        Reservation reservation = reservationRepository.searchReservation(kioskId, hotelId, type, value)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Reservation not found for search type " + type));
         ReservationEligibility eligibility = eligibilityPolicy.evaluate(reservation);
         return ReservationMapper.toResult(reservation, eligibility);

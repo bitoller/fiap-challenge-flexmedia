@@ -3,6 +3,7 @@ import { Reservation, Guest, Room } from "../../../domain/models";
 // Scenario 1: Successful check-in
 export const MOCK_RESERVATION_SUCCESS: Reservation = {
   id: 1,
+  hotelId: 1,
   code: 'RSV-2026-0001',
   status: 'CONFIRMED',
   hotelName: 'LUXE GRAND HOTEL',
@@ -40,6 +41,7 @@ export const MOCK_RESERVATION_NOT_FOUND = {
 export const MOCK_RESERVATION_INVALID_DOCUMENT: Reservation = {
   ...MOCK_RESERVATION_SUCCESS,
   id: 3,
+  hotelId: 1,
   code: 'RSV-2026-0003',
   eligible: false,
   eligibilityReasons: ['INVALID_DOCUMENT_TYPE', 'DOCUMENT_MISMATCH'],
@@ -63,6 +65,7 @@ export const MOCK_RESERVATIONS_LIST: Reservation[] = [
   {
     ...MOCK_RESERVATION_SUCCESS,
     id: 2,
+    hotelId: 1,
     code: 'RSV-2026-0002',
     guest: {
       ...MOCK_RESERVATION_SUCCESS.guest,
@@ -80,6 +83,7 @@ export const MOCK_RESERVATIONS_LIST: Reservation[] = [
   {
     ...MOCK_RESERVATION_SUCCESS,
     id: 4,
+    hotelId: 1,
     code: 'RSV-2026-0004',
     guest: {
       ...MOCK_RESERVATION_SUCCESS.guest,

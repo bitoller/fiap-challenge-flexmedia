@@ -22,6 +22,7 @@ public class DefaultCreateSessionUseCase implements CreateSessionUseCase {
     public SessionResult execute(CreateSessionCommand command) {
         CheckinSession session = sessionRepository.createSession(command.kioskId(), command.flowType(), command.language());
         auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(
+                command.kioskId(),
                 "KIOSK",
                 String.valueOf(command.kioskId()),
                 "SESSION_STARTED",

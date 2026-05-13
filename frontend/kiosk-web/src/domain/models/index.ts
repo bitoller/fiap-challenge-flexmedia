@@ -17,6 +17,7 @@ export interface Room {
 
 export interface Reservation {
   id: number;
+  hotelId: number;
   code: string;
   status: string;
   hotelName: string;
@@ -62,3 +63,5 @@ export interface CheckoutResponse {
   totalPaid: number;
   receiptCode: string;
 }
+
+export * from "./hotel";

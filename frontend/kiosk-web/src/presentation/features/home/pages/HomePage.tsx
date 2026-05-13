@@ -1,16 +1,18 @@
 import { useTranslation } from "react-i18next";
 import { KioskLayout } from "../../../components/layouts/KioskLayout";
 import { ActionButtonsContainer } from "../components/ActionButtonsContainer";
+import { useHotelBranding } from "../../../../core/hotelBranding";
 
 export function HomePage() {
   const { t } = useTranslation("home");
+  const { hotel } = useHotelBranding();
 
   return (
     <KioskLayout>
       <section className="home-screen" aria-label={t("welcomeTitle")}>
         <div className="home-hero">
-          <h1 className="welcome-title">{t("welcomeTitle")}</h1>
-          <p className="welcome-subtitle">{t("selectOption")}</p>
+          <h1 className="welcome-title">{hotel.branding.welcomeHeadline || t("welcomeTitle")}</h1>
+          <p className="welcome-subtitle">{hotel.branding.welcomeSubheadline || t("selectOption")}</p>
           <div className="home-watermark" aria-hidden="true">
             <span className="home-watermark-ring" />
             <span className="home-watermark-ring home-watermark-ring--inner" />

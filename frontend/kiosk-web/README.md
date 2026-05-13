@@ -37,6 +37,7 @@ O frontend tenta a API primeiro e cai para mocks quando houver timeout ou quando
 ```text
 VITE_USE_MOCKS=false
 VITE_API_URL=http://127.0.0.1:8088/api/v1
+VITE_ACTIVE_HOTEL_ID=1
 ```
 
 ### Usar mocks sempre
@@ -60,6 +61,15 @@ VITE_MOCK_SCENARIO=SUCCESS
 - `VITE_USE_MOCKS`: força mocks sem acessar a rede.
 - `VITE_MOCK_SCENARIO`: escolhe qual cenário mock usar.
 - `VITE_DEFAULT_LANGUAGE`: idioma inicial.
+- `VITE_ACTIVE_HOTEL_ID`: hotel usado pelo kiosk para carregar branding e conteúdo.
+
+## Seleção de hotel
+
+O kiosk carrega o perfil do hotel por `VITE_ACTIVE_HOTEL_ID`.
+
+- O valor padrão é `1`.
+- O frontend consulta `GET /api/v1/admin/hotels/{hotelId}` através do gateway.
+- Se a API ficar indisponível, o kiosk mantém um branding de fallback para não quebrar a tela.
 
 ## Idiomas
 

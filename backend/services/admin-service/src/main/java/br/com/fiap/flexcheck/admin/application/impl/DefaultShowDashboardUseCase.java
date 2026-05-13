@@ -17,7 +17,7 @@ public class DefaultShowDashboardUseCase implements ShowDashboardUseCase {
     }
 
     @Override
-    public DashboardResult execute() {
-        return dashboardRepository.dashboard(deviceServiceClient.status());
+    public DashboardResult execute(Long hotelId) {
+        return dashboardRepository.dashboard(hotelId, deviceServiceClient.status(hotelId));
     }
 }

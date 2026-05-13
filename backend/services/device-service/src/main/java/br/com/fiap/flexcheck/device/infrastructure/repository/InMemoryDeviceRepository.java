@@ -54,8 +54,9 @@ public class InMemoryDeviceRepository {
         return toResult(device);
     }
 
-    public List<KioskDeviceResult> listDevices() {
+    public List<KioskDeviceResult> listDevices(Long hotelId) {
         return devices.values().stream()
+                .filter(device -> hotelId == null || hotelId.equals(device.hotelId()))
                 .sorted(Comparator.comparing(KioskDevice::deviceCode))
                 .map(this::toResult)
                 .toList();

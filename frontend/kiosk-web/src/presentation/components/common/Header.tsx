@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useHotelBranding } from "../../../core/hotelBranding";
 
 interface HeaderProps {
   onLanguageChange?: (language: string) => void;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onLanguageChange, currentLanguage = "en" }) => {
   const { t } = useTranslation("common");
+  const { hotel } = useHotelBranding();
   const languages = [
     { code: "en", label: "EN" },
     { code: "pt-BR", label: "PT" },
@@ -19,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ onLanguageChange, currentLanguag
       <div className="container-fluid h-100">
         <div className="row h-100 align-items-center justify-content-between">
           <div className="col-auto">
-            <h1 className="kiosk-hotel-name">{t("hotelName")}</h1>
+            <h1 className="kiosk-hotel-name">{hotel.name || t("hotelName")}</h1>
           </div>
           <div className="col-auto">
             <div className="language-selector language-selector--header" aria-label={t("languageLabel")}>

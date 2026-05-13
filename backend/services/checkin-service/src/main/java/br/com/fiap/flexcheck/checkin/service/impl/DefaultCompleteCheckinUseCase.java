@@ -133,7 +133,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                 "STAY",
                 String.valueOf(stayId)
         );
-        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CHECKIN_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(reservation.hotelId(), "KIOSK", null, "CHECKIN_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 
         return new CompleteCheckinResult(
                 sessionId,

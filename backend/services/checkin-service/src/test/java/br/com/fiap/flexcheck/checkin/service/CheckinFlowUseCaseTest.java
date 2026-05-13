@@ -73,6 +73,7 @@ class CheckinFlowUseCaseTest {
     void shouldCompleteCheckinAndCheckoutThroughUseCases() {
         ReservationResult reservationResult = new ReservationResult(
                 1L,
+                1L,
                 "RSV-2026-0001",
                 "CONFIRMED",
                 "Flex Hotel Paulista",
@@ -86,7 +87,7 @@ class CheckinFlowUseCaseTest {
                 new RoomResult(1L, "1204", "STANDARD", "AVAILABLE")
         );
 
-        when(reservationServiceClient.search("RESERVATION_CODE", "RSV-2026-0001")).thenReturn(reservationResult);
+        when(reservationServiceClient.search(anyLong(), anyString(), anyString())).thenReturn(reservationResult);
         when(reservationServiceClient.findById(1L)).thenReturn(reservationResult);
         doNothing().when(reservationServiceClient).confirmGuest(anyLong(), any());
         doNothing().when(auditServiceClient).record(any());

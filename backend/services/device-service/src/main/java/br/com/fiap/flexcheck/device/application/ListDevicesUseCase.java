@@ -5,5 +5,5 @@ import br.com.fiap.flexcheck.device.service.result.KioskDeviceResult;
 import java.util.List;
 
 public interface ListDevicesUseCase {
-    List<KioskDeviceResult> execute();
+    List<KioskDeviceResult> execute(Long hotelId);
 }

@@ -44,7 +44,7 @@ public class JdbcStayRepository implements StayRepository {
     @Override
     public Optional<Stay> findStay(Long stayId) {
         String sql = """
-                SELECT st.id, st.reservation_id, st.room_id, st.status, r.total_amount
+                SELECT st.id, st.reservation_id, r.hotel_id, st.room_id, st.status, r.total_amount
                   FROM fc_stay st
                   JOIN fc_reservation r ON r.id = st.reservation_id
                  WHERE st.id = ?
@@ -52,6 +52,7 @@ public class JdbcStayRepository implements StayRepository {
         List<Stay> stays = jdbc.query(sql, (rs, rowNum) -> new Stay(
                 rs.getLong("id"),
                 rs.getLong("reservation_id"),
+                rs.getLong("hotel_id"),
                 rs.getLong("room_id"),
                 rs.getString("status"),
                 rs.getBigDecimal("total_amount")

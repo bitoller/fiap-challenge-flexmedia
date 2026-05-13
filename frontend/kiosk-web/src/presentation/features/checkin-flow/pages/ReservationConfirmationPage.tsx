@@ -5,12 +5,6 @@ import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
 
-function ConfirmationRightContent() {
-  return (
-    <span className="checkin-topbar__confirmation-label">CONFIRMAR RESERVA</span>
-  );
-}
-
 function formatDate(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
@@ -41,7 +35,7 @@ function getStayNights(arrivalDate: string, departureDate: string) {
 export function ReservationConfirmationPage() {
   const { t, i18n } = useTranslation("checkin");
   const navigate = useNavigate();
-  const { reservation, clearFlow } = useCheckinFlow();
+  const { reservation, setFlowStep, setRecovery } = useCheckinFlow();
 
   useEffect(() => {
     if (!reservation) {
@@ -65,13 +59,25 @@ export function ReservationConfirmationPage() {
   const nights = getStayNights(reservation.arrivalDate, reservation.departureDate);
 
   const confirmReservation = () => {
-    clearFlow();
-    navigate("/", { replace: true });
+    if (!reservation.eligible) {
+      const recoveryCode = reservation.eligibilityReasons.some((reason) =>
+        ["INVALID_DOCUMENT", "INVALID_DOCUMENT_TYPE", "DOCUMENT_MISMATCH"].includes(reason)
+      )
+        ? "DOCUMENT_REJECTED"
+        : "BIOMETRY_REJECTED";
+
+      setRecovery(recoveryCode, t("reservationNotEligible"));
+      navigate("/checkin/recovery", { replace: true, state: { code: recoveryCode, message: t("reservationNotEligible") } });
+      return;
+    }
+
+    setFlowStep("contact");
+    navigate("/checkin/contact");
   };
 
   return (
     <CheckinFlowLayout
-      topRightContent={<ConfirmationRightContent />}
+      topRightContent={<span className="checkin-topbar__confirmation-label">{t("confirmationTag")}</span>}
       bottomItems={[
         {
           key: "home",

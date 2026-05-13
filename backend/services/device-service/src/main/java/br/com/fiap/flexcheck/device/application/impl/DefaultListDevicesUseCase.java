@@ -16,7 +16,7 @@ public class DefaultListDevicesUseCase implements ListDevicesUseCase {
     }
 
     @Override
-    public List<KioskDeviceResult> execute() {
-        return deviceRepository.listDevices();
+    public List<KioskDeviceResult> execute(Long hotelId) {
+        return deviceRepository.listDevices(hotelId);
     }
 }

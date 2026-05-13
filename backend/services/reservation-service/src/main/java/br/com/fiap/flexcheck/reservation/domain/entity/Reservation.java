@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public record Reservation(
         Long id,
+        Long hotelId,
         Long kioskId,
         String code,
         String status,

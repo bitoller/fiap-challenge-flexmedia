@@ -1,6 +1,7 @@
 import { ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../../hooks/useLanguage";
+import { useHotelBranding } from "../../../../core/hotelBranding";
 
 interface FlowTopBarProps {
   rightContent: ReactNode;
@@ -10,11 +11,13 @@ interface FlowTopBarProps {
 export function FlowTopBar({ rightContent, rightDescription }: FlowTopBarProps) {
   const { t } = useTranslation("common");
   const { currentLanguage, changeLanguage } = useLanguage();
+  const { hotel } = useHotelBranding();
+
   const currentLabel = useMemo(() => {
-    if (currentLanguage === "pt-BR") return "PORTUGUÊS";
-    if (currentLanguage === "es") return "ESPAÑOL";
-    return "ENGLISH";
-  }, [currentLanguage]);
+    if (currentLanguage === "pt-BR") return t("portuguese");
+    if (currentLanguage === "es") return t("spanish");
+    return t("english");
+  }, [currentLanguage, t]);
 
   const cycleLanguage = () => {
     if (currentLanguage === "en") {
@@ -32,7 +35,7 @@ export function FlowTopBar({ rightContent, rightDescription }: FlowTopBarProps) 
 
   return (
     <header className="checkin-topbar">
-      <div className="checkin-topbar__brand">{t("hotelName")}</div>
+      <div className="checkin-topbar__brand">{hotel.name || t("hotelName")}</div>
 
       <div className="checkin-topbar__actions" aria-label={rightDescription ?? t("languageLabel")}>
         {rightContent}

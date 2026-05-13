@@ -8,7 +8,7 @@
   "error": "Error",
   "success": "Éxito",
   "loading": "Cargando...",
-  "tryAgain": "Intentar de Nuevo",
+  "tryAgain": "Intentar de nuevo",
   "back": "Atrás",
   "next": "Siguiente",
   "cancel": "Cancelar",
@@ -19,5 +19,5 @@
   "privacyPolicy": "Política de Privacidad",
   "termsOfService": "Términos de Servicio",
   "contact": "Contacto Concierge",
-  "copyright": "© 2024 LUXE HOTEL GROUP"
+  "copyright": "© 2024 {{hotelName}}"
 }

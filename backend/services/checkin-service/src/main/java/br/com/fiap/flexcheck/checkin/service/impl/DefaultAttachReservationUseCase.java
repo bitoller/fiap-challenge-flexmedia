@@ -29,7 +29,8 @@ public class DefaultAttachReservationUseCase implements AttachReservationUseCase
     @Override
     @Transactional
     public SessionReservationResult execute(Long sessionId, AttachReservationCommand command) {
-        var reservation = reservationServiceClient.search(command.searchType(), command.searchValue());
+        Long kioskId = sessionRepository.findKioskIdBySession(sessionId);
+        var reservation = reservationServiceClient.search(kioskId, command.searchType(), command.searchValue());
         if (!reservation.eligible()) {
             sessionRepository.failSession(sessionId, "RESERVATION_NOT_ELIGIBLE");
             throw new BusinessException(
@@ -41,6 +42,7 @@ public class DefaultAttachReservationUseCase implements AttachReservationUseCase
 
         sessionRepository.attachReservation(sessionId, reservation.id());
         auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(
+                reservation.hotelId(),
                 "KIOSK",
                 String.valueOf(reservation.id()),
                 "RESERVATION_ATTACHED",

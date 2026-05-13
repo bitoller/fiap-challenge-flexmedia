@@ -1,5 +1,6 @@
 import { Reservation, Session, SessionReservation, CompleteCheckinResponse } from "../../domain/models";
 import { TimeoutError, ApiError } from "../../domain/errors";
+import { KIOSK_CONFIG } from "../../core/constants";
 import { apiPost, apiGet } from "../api/client";
 import { API_ENDPOINTS, buildUrl } from "../api/endpoints";
 import {
@@ -186,7 +187,7 @@ export const checkinRepository = {
   async searchReservation(type: string, value: string): Promise<Reservation[]> {
     try {
       const response = await apiGet<any>(
-        buildUrl(`${API_ENDPOINTS.SEARCH_RESERVATIONS}?type=${type}&value=${value}`)
+        buildUrl(`${API_ENDPOINTS.SEARCH_RESERVATIONS}?hotelId=${KIOSK_CONFIG.ACTIVE_HOTEL_ID}&type=${type}&value=${value}`)
       );
       return Array.isArray(response) ? response : [response];
     } catch (error) {

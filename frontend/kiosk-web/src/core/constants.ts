@@ -17,6 +17,7 @@ export const LANGUAGE_CONFIG = {
 
 export const KIOSK_CONFIG = {
   KIOSK_ID: 1,
+  ACTIVE_HOTEL_ID: Number(import.meta.env.VITE_ACTIVE_HOTEL_ID || "1"),
   ENVIRONMENT: import.meta.env.MODE,
   DEBUG: import.meta.env.MODE === 'development',
 };

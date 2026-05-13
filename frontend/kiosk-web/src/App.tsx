@@ -7,6 +7,11 @@ import { CheckinFlowProvider } from "./presentation/features/checkin-flow/contex
 import { IdentificationPage } from "./presentation/features/checkin-flow/pages/IdentificationPage";
 import { ReservationConfirmationPage } from "./presentation/features/checkin-flow/pages/ReservationConfirmationPage";
 import { ReservationNotFoundPage } from "./presentation/features/checkin-flow/pages/ReservationNotFoundPage";
+import { ContactReviewPage } from "./presentation/features/checkin-flow/pages/ContactReviewPage";
+import { TermsPage } from "./presentation/features/checkin-flow/pages/TermsPage";
+import { PaymentPage } from "./presentation/features/checkin-flow/pages/PaymentPage";
+import { SuccessPage } from "./presentation/features/checkin-flow/pages/SuccessPage";
+import { RecoveryPage } from "./presentation/features/checkin-flow/pages/RecoveryPage";
 
 type FlowName = "checkin" | "checkout" | "services";
 
@@ -62,6 +67,11 @@ export default function App() {
         <Route path="/checkin" element={<IdentificationPage />} />
         <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
         <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />
+        <Route path="/checkin/contact" element={<ContactReviewPage />} />
+        <Route path="/checkin/terms" element={<TermsPage />} />
+        <Route path="/checkin/payment" element={<PaymentPage />} />
+        <Route path="/checkin/success" element={<SuccessPage />} />
+        <Route path="/checkin/recovery" element={<RecoveryPage />} />
         <Route path="/checkout" element={<FlowPlaceholderPage flow="checkout" />} />
         <Route path="/services" element={<FlowPlaceholderPage flow="services" />} />
         <Route path="*" element={<Navigate to="/" replace />} />

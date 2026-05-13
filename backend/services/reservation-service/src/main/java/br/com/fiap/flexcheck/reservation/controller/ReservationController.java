@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.reservation.controller;
 
 import br.com.fiap.flexcheck.reservation.application.ConfirmGuestUseCase;
+import br.com.fiap.flexcheck.reservation.application.ListReservationsUseCase;
 import br.com.fiap.flexcheck.reservation.application.SearchReservationUseCase;
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.reservation.service.result.ReservationResult;
@@ -13,23 +14,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/reservations")
 public class ReservationController {
     private final SearchReservationUseCase searchReservationUseCase;
     private final ConfirmGuestUseCase confirmGuestUseCase;
+    private final ListReservationsUseCase listReservationsUseCase;
 
     public ReservationController(
             SearchReservationUseCase searchReservationUseCase,
-            ConfirmGuestUseCase confirmGuestUseCase
+            ConfirmGuestUseCase confirmGuestUseCase,
+            ListReservationsUseCase listReservationsUseCase
     ) {
         this.searchReservationUseCase = searchReservationUseCase;
         this.confirmGuestUseCase = confirmGuestUseCase;
+        this.listReservationsUseCase = listReservationsUseCase;
     }
 
     @GetMapping("/search")
-    public ReservationResult searchReservation(@RequestParam String type, @RequestParam String value) {
-        return searchReservationUseCase.execute(type, value);
+    public ReservationResult searchReservation(
+            @RequestParam(required = false) Long kioskId,
+            @RequestParam(required = false) Long hotelId,
+            @RequestParam String type,
+            @RequestParam String value
+    ) {
+        return searchReservationUseCase.execute(kioskId, hotelId, type, value);
+    }
+
+    @GetMapping("/hotels/{hotelId}")
+    public List<ReservationResult> listByHotel(@PathVariable Long hotelId) {
+        return listReservationsUseCase.execute(hotelId);
     }
 
     @GetMapping("/{reservationId}")

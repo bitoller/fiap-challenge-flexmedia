@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public record DashboardResult(
+        Long hotelId,
         long reservationsToday,
         long activeStays,
         long completedCheckins,

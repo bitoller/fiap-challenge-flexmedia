@@ -34,6 +34,7 @@
 - `identity-service` and `notification-service` currently use in-memory storage for the MVP.
 - PMS and biometrics were intentionally preserved as service contracts so they can become real integrations later without changing the split.
 - The `admin-service` owns hotel branding and content management for the hotel owner use case.
+- `admin-service`, `device-service`, and `reservation-service` now accept `hotelId`-scoped queries so the future dashboard can switch hotels without mixing metrics or reservations.
 - The Oracle database did not require a new physical change after the cleanup and documentation pass.
 
 ## Where To Resume Next Time

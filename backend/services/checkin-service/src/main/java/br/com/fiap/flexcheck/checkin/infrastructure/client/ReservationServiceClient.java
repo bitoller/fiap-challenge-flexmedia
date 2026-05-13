@@ -4,7 +4,11 @@ import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.checkin.service.result.ReservationResult;
 
 public interface ReservationServiceClient {
-    ReservationResult search(String type, String value);
+    ReservationResult search(Long kioskId, String type, String value);
+
+    default ReservationResult search(String type, String value) {
+        return search(null, type, value);
+    }
 
     ReservationResult findById(Long reservationId);
 

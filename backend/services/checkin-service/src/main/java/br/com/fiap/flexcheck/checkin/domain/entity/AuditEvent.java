@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.checkin.domain.entity;
 
 public record AuditEvent(
+        Long hotelId,
         String actorType,
         String actorId,
         String action,

@@ -17,6 +17,7 @@ public final class ReservationMapper {
         Room room = reservation.room();
         return new ReservationResult(
                 reservation.id(),
+                reservation.hotelId(),
                 reservation.code(),
                 reservation.status(),
                 reservation.hotelName(),

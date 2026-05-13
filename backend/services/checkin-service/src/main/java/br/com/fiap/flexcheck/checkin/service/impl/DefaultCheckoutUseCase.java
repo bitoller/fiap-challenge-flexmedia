@@ -76,7 +76,7 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
                 "STAY",
                 String.valueOf(stayId)
         );
-        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CHECKOUT_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
+        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(stay.hotelId(), "KIOSK", null, "CHECKOUT_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 
         return new CheckoutResult(stayId, "CHECKED_OUT", stay.totalAmount(), "RCP-" + stayId);
     }

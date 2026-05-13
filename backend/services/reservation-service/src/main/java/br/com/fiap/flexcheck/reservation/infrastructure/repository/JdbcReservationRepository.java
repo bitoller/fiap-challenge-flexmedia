@@ -20,7 +20,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> searchReservation(String searchType, String value) {
+    public Optional<Reservation> searchReservation(Long kioskId, Long hotelId, String searchType, String value) {
         String normalizedType = searchType == null ? "" : searchType.toUpperCase();
         String where = switch (normalizedType) {
             case "CPF", "DOCUMENT", "PASSPORT" -> "g.document_number = ?";
@@ -28,8 +28,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             default -> "UPPER(r.reservation_code) = UPPER(?)";
         };
 
+        String kioskClause = kioskId == null ? "" : " AND k.id = ?";
+        String hotelClause = hotelId == null ? "" : " AND r.hotel_id = ?";
+
         String sql = """
                 SELECT r.id,
+                       r.hotel_id,
                        k.id AS kiosk_id,
                        r.reservation_code,
                        r.status,
@@ -55,9 +59,21 @@ public class JdbcReservationRepository implements ReservationRepository {
                   JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
                   JOIN fc_guest g ON g.id = rg.guest_id
                   LEFT JOIN fc_kiosk_device k ON k.hotel_id = h.id
-                 WHERE %s
+                 WHERE %s%s%s
                  FETCH FIRST 1 ROWS ONLY
-                """.formatted(where);
+                """.formatted(where, kioskClause, hotelClause);
+
+        if (kioskId != null && hotelId != null) {
+            return jdbc.query(sql, reservationRowMapper, value, kioskId, hotelId).stream().findFirst();
+        }
+
+        if (kioskId != null) {
+            return jdbc.query(sql, reservationRowMapper, value, kioskId).stream().findFirst();
+        }
+
+        if (hotelId != null) {
+            return jdbc.query(sql, reservationRowMapper, value, hotelId).stream().findFirst();
+        }
 
         List<Reservation> results = jdbc.query(sql, reservationRowMapper, value);
         return results.stream().findFirst();
@@ -67,6 +83,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(Long reservationId) {
         String sql = """
                 SELECT r.id,
+                       r.hotel_id,
                        k.id AS kiosk_id,
                        r.reservation_code,
                        r.status,
@@ -96,6 +113,42 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         List<Reservation> results = jdbc.query(sql, reservationRowMapper, reservationId);
         return results.stream().findFirst();
+    }
+
+    @Override
+    public List<Reservation> listByHotelId(Long hotelId) {
+        String sql = """
+                SELECT r.id,
+                       r.hotel_id,
+                       k.id AS kiosk_id,
+                       r.reservation_code,
+                       r.status,
+                       h.name AS hotel_name,
+                       r.arrival_date,
+                       r.departure_date,
+                       r.total_amount,
+                       r.currency,
+                       g.id AS guest_id,
+                       g.full_name,
+                       g.document_type,
+                       g.document_number,
+                       g.birth_date,
+                       g.email,
+                       g.phone,
+                       room.id AS room_id,
+                       room.room_number,
+                       room.room_type,
+                       room.status AS room_status
+                  FROM fc_reservation r
+                  JOIN fc_hotel h ON h.id = r.hotel_id
+                  LEFT JOIN fc_room room ON room.id = r.room_id
+                  JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                  JOIN fc_guest g ON g.id = rg.guest_id
+                  LEFT JOIN fc_kiosk_device k ON k.hotel_id = h.id
+                 WHERE r.hotel_id = ?
+                 ORDER BY r.arrival_date DESC, r.id DESC
+                """;
+        return jdbc.query(sql, reservationRowMapper, hotelId);
     }
 
     @Override

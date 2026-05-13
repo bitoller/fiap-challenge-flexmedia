@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public record Stay(
         Long id,
         Long reservationId,
+        Long hotelId,
         Long roomId,
         String status,
         BigDecimal totalAmount

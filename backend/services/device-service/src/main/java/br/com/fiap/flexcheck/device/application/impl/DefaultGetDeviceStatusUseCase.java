@@ -17,8 +17,8 @@ public class DefaultGetDeviceStatusUseCase implements GetDeviceStatusUseCase {
     }
 
     @Override
-    public DeviceStatusResult execute() {
-        List<KioskDeviceResult> devices = deviceRepository.listDevices();
+    public DeviceStatusResult execute(Long hotelId) {
+        List<KioskDeviceResult> devices = deviceRepository.listDevices(hotelId);
         long online = devices.stream().filter(device -> "ONLINE".equals(device.status())).count();
         long offline = devices.stream().filter(device -> "OFFLINE".equals(device.status())).count();
         long maintenance = devices.stream().filter(device -> "MAINTENANCE".equals(device.status())).count();

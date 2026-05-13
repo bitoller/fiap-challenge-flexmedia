@@ -15,22 +15,27 @@ public class InMemoryDashboardRepository {
         this.auditRepository = auditRepository;
     }
 
-    public DashboardResult dashboard(DeviceStatusResult deviceStatus) {
-        long completedCheckins = auditRepository.countByAction("CHECKIN_COMPLETED");
-        long completedCheckouts = auditRepository.countByAction("CHECKOUT_COMPLETED");
-        long failedSessions = auditRepository.countByResult("FAILURE");
+    public DashboardResult dashboard(Long hotelId, DeviceStatusResult deviceStatus) {
+        long completedCheckins = auditRepository.countByAction(hotelId, "CHECKIN_COMPLETED");
+        long completedCheckouts = auditRepository.countByAction(hotelId, "CHECKOUT_COMPLETED");
+        long failedSessions = auditRepository.countByResult(hotelId, "FAILURE");
         long activeStays = Math.max(0, completedCheckins - completedCheckouts);
         long reservationsToday = completedCheckins;
-        List<Map<String, Object>> recent = auditRepository.recent().stream()
-                .map(event -> Map.<String, Object>of(
-                        "actorType", event.actorType(),
-                        "actorId", event.actorId(),
-                        "action", event.action(),
-                        "resourceType", event.resourceType(),
-                        "resourceId", event.resourceId(),
-                        "result", event.result(),
-                        "correlationId", event.correlationId()
-                ))
+        List<Map<String, Object>> recent = auditRepository.recent(hotelId).stream()
+                .map(event -> {
+                    java.util.Map<String, Object> item = new java.util.HashMap<>();
+                    if (event.hotelId() != null) {
+                        item.put("hotelId", event.hotelId());
+                    }
+                    item.put("actorType", event.actorType());
+                    item.put("actorId", event.actorId());
+                    item.put("action", event.action());
+                    item.put("resourceType", event.resourceType());
+                    item.put("resourceId", event.resourceId());
+                    item.put("result", event.result());
+                    item.put("correlationId", event.correlationId());
+                    return java.util.Map.copyOf(item);
+                })
                 .toList();
 
         var dashboard = new br.com.fiap.flexcheck.admin.domain.entity.Dashboard(
@@ -50,6 +55,7 @@ public class InMemoryDashboardRepository {
                 recent
         );
         return new DashboardResult(
+                hotelId,
                 dashboard.reservationsToday(),
                 dashboard.activeStays(),
                 dashboard.completedCheckins(),

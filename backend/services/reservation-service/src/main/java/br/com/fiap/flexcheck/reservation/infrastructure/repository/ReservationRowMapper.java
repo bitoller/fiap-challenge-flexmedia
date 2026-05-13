@@ -33,6 +33,7 @@ class ReservationRowMapper implements RowMapper<Reservation> {
 
         return new Reservation(
                 rs.getLong("id"),
+                rs.getLong("hotel_id"),
                 rs.getLong("kiosk_id"),
                 rs.getString("reservation_code"),
                 rs.getString("status"),
