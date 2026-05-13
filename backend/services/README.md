@@ -1,8 +1,8 @@
 # Services
 
-Microservicos do backend FlexCheck.
+Backend microservices for FlexCheck.
 
-## Componentes ativos
+## Active Components
 
 - [api-gateway](api-gateway/README.md)
 - [checkin-service](checkin-service/README.md)
@@ -16,16 +16,16 @@ Microservicos do backend FlexCheck.
 - [biometry-service](biometry-service/README.md)
 - [pms-adapter-service](pms-adapter-service/README.md)
 
-## Como subir a stack completa
+## Run the full stack
 
-Na raiz do projeto:
+From the project root:
 
 ```bash
 Copy-Item .env.demo.example .env
 docker compose up -d --build
 ```
 
-Isso sobe:
+This starts:
 
 - `checkin-service`
 - `api-gateway`
@@ -38,11 +38,8 @@ Isso sobe:
 - `notification-service`
 - `biometry-service`
 - `pms-adapter-service`
-- `kiosk-web`
 
-## Como subir um servico isolado
-
-Cada servico pode ser executado sozinho para desenvolvimento local.
+## Run individual services
 
 ### checkin-service
 
@@ -58,23 +55,24 @@ cd backend/services/api-gateway
 mvn spring-boot:run
 ```
 
-### identity-service
+### admin-service
 
 ```bash
-cd backend/services/identity-service
+cd backend/services/admin-service
 mvn spring-boot:run
 ```
 
-### notification-service
+### reservation-service
 
 ```bash
-cd backend/services/notification-service
+cd backend/services/reservation-service
 mvn spring-boot:run
 ```
 
-## Observacoes importantes
+## Notes
 
-- `checkin-service` orquestra o fluxo principal do totem.
-- `reservation-service`, `payment-service`, `key-service`, `admin-service` e `device-service` podem ser consumidos pelo gateway ou direto via HTTP.
-- `identity-service` e `notification-service` usam armazenamento em memoria no MVP.
-- `biometry-service` e `pms-adapter-service` continuam como contratos de integracao para evolucao futura.
+- `checkin-service` orchestrates the guest kiosk flow.
+- `reservation-service` now owns reservation create, delete, list, and guest confirmation for persistent test data.
+- `admin-service` exposes hotel dashboard, branding, devices, audit, and admin login contracts.
+- `identity-service` and `notification-service` still use in-memory storage in the MVP.
+- `biometry-service` and `pms-adapter-service` remain future integration contracts.

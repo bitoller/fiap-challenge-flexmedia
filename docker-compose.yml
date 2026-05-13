@@ -92,6 +92,21 @@ services:
     networks:
       - flexcheck-net
 
+  admin-web:
+    build:
+      context: ./frontend/admin-web
+      args:
+        VITE_API_URL: ${ADMIN_WEB_API_URL:-/api/v1}
+    image: flexcheck/admin-web:demo
+    container_name: flexcheck-admin-web
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_WEB_PORT:-3001}:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - flexcheck-net
+
   reservation-service:
     build:
       context: ./backend/services/reservation-service

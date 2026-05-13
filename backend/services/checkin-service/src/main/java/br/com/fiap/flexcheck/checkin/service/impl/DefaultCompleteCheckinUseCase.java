@@ -16,7 +16,6 @@ import br.com.fiap.flexcheck.checkin.service.CompleteCheckinUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
@@ -56,7 +55,6 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
     }
 
     @Override
-    @Transactional
     public CompleteCheckinResult execute(Long sessionId, CompleteCheckinCommand command) {
         Long reservationId = sessionRepository.findReservationIdBySession(sessionId);
         var reservation = reservationServiceClient.findById(reservationId);

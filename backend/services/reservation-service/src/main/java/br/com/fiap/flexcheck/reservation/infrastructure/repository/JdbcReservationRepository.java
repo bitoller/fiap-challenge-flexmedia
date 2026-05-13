@@ -1,11 +1,14 @@
 package br.com.fiap.flexcheck.reservation.infrastructure.repository;
 
+import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCommand;
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.reservation.domain.entity.Reservation;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,5 +175,258 @@ public class JdbcReservationRepository implements ReservationRepository {
                 command.phone(),
                 command.guestId()
         );
+    }
+
+    @Override
+    public Reservation createReservation(CreateReservationCommand command) {
+        ensureHotel(command.hotelId(), command.hotelName());
+        Long roomId = ensureRoom(command.hotelId(), command.roomNumber(), command.roomType());
+        Long guestId = ensureGuest(command);
+        Long reservationId = insertReservation(command, roomId);
+        jdbc.update("""
+                INSERT INTO fc_reservation_guest (
+                    reservation_id,
+                    guest_id,
+                    is_primary
+                ) VALUES (?, ?, 'Y')
+                """,
+                reservationId,
+                guestId
+        );
+
+        return findById(reservationId).orElseThrow(() -> new IllegalStateException("Reservation was created but not found."));
+    }
+
+    @Override
+    public void deleteReservation(Long hotelId, Long reservationId) {
+        String stayStatus = jdbc.query("""
+                SELECT status
+                  FROM fc_stay
+                 WHERE reservation_id = ?
+                """,
+                rs -> rs.next() ? rs.getString("status") : null,
+                reservationId
+        );
+
+        Integer hotelMatches = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                  FROM fc_reservation
+                 WHERE id = ?
+                   AND hotel_id = ?
+                """, Integer.class, reservationId, hotelId);
+
+        if (hotelMatches == null || hotelMatches == 0) {
+            throw new IllegalStateException("Reservation does not belong to the selected hotel.");
+        }
+
+        if (stayStatus != null && ("ACTIVE".equalsIgnoreCase(stayStatus) || "PENDING_KEY".equalsIgnoreCase(stayStatus))) {
+            throw new IllegalStateException("Cannot delete a reservation with an active stay.");
+        }
+
+        deleteSessionChildren(reservationId);
+        deleteStayChildren(reservationId);
+        jdbc.update("DELETE FROM fc_reservation_guest WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_payment_transaction WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_pms_event WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_checkin_session WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_stay WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_reservation WHERE id = ?", reservationId);
+    }
+
+    private void deleteSessionChildren(Long reservationId) {
+        List<Long> sessionIds = jdbc.query("""
+                SELECT id
+                  FROM fc_checkin_session
+                 WHERE reservation_id = ?
+                """,
+                (rs, rowNum) -> rs.getLong("id"),
+                reservationId
+        );
+
+        if (sessionIds.isEmpty()) {
+            return;
+        }
+
+        for (Long sessionId : sessionIds) {
+            jdbc.update("DELETE FROM fc_consent WHERE session_id = ?", sessionId);
+            jdbc.update("DELETE FROM fc_document_verification WHERE session_id = ?", sessionId);
+            jdbc.update("DELETE FROM fc_biometry_verification WHERE session_id = ?", sessionId);
+        }
+    }
+
+    private void deleteStayChildren(Long reservationId) {
+        List<Long> stayIds = jdbc.query("""
+                SELECT id
+                  FROM fc_stay
+                 WHERE reservation_id = ?
+                """,
+                (rs, rowNum) -> rs.getLong("id"),
+                reservationId
+        );
+
+        if (stayIds.isEmpty()) {
+            return;
+        }
+
+        for (Long stayId : stayIds) {
+            jdbc.update("DELETE FROM fc_key_credential WHERE stay_id = ?", stayId);
+            jdbc.update("DELETE FROM fc_payment_transaction WHERE stay_id = ?", stayId);
+        }
+    }
+
+    private void ensureHotel(Long hotelId, String hotelName) {
+        Integer hotelCount = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                  FROM fc_hotel
+                 WHERE id = ?
+                """, Integer.class, hotelId);
+
+        if (hotelCount != null && hotelCount > 0) {
+            return;
+        }
+
+        jdbc.update("""
+                INSERT INTO fc_hotel (
+                    id,
+                    name,
+                    timezone,
+                    checkin_time,
+                    checkout_time,
+                    early_checkin_minutes,
+                    late_checkout_minutes,
+                    created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                hotelId,
+                hotelName,
+                "America/Sao_Paulo",
+                "14:00",
+                "12:00",
+                120,
+                60,
+                LocalDateTime.now()
+        );
+    }
+
+    private Long ensureRoom(Long hotelId, String roomNumber, String roomType) {
+        try {
+            return jdbc.queryForObject("""
+                    SELECT id
+                      FROM fc_room
+                     WHERE hotel_id = ?
+                       AND room_number = ?
+                    """, Long.class, hotelId, roomNumber);
+        } catch (EmptyResultDataAccessException ignored) {
+            jdbc.update("""
+                    INSERT INTO fc_room (
+                        hotel_id,
+                        room_number,
+                        room_type,
+                        status,
+                        floor_number
+                    ) VALUES (?, ?, ?, 'AVAILABLE', ?)
+                    """,
+                    hotelId,
+                    roomNumber,
+                    roomType,
+                    inferFloor(roomNumber)
+            );
+            return jdbc.queryForObject("""
+                    SELECT id
+                      FROM fc_room
+                     WHERE hotel_id = ?
+                       AND room_number = ?
+                    """, Long.class, hotelId, roomNumber);
+        }
+    }
+
+    private Long ensureGuest(CreateReservationCommand command) {
+        try {
+            return jdbc.queryForObject("""
+                    SELECT id
+                      FROM fc_guest
+                     WHERE document_type = ?
+                       AND document_number = ?
+                    """, Long.class, command.guestDocumentType(), command.guestDocumentNumber());
+        } catch (EmptyResultDataAccessException ignored) {
+            jdbc.update("""
+                    INSERT INTO fc_guest (
+                        full_name,
+                        document_type,
+                        document_number,
+                        birth_date,
+                        nationality,
+                        email,
+                        phone,
+                        created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    command.guestFullName(),
+                    command.guestDocumentType(),
+                    command.guestDocumentNumber(),
+                    command.guestBirthDate(),
+                    command.guestNationality(),
+                    command.guestEmail(),
+                    command.guestPhone(),
+                    LocalDateTime.now()
+            );
+            return jdbc.queryForObject("""
+                    SELECT id
+                      FROM fc_guest
+                     WHERE document_type = ?
+                       AND document_number = ?
+                    """, Long.class, command.guestDocumentType(), command.guestDocumentNumber());
+        }
+    }
+
+    private Long insertReservation(CreateReservationCommand command, Long roomId) {
+        String reservationCode = command.reservationCode();
+        if (reservationCode == null || reservationCode.isBlank()) {
+            reservationCode = String.format("TEST-%d-%d", command.hotelId(), System.currentTimeMillis());
+        }
+
+        jdbc.update("""
+                INSERT INTO fc_reservation (
+                    hotel_id,
+                    room_id,
+                    reservation_code,
+                    pms_external_id,
+                    status,
+                    arrival_date,
+                    departure_date,
+                    adults,
+                    children,
+                    total_amount,
+                    currency,
+                    created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                command.hotelId(),
+                roomId,
+                reservationCode,
+                reservationCode,
+                "CONFIRMED",
+                command.arrivalDate(),
+                command.departureDate(),
+                command.adults(),
+                command.children(),
+                command.totalAmount(),
+                command.currency(),
+                LocalDateTime.now()
+        );
+
+        return jdbc.queryForObject("""
+                SELECT id
+                  FROM fc_reservation
+                 WHERE reservation_code = ?
+                """, Long.class, reservationCode);
+    }
+
+    private int inferFloor(String roomNumber) {
+        try {
+            return Integer.parseInt(roomNumber.substring(0, 2));
+        } catch (RuntimeException ex) {
+            return 1;
+        }
     }
 }

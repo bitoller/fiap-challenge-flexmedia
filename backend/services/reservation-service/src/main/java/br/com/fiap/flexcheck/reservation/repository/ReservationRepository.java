@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.reservation.repository;
 
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
+import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCommand;
 import br.com.fiap.flexcheck.reservation.domain.entity.Reservation;
 
 import java.util.Optional;
@@ -13,4 +14,8 @@ public interface ReservationRepository {
     java.util.List<Reservation> listByHotelId(Long hotelId);
 
     void updateGuest(Long reservationId, GuestConfirmationCommand command);
+
+    Reservation createReservation(CreateReservationCommand command);
+
+    void deleteReservation(Long hotelId, Long reservationId);
 }

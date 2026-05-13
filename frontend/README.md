@@ -1,21 +1,21 @@
 # Frontend
 
-Aplicacoes web do FlexCheck Hotel.
+Web applications for FlexCheck Hotel.
 
-## Aplicacoes
+## Applications
 
-- `kiosk-web`: implementada. Interface React do totem.
-- `admin-web`: planejada. Painel de recepcao e operacao.
+- `kiosk-web`: implemented. React kiosk interface.
+- `admin-web`: implemented. Administrative portal separated from the kiosk.
 
 ## Stack
 
 - React
 - TypeScript
 - Vite
-- CSS simples no MVP
+- Simple CSS in the MVP
 - API via `VITE_API_URL`
 
-## Rodar o Totem
+## Run the Kiosk
 
 ```bash
 cd frontend/kiosk-web
@@ -23,56 +23,69 @@ npm install
 npm run dev
 ```
 
-Padrao de API:
+Default API endpoint:
 
 ```text
 http://127.0.0.1:8080/api/v1
 ```
 
-Com backend em outra porta:
+With backend on another port:
 
 ```bash
 VITE_API_URL=http://127.0.0.1:8081/api/v1 npm run dev
 ```
 
-Via gateway:
+Through the gateway:
 
 ```bash
 VITE_API_URL=http://127.0.0.1:8088/api/v1 VITE_ACTIVE_HOTEL_ID=1 npm run dev
 ```
 
-Exemplo de ambiente local:
+Environment example:
 
 - [frontend/kiosk-web/.env.example](./kiosk-web/.env.example)
 
-O kiosk busca o hotel ativo por `VITE_ACTIVE_HOTEL_ID` e usa o perfil retornado pelo `admin-service` para nome, cores e conteúdo de marca.
+The kiosk resolves the active hotel using `VITE_ACTIVE_HOTEL_ID` and uses the profile returned by `admin-service` for branding and hotel copy.
 
-## Demo com Docker
+## Run the Admin Portal
 
-Na raiz do projeto:
+```bash
+cd frontend/admin-web
+npm install
+npm run dev
+```
+
+Default API endpoint:
+
+```text
+http://127.0.0.1:8088/api/v1
+```
+
+Environment example:
+
+- [frontend/admin-web/README.md](./admin-web/README.md)
+
+## Docker Demo
+
+From the project root:
 
 ```bash
 docker compose up --build
 ```
 
-O totem fica em:
+The kiosk is available at:
 
 ```text
 http://127.0.0.1:3000
 ```
 
-## Fluxo do Totem
+The admin portal is available at:
 
-1. Escolher check-in ou checkout.
-2. Buscar reserva.
-3. Confirmar dados.
-4. Aceitar termos.
-5. Simular documento/biometria.
-6. Simular pagamento.
-7. Emitir chave.
-8. Fazer checkout.
+```text
+http://127.0.0.1:3001
+```
 
-## Pastas
+## App Folders
 
 - [kiosk-web](kiosk-web/README.md)
 - [admin-web](admin-web/README.md)

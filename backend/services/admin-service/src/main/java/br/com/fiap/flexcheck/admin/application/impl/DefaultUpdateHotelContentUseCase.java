@@ -2,15 +2,15 @@ package br.com.fiap.flexcheck.admin.application.impl;
 
 import br.com.fiap.flexcheck.admin.application.UpdateHotelContentUseCase;
 import br.com.fiap.flexcheck.admin.application.command.UpdateHotelContentCommand;
-import br.com.fiap.flexcheck.admin.infrastructure.repository.InMemoryHotelRepository;
+import br.com.fiap.flexcheck.admin.infrastructure.persistence.OracleHotelRepository;
 import br.com.fiap.flexcheck.admin.service.result.HotelProfileResult;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultUpdateHotelContentUseCase implements UpdateHotelContentUseCase {
-    private final InMemoryHotelRepository hotelRepository;
+    private final OracleHotelRepository hotelRepository;
 
-    public DefaultUpdateHotelContentUseCase(InMemoryHotelRepository hotelRepository) {
+    public DefaultUpdateHotelContentUseCase(OracleHotelRepository hotelRepository) {
         this.hotelRepository = hotelRepository;
     }
 

@@ -51,6 +51,70 @@ public class InMemoryHotelRepository {
                 now,
                 now
         ));
+
+        hotels.put(2L, new HotelProfile(
+                2L,
+                "Flex Hotel Ipanema",
+                "FlexMedia",
+                "America/Sao_Paulo",
+                "15:00",
+                "11:00",
+                90,
+                45,
+                new HotelProfile.Branding(
+                        "https://cdn.flexcheck.local/flex-hotel-ipanema/logo.svg",
+                        "#2b1f3a",
+                        "#f6efe7",
+                        "#b8860b",
+                        "Welcome to Flex Hotel Ipanema",
+                        "Ocean view, premium comfort"
+                ),
+                new HotelProfile.Content(
+                        "pt-BR",
+                        List.of("pt-BR", "en-US", "es-ES"),
+                        List.of(
+                                new HotelProfile.Promotion("Beach Breakfast", "Breakfast with sea view", true, 1)
+                        ),
+                        List.of("Beach", "Spa", "Restaurant"),
+                        "https://maps.example.com/flex-hotel-ipanema",
+                        "Need help? Our reception is available 24/7."
+                ),
+                true,
+                now,
+                now
+        ));
+
+        hotels.put(3L, new HotelProfile(
+                3L,
+                "Flex Hotel Jardim",
+                "FlexMedia",
+                "America/Sao_Paulo",
+                "14:00",
+                "12:00",
+                120,
+                60,
+                new HotelProfile.Branding(
+                        "https://cdn.flexcheck.local/flex-hotel-jardim/logo.svg",
+                        "#243447",
+                        "#faf7f0",
+                        "#af8a3d",
+                        "Welcome to Flex Hotel Jardim",
+                        "Garden calm for every stay"
+                ),
+                new HotelProfile.Content(
+                        "pt-BR",
+                        List.of("pt-BR", "en-US", "es-ES"),
+                        List.of(
+                                new HotelProfile.Promotion("Garden Suite", "Premium suite with garden view", true, 1)
+                        ),
+                        List.of("Garden", "Pool", "Lounge"),
+                        "https://maps.example.com/flex-hotel-jardim",
+                        "We are here whenever you need us."
+                ),
+                true,
+                now,
+                now
+        ));
     }
 
     public List<HotelSummaryResult> listHotels() {

@@ -1,43 +1,79 @@
 # admin-web
 
-Painel administrativo planejado para recepcao e gestao operacional.
+Administrative portal for hotel operators.
 
 ## Status
 
-Planejado. Ainda nao possui aplicacao React implementada.
+Implemented. This app is separate from the guest kiosk and requires administrator login.
 
-## Objetivo
+## What it does
 
-Dar visibilidade operacional para o hotel: reservas do dia, sessoes em andamento, falhas, check-ins concluidos, checkouts e status de totens.
+- Shows hotel-scoped operational metrics.
+- Lets the operator switch between hotels.
+- Shows devices, audit activity, branding, and identity views.
+- Provides a persistent reservation test area backed by the real backend and Oracle.
 
-## Telas Planejadas
+## Login
 
-- Dashboard do dia.
-- Reservas de hoje.
-- Sessoes em andamento.
-- Check-ins concluidos.
-- Checkouts concluidos.
-- Falhas e handoffs para recepcao.
-- Status dos totens.
-- Auditoria resumida.
+The portal uses the admin login exposed by `admin-service`.
 
-## API Inicial
+Default credentials:
 
-O `checkin-service` ja expõe:
+- username: `admin@flexcheck.local`
+- password: `FlexCheck@2026`
 
-```text
-GET /api/v1/admin/dashboard
+The session stores the token in local storage and sends it as `X-Admin-Token`.
+
+## Local development
+
+```bash
+cd frontend/admin-web
+npm install
+npm run dev
 ```
 
-Esse endpoint retorna:
+Default API endpoint:
 
-- reservas de hoje
-- estadias ativas
-- check-ins concluidos
-- checkouts concluidos
-- sessoes com falha
-- sessoes recentes
+```text
+http://127.0.0.1:8088/api/v1
+```
 
-## Valor para a Banca
+Optional environment variable:
 
-O painel mostra que o totem faz parte de uma operacao monitoravel, com rastreabilidade e atendimento humano para excecoes.
+- `VITE_API_URL`
+
+## Docker
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+The admin portal is available at:
+
+```text
+http://127.0.0.1:3001
+```
+
+## Main views
+
+- Overview
+- Reservations
+- Branding
+- Devices
+- Audit
+- Identity
+
+## Reservation test area
+
+The reservations view lets the operator:
+
+- create a persistent reservation for the selected hotel
+- list reservations for the selected hotel
+- delete test reservations through the backend
+
+## Notes
+
+- The portal is intentionally separate from the kiosk.
+- Reservation test data is persisted in the backend and Oracle, not local state.

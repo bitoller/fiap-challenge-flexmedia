@@ -1,46 +1,52 @@
 # FlexCheck Hotel
 
-Plataforma do desafio FIAP com a Flexmedia. O backend foi organizado em microservicos com foco em clean code, clean architecture e separacao clara de responsabilidades.
+FlexCheck is organized into two products:
 
-## O que esta pronto
+- a guest kiosk for check-in and check-out
+- a separate admin portal for hotel operations
 
-- `checkin-service`: orquestra o fluxo principal do totem
-- `api-gateway`: entrada unica para `/api/v1/**`
-- `reservation-service`: busca e confirmacao de reservas
-- `payment-service`: transacoes de pagamento
-- `key-service`: emissao e revogacao de chaves
-- `admin-service`: dashboard, auditoria, branding e conteudo do hotel
-- `device-service`: status e heartbeat dos totens
-- `identity-service`: autenticacao, usuarios e credenciais tecnicas
-- `notification-service`: comprovantes e alertas
-- `biometry-service`: contrato de biometria para evolucao futura
-- `pms-adapter-service`: contrato de PMS para evolucao futura
-- `kiosk-web`: frontend do totem
+The backend is split into microservices with clean architecture, clean code, and clear domain boundaries.
 
-## Como subir tudo com Docker
+## What is ready
 
-### 1. Configurar o ambiente
+- `checkin-service`: orchestrates the kiosk flow
+- `api-gateway`: entrypoint for `/api/v1/**`
+- `reservation-service`: reservation lookup, list, create, delete, and guest confirmation
+- `payment-service`: payment transactions
+- `key-service`: key issuance and revocation
+- `admin-service`: dashboard, devices, audit, branding, hotel profile, and admin login
+- `device-service`: kiosk heartbeat and status
+- `identity-service`: authentication, users, and technical credentials
+- `notification-service`: receipts and alerts
+- `biometry-service`: future biometric integration contract
+- `pms-adapter-service`: future PMS integration contract
+- `kiosk-web`: guest kiosk frontend
+- `admin-web`: admin portal frontend
 
-Na raiz do projeto:
+## Docker
+
+### 1. Configure the environment
+
+From the project root:
 
 ```bash
 Copy-Item .env.demo.example .env
 ```
 
-O arquivo de exemplo ja vem com:
+The demo env already uses:
 
 - `ORACLE_USER=rm553134`
 - `ORACLE_PASSWORD=060892`
 
-Se voce for usar o Oracle fisico da FIAP, confirme que esse schema foi criado antes de subir a stack.
+If you use the FIAP Oracle instance, make sure the schema exists before starting the stack.
 
-### 2. Subir a stack completa
+### 2. Start everything
 
 ```bash
 docker compose up -d --build
 ```
 
-Isso sobe:
+This starts:
 
 - `checkin-service`
 - `api-gateway`
@@ -54,88 +60,94 @@ Isso sobe:
 - `biometry-service`
 - `pms-adapter-service`
 - `kiosk-web`
+- `admin-web`
 
-### 3. Parar tudo
+### 3. Stop everything
 
 ```bash
 docker compose down
 ```
 
-## Como subir partes especificas
+## Start only parts
 
-### Somente o totem e a API principal
+### Kiosk and API
 
 ```bash
 docker compose up -d --build checkin-service api-gateway kiosk-web
 ```
 
-### Somente os servicos de apoio
+### Admin portal
 
 ```bash
-docker compose up -d --build reservation-service payment-service key-service admin-service device-service identity-service notification-service
+docker compose up -d --build admin-service reservation-service admin-web
 ```
 
-### Somente os contratos de integracao futuros
+### Support services
+
+```bash
+docker compose up -d --build payment-service key-service device-service identity-service notification-service
+```
+
+### Future integration contracts
 
 ```bash
 docker compose up -d --build biometry-service pms-adapter-service
 ```
 
-## Rodar local sem Docker
+## Run locally without Docker
 
-### Backend principal
+### Kiosk frontend
+
+```bash
+cd frontend/kiosk-web
+npm install
+npm run dev
+```
+
+### Admin frontend
+
+```bash
+cd frontend/admin-web
+npm install
+npm run dev
+```
+
+### Backend services
 
 ```bash
 cd backend/services/checkin-service
 mvn spring-boot:run
-```
 
-### Gateway
-
-```bash
 cd backend/services/api-gateway
 mvn spring-boot:run
 ```
 
-### Servicos novos
-
-```bash
-cd backend/services/identity-service
-mvn spring-boot:run
-
-cd backend/services/notification-service
-mvn spring-boot:run
-```
-
-## Documentacao por servico
+## Service docs
 
 - [Backend services](backend/services/README.md)
-- [identity-service](backend/services/identity-service/README.md)
-- [notification-service](backend/services/notification-service/README.md)
+- [admin-web](frontend/admin-web/README.md)
+- [kiosk-web](frontend/kiosk-web/README.md)
 
-## Banco Oracle
+## Oracle
 
-O projeto usa o schema `rm553134` no Oracle da FIAP e scripts de inicializacao versionados em `database/oracle/`.
+The project uses schema `rm553134` in the FIAP Oracle environment and the versioned bootstrap scripts in `database/oracle/`.
 
-Se precisar recriar o schema fisico, rode os scripts da pasta:
+To recreate the physical schema, run:
 
 - `database/oracle/init/01_create_user.sql`
 - `database/oracle/init/02_run_schema.sql`
 - `database/oracle/init/03_run_seed.sql`
 
-## Fluxo principal
+## Main flows
 
-1. abrir sessao no totem
-2. buscar e associar reserva
-3. confirmar hospede e consentimentos
-4. concluir check-in
-5. emitir chave
-6. fazer check-out
-7. registrar comprovantes e alertas
+1. guest uses the kiosk for check-in
+2. guest uses the kiosk for check-out
+3. staff uses the admin portal to manage hotels and test reservations
 
-## Observacoes de arquitetura
+## Architecture notes
 
-- `checkin-service` continua como orquestrador do fluxo.
-- `identity-service` e `notification-service` usam armazenamento em memoria no MVP.
-- `biometry-service` e `pms-adapter-service` foram preservados como contratos para integracao real futura.
-- O `admin-service` concentra operacoes de hotel, incluindo branding e conteudo.
+- `checkin-service` remains the kiosk orchestrator.
+- `reservation-service` now owns hotel-scoped reservation CRUD for kiosk tests.
+- `admin-service` owns dashboard, branding, hotel profile, devices, audit, and login contracts.
+- `identity-service` and `notification-service` still use in-memory storage in the MVP.
+- `biometry-service` and `pms-adapter-service` remain future integration contracts.

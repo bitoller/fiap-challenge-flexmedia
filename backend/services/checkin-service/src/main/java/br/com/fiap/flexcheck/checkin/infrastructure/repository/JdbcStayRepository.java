@@ -65,6 +65,26 @@ public class JdbcStayRepository implements StayRepository {
 
     @Override
     public Optional<CheckoutPreviewResult> findCheckoutPreview(Long hotelId, String roomNumber, String documentType, String documentNumber) {
+        Optional<CheckoutPreviewResult> preview = queryCheckoutPreview(hotelId, roomNumber, documentType, documentNumber);
+        if (preview.isPresent()) {
+            return preview;
+        }
+
+        Optional<CheckoutPreviewResult> roomPreview = queryCheckoutPreviewByRoom(hotelId, roomNumber);
+        if (roomPreview.isPresent()) {
+            return roomPreview;
+        }
+
+        reconcileMissingStay(hotelId, roomNumber, documentType, documentNumber);
+        preview = queryCheckoutPreview(hotelId, roomNumber, documentType, documentNumber);
+        if (preview.isPresent()) {
+            return preview;
+        }
+
+        return queryCheckoutPreviewByRoom(hotelId, roomNumber);
+    }
+
+    private Optional<CheckoutPreviewResult> queryCheckoutPreview(Long hotelId, String roomNumber, String documentType, String documentNumber) {
         String sql = """
                 SELECT st.id AS stay_id,
                        st.status AS stay_status,
@@ -108,6 +128,128 @@ public class JdbcStayRepository implements StayRepository {
                 .findFirst();
     }
 
+    private Optional<CheckoutPreviewResult> queryCheckoutPreviewByRoom(Long hotelId, String roomNumber) {
+        String sql = """
+                SELECT st.id AS stay_id,
+                       st.status AS stay_status,
+                       r.id AS reservation_id,
+                       r.hotel_id,
+                       r.reservation_code,
+                       r.status AS reservation_status,
+                       h.name AS hotel_name,
+                       r.arrival_date,
+                       r.departure_date,
+                       r.total_amount,
+                       r.currency,
+                       g.id AS guest_id,
+                       g.full_name,
+                       g.document_type,
+                       g.document_number,
+                       g.birth_date,
+                       g.email,
+                       g.phone,
+                       room.id AS room_id,
+                       room.room_number,
+                       room.room_type,
+                       room.status AS room_status
+                  FROM fc_stay st
+                  JOIN fc_reservation r ON r.id = st.reservation_id
+                  JOIN fc_hotel h ON h.id = r.hotel_id
+                  JOIN fc_room room ON room.id = st.room_id
+                  JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                  JOIN fc_guest g ON g.id = rg.guest_id
+                 WHERE h.id = ?
+                   AND room.room_number = ?
+                   AND UPPER(st.status) IN ('ACTIVE', 'PENDING_KEY')
+                   AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
+                 FETCH FIRST 1 ROWS ONLY
+                """;
+
+        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, roomNumber)
+                .stream()
+                .findFirst();
+    }
+
+    private void reconcileMissingStay(Long hotelId, String roomNumber, String documentType, String documentNumber) {
+        Optional<ReconciliationCandidate> candidate = jdbc.query("""
+                        SELECT r.id AS reservation_id,
+                               r.room_id,
+                               r.departure_date,
+                               r.total_amount
+                          FROM fc_reservation r
+                          JOIN fc_hotel h ON h.id = r.hotel_id
+                          JOIN fc_room room ON room.id = r.room_id
+                          JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                          JOIN fc_guest g ON g.id = rg.guest_id
+                         WHERE h.id = ?
+                           AND room.room_number = ?
+                           AND UPPER(g.document_type) = UPPER(?)
+                           AND g.document_number = ?
+                           AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
+                        FETCH FIRST 1 ROWS ONLY
+                        """,
+                (rs, rowNum) -> new ReconciliationCandidate(
+                        rs.getLong("reservation_id"),
+                        rs.getLong("room_id"),
+                        rs.getDate("departure_date").toLocalDate(),
+                        rs.getBigDecimal("total_amount")
+                ),
+                hotelId,
+                roomNumber,
+                documentType,
+                documentNumber
+        ).stream().findFirst();
+
+        if (candidate.isEmpty()) {
+            candidate = jdbc.query("""
+                            SELECT r.id AS reservation_id,
+                                   r.room_id,
+                                   r.departure_date,
+                                   r.total_amount
+                              FROM fc_reservation r
+                              JOIN fc_hotel h ON h.id = r.hotel_id
+                              JOIN fc_room room ON room.id = r.room_id
+                             WHERE h.id = ?
+                               AND room.room_number = ?
+                               AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
+                             FETCH FIRST 1 ROWS ONLY
+                            """,
+                    (rs, rowNum) -> new ReconciliationCandidate(
+                            rs.getLong("reservation_id"),
+                            rs.getLong("room_id"),
+                            rs.getDate("departure_date").toLocalDate(),
+                            rs.getBigDecimal("total_amount")
+                    ),
+                    hotelId,
+                    roomNumber
+            ).stream().findFirst();
+        }
+
+        if (candidate.isEmpty() || hasActiveStay(candidate.get().reservationId())) {
+            return;
+        }
+
+        ReconciliationCandidate data = candidate.get();
+        try {
+            createStay(data.reservationId(), data.roomId(), data.departureDate(), data.totalAmount());
+            jdbc.update("UPDATE fc_reservation SET status = 'CHECKED_IN', updated_at = ? WHERE id = ?",
+                    Timestamp.valueOf(LocalDateTime.now()), data.reservationId());
+            jdbc.update("UPDATE fc_room SET status = 'OCCUPIED' WHERE id = ?", data.roomId());
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to reconcile missing stay.", ex);
+        }
+    }
+
+    private boolean hasActiveStay(Long reservationId) {
+        Integer count = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                  FROM fc_stay
+                 WHERE reservation_id = ?
+                   AND UPPER(status) IN ('ACTIVE', 'PENDING_KEY')
+                """, Integer.class, reservationId);
+        return count != null && count > 0;
+    }
+
     @Override
     public void markCheckedIn(Long sessionId, Long reservationId, Long roomId) {
         jdbc.update("UPDATE fc_reservation SET status = 'CHECKED_IN', updated_at = ? WHERE id = ?",
@@ -123,5 +265,13 @@ public class JdbcStayRepository implements StayRepository {
         jdbc.update("UPDATE fc_stay SET status = 'CHECKED_OUT', checked_out_at = ? WHERE id = ?", now, stay.id());
         jdbc.update("UPDATE fc_reservation SET status = 'CHECKED_OUT', updated_at = ? WHERE id = ?", now, stay.reservationId());
         jdbc.update("UPDATE fc_room SET status = 'CLEANING' WHERE id = ?", stay.roomId());
+    }
+
+    private record ReconciliationCandidate(
+            Long reservationId,
+            Long roomId,
+            LocalDate departureDate,
+            BigDecimal totalAmount
+    ) {
     }
 }
