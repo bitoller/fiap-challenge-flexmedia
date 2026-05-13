@@ -48,8 +48,10 @@ public class ProxyController {
     private final String keyServiceUrl;
     private final String adminServiceUrl;
     private final String deviceServiceUrl;
+    private final String identityServiceUrl;
     private final String biometryServiceUrl;
     private final String pmsServiceUrl;
+    private final String notificationServiceUrl;
 
     public ProxyController(
             @Value("${services.checkin.url:http://localhost:8080}") String checkinServiceUrl,
@@ -58,8 +60,10 @@ public class ProxyController {
             @Value("${services.key.url:http://localhost:8084}") String keyServiceUrl,
             @Value("${services.admin.url:http://localhost:8085}") String adminServiceUrl,
             @Value("${services.device.url:http://localhost:8089}") String deviceServiceUrl,
+            @Value("${services.identity.url:http://localhost:8090}") String identityServiceUrl,
             @Value("${services.biometry.url:http://localhost:8086}") String biometryServiceUrl,
-            @Value("${services.pms.url:http://localhost:8087}") String pmsServiceUrl
+            @Value("${services.pms.url:http://localhost:8087}") String pmsServiceUrl,
+            @Value("${services.notification.url:http://localhost:8091}") String notificationServiceUrl
     ) {
         this.checkinServiceUrl = checkinServiceUrl;
         this.reservationServiceUrl = reservationServiceUrl;
@@ -67,8 +71,10 @@ public class ProxyController {
         this.keyServiceUrl = keyServiceUrl;
         this.adminServiceUrl = adminServiceUrl;
         this.deviceServiceUrl = deviceServiceUrl;
+        this.identityServiceUrl = identityServiceUrl;
         this.biometryServiceUrl = biometryServiceUrl;
         this.pmsServiceUrl = pmsServiceUrl;
+        this.notificationServiceUrl = notificationServiceUrl;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
@@ -132,6 +138,12 @@ public class ProxyController {
         }
         if (path.startsWith("/api/v1/devices")) {
             return deviceServiceUrl;
+        }
+        if (path.startsWith("/api/v1/auth") || path.startsWith("/api/v1/users") || path.startsWith("/api/v1/kiosk-credentials")) {
+            return identityServiceUrl;
+        }
+        if (path.startsWith("/api/v1/notifications")) {
+            return notificationServiceUrl;
         }
         if (path.startsWith("/api/v1/biometry")) {
             return biometryServiceUrl;

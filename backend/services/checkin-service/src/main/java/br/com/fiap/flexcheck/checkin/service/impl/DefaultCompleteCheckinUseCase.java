@@ -5,6 +5,7 @@ import br.com.fiap.flexcheck.checkin.infrastructure.client.BiometryServiceClient
 import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.NotificationServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
@@ -26,6 +27,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
     private final StayRepository stayRepository;
     private final KeyServiceClient keyServiceClient;
     private final PmsAdapterServiceClient pmsAdapterServiceClient;
+    private final NotificationServiceClient notificationServiceClient;
     private final AuditServiceClient auditServiceClient;
     private final ReservationServiceClient reservationServiceClient;
 
@@ -37,6 +39,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
             StayRepository stayRepository,
             KeyServiceClient keyServiceClient,
             PmsAdapterServiceClient pmsAdapterServiceClient,
+            NotificationServiceClient notificationServiceClient,
             AuditServiceClient auditServiceClient,
             ReservationServiceClient reservationServiceClient
     ) {
@@ -47,6 +50,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         this.stayRepository = stayRepository;
         this.keyServiceClient = keyServiceClient;
         this.pmsAdapterServiceClient = pmsAdapterServiceClient;
+        this.notificationServiceClient = notificationServiceClient;
         this.auditServiceClient = auditServiceClient;
         this.reservationServiceClient = reservationServiceClient;
     }
@@ -68,6 +72,13 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         if ("REJECTED".equals(documentStatus)) {
             verificationRepository.insertDocumentVerification(sessionId, reservation.guest().id(), "REJECTED");
             sessionRepository.failSession(sessionId, "DOCUMENT_REJECTED");
+            notificationServiceClient.sendAlert(
+                    "reception",
+                    "Document rejected",
+                    "Document validation rejected for reservation " + reservation.code() + ". Human support required.",
+                    "SESSION",
+                    String.valueOf(sessionId)
+            );
             throw new BusinessException("DOCUMENT_REJECTED", "Documento rejeitado. Procure a recepcao.", 409);
         }
 
@@ -80,12 +91,26 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         );
         if ("REJECTED".equalsIgnoreCase(biometryVerification.status())) {
             sessionRepository.failSession(sessionId, "BIOMETRY_REJECTED");
+            notificationServiceClient.sendAlert(
+                    "reception",
+                    "Biometry rejected",
+                    "Biometry validation rejected for reservation " + reservation.code() + ". Human support required.",
+                    "SESSION",
+                    String.valueOf(sessionId)
+            );
             throw new BusinessException("BIOMETRY_REJECTED", "Biometria rejeitada. Procure a recepcao.", 409);
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
             paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "DECLINED", reservation.totalAmount(), null);
             sessionRepository.failSession(sessionId, "PAYMENT_DECLINED");
+            notificationServiceClient.sendAlert(
+                    "reception",
+                    "Payment declined",
+                    "Payment declined for reservation " + reservation.code() + ". Human support required.",
+                    "SESSION",
+                    String.valueOf(sessionId)
+            );
             throw new BusinessException("PAYMENT_DECLINED", "Pagamento recusado. Tente outro cartao ou procure a recepcao.", 409);
         }
 
@@ -100,6 +125,13 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                 reservation.room().number(),
                 reservation.guest().fullName(),
                 reservation.totalAmount()
+        );
+        notificationServiceClient.sendReceipt(
+                reservation.guest().email(),
+                "Check-in completed",
+                "Your check-in was completed successfully. Stay " + stayId + " is now active.",
+                "STAY",
+                String.valueOf(stayId)
         );
         auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent("KIOSK", null, "CHECKIN_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 

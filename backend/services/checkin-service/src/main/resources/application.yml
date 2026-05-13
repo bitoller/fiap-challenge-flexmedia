@@ -39,6 +39,8 @@ services:
     url: ${BIOMETRY_SERVICE_URL:http://localhost:8086}
   pms:
     url: ${PMS_SERVICE_URL:http://localhost:8087}
+  notification:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8091}
 
 logging:
   level:

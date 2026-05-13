@@ -1,56 +1,46 @@
 # FlexCheck Hotel
 
-MVP para o Challenge FIAP com a Flexmedia. O projeto simula um totem de autoatendimento para hotel, com fluxo de check-in, consentimentos LGPD, pagamento simulado, emissao de chave, checkout, dashboard e rastreabilidade operacional.
+Plataforma do desafio FIAP com a Flexmedia. O backend foi organizado em microservicos com foco em clean code, clean architecture e separacao clara de responsabilidades.
 
-## Status
+## O que esta pronto
 
-Implementado:
+- `checkin-service`: orquestra o fluxo principal do totem
+- `api-gateway`: entrada unica para `/api/v1/**`
+- `reservation-service`: busca e confirmacao de reservas
+- `payment-service`: transacoes de pagamento
+- `key-service`: emissao e revogacao de chaves
+- `admin-service`: dashboard, auditoria, branding e conteudo do hotel
+- `device-service`: status e heartbeat dos totens
+- `identity-service`: autenticacao, usuarios e credenciais tecnicas
+- `notification-service`: comprovantes e alertas
+- `biometry-service`: contrato de biometria para evolucao futura
+- `pms-adapter-service`: contrato de PMS para evolucao futura
+- `kiosk-web`: frontend do totem
 
-- `checkin-service`: API principal do MVP em Spring Boot.
-- `api-gateway`: proxy simples para entrada unica em `/api/v1/**`.
-- `reservation-service`: busca e confirmacao de reserva.
-- `payment-service`: gravacao de transacoes de pagamento.
-- `key-service`: emissao e revogacao de chaves.
-- `admin-service`: dashboard e auditoria operacional.
-- `kiosk-web`: frontend React do totem.
-- Oracle FIAP como banco principal, com tabelas criadas por JPA/Hibernate.
-- Collection Postman para validar o fluxo completo.
+## Como subir tudo com Docker
 
-Planejado/documentado:
+### 1. Configurar o ambiente
 
-- `identity-service`
-- `biometry-service`
-- `notification-service`
-- `device-service`
-- `pms-adapter-service`
-- `admin-web`
+Na raiz do projeto:
 
-## Estrutura
-
-```text
-.
-├── backend/
-│   └── services/
-│       ├── api-gateway/
-│       ├── checkin-service/
-│       └── demais microservicos planejados
-├── database/
-│   └── oracle/
-├── docs/
-│   ├── postman/
-│   └── diagramas/
-├── frontend/
-│   ├── kiosk-web/
-│   └── admin-web/
-├── infra/
-│   └── docker/
-├── .env.example
-└── docker-compose.yml
+```bash
+Copy-Item .env.demo.example .env
 ```
 
-## Rodar pelo Docker
+O arquivo de exemplo ja vem com:
 
-Este e o fluxo recomendado para a demo e para padronizar a equipe. Ele sobe:
+- `ORACLE_USER=rm553134`
+- `ORACLE_PASSWORD=060892`
+
+Se voce for usar o Oracle fisico da FIAP, confirme que esse schema foi criado antes de subir a stack.
+
+### 2. Subir a stack completa
+
+```bash
+docker compose up -d --build
+```
+
+Isso sobe:
 
 - `checkin-service`
 - `api-gateway`
@@ -58,141 +48,94 @@ Este e o fluxo recomendado para a demo e para padronizar a equipe. Ele sobe:
 - `payment-service`
 - `key-service`
 - `admin-service`
+- `device-service`
+- `identity-service`
+- `notification-service`
+- `biometry-service`
+- `pms-adapter-service`
 - `kiosk-web`
 
-O banco usado e o Oracle FIAP remoto configurado no `.env`.
-
-### 1. Abrir o Docker
-
-No macOS, abra o Docker Desktop e confirme que o daemon esta ativo:
-
-```bash
-open -a Docker
-docker info
-```
-
-Se `docker info` reclamar de `docker.sock` ou daemon indisponivel, o Docker Desktop ainda nao terminou de iniciar.
-
-### 2. Configurar ambiente
-
-Na raiz do projeto:
-
-```bash
-cp .env.demo.example .env
-```
-
-Edite `.env` e preencha:
-
-```text
-ORACLE_PASSWORD=060892
-```
-
-As portas padrao da demo sao:
-
-```text
-CHECKIN_PORT=8081
-GATEWAY_PORT=8088
-KIOSK_PORT=3000
-```
-
-### 3. Subir tudo
-
-```bash
-docker compose up --build
-```
-
-URLs:
-
-- Totem: `http://127.0.0.1:3000`
-- Gateway: `http://127.0.0.1:8088/gateway/health`
-- API direta: `http://127.0.0.1:8081/api/v1/health`
-
-### 4. Parar
+### 3. Parar tudo
 
 ```bash
 docker compose down
 ```
 
-### Porta ocupada
+## Como subir partes especificas
 
-Se alguma porta estiver em uso, altere no `.env`. Exemplo:
-
-```text
-CHECKIN_PORT=8082
-GATEWAY_PORT=8089
-KIOSK_PORT=3001
-```
-
-Depois rode novamente:
+### Somente o totem e a API principal
 
 ```bash
-docker compose down
-docker compose up --build
+docker compose up -d --build checkin-service api-gateway kiosk-web
 ```
 
-Guia completo: [Demo Docker](docs/DEMO_DOCKER.md).
+### Somente os servicos de apoio
 
-## Banco
-
-O backend usa Oracle FIAP por padrao:
-
-```text
-ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm553134
-JPA_DDL_AUTO=update
+```bash
+docker compose up -d --build reservation-service payment-service key-service admin-service device-service identity-service notification-service
 ```
 
-O Hibernate cria/atualiza as tabelas `FC_*` a partir das entidades JPA quando o `checkin-service` inicia.
+### Somente os contratos de integracao futuros
 
-## Rodar sem Docker
+```bash
+docker compose up -d --build biometry-service pms-adapter-service
+```
 
-Use apenas como fallback de desenvolvimento.
+## Rodar local sem Docker
 
-Backend:
+### Backend principal
 
 ```bash
 cd backend/services/checkin-service
 mvn spring-boot:run
 ```
 
-Frontend:
+### Gateway
 
 ```bash
-cd frontend/kiosk-web
-npm install
-VITE_API_URL=http://127.0.0.1:8080/api/v1 npm run dev
+cd backend/services/api-gateway
+mvn spring-boot:run
 ```
 
-## URLs
+### Servicos novos
 
-- Checkin API: `http://127.0.0.1:8081/api/v1/health`
-- Gateway: `http://127.0.0.1:8088/gateway/health`
-- Totem Docker: `http://127.0.0.1:3000`
-- Totem local Vite: `http://127.0.0.1:5173`
+```bash
+cd backend/services/identity-service
+mvn spring-boot:run
 
-## Postman
-
-Importe:
-
-```text
-docs/postman/FlexCheck-Hotel.postman_collection.json
+cd backend/services/notification-service
+mvn spring-boot:run
 ```
 
-A collection cobre health checks, busca de reserva, criacao de sessao, associacao de reserva, confirmacao de hospede, consentimentos, check-in, checkout e dashboard.
+## Documentacao por servico
 
-## Dados de Demo
+- [Backend services](backend/services/README.md)
+- [identity-service](backend/services/identity-service/README.md)
+- [notification-service](backend/services/notification-service/README.md)
 
-- Reserva: `RSV-2026-0001`
-- Documento: `12345678909`
-- Pagamento aprovado: `TEST_CARD_APPROVED`
-- Pagamento recusado: `TEST_CARD_DECLINED`
+## Banco Oracle
 
-## Documentacao
+O projeto usa o schema `rm553134` no Oracle da FIAP e scripts de inicializacao versionados em `database/oracle/`.
 
-- [Backend](backend/README.md)
-- [Frontend](frontend/README.md)
-- [Banco Oracle](database/README.md)
-- [Infraestrutura](infra/README.md)
-- [Documentos do projeto](docs/README.md)
-- [Demo Docker](docs/DEMO_DOCKER.md)
-- [Postman](docs/postman/README.md)
+Se precisar recriar o schema fisico, rode os scripts da pasta:
+
+- `database/oracle/init/01_create_user.sql`
+- `database/oracle/init/02_run_schema.sql`
+- `database/oracle/init/03_run_seed.sql`
+
+## Fluxo principal
+
+1. abrir sessao no totem
+2. buscar e associar reserva
+3. confirmar hospede e consentimentos
+4. concluir check-in
+5. emitir chave
+6. fazer check-out
+7. registrar comprovantes e alertas
+
+## Observacoes de arquitetura
+
+- `checkin-service` continua como orquestrador do fluxo.
+- `identity-service` e `notification-service` usam armazenamento em memoria no MVP.
+- `biometry-service` e `pms-adapter-service` foram preservados como contratos para integracao real futura.
+- O `admin-service` concentra operacoes de hotel, incluindo branding e conteudo.

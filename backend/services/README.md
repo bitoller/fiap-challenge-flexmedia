@@ -1,8 +1,8 @@
 # Services
 
-Microservicos do backend FlexCheck Hotel.
+Microservicos do backend FlexCheck.
 
-## Implementados
+## Componentes ativos
 
 - [api-gateway](api-gateway/README.md)
 - [checkin-service](checkin-service/README.md)
@@ -11,37 +11,18 @@ Microservicos do backend FlexCheck Hotel.
 - [key-service](key-service/README.md)
 - [admin-service](admin-service/README.md)
 - [device-service](device-service/README.md)
+- [identity-service](identity-service/README.md)
+- [notification-service](notification-service/README.md)
 - [biometry-service](biometry-service/README.md)
 - [pms-adapter-service](pms-adapter-service/README.md)
 
-## Planejados
-
-- [identity-service](identity-service/README.md)
-- [notification-service](notification-service/README.md)
-
-## Execucao Recomendada
-
-API principal:
-
-```bash
-cd checkin-service
-mvn spring-boot:run
-```
-
-Gateway:
-
-```bash
-cd api-gateway
-mvn spring-boot:run
-```
-
-## Demo com Docker
+## Como subir a stack completa
 
 Na raiz do projeto:
 
 ```bash
-cp .env.demo.example .env
-docker compose up --build
+Copy-Item .env.demo.example .env
+docker compose up -d --build
 ```
 
 Isso sobe:
@@ -53,14 +34,47 @@ Isso sobe:
 - `key-service`
 - `admin-service`
 - `device-service`
+- `identity-service`
+- `notification-service`
 - `biometry-service`
 - `pms-adapter-service`
 - `kiosk-web`
 
-## Contrato de API
+## Como subir um servico isolado
 
-Use a collection:
+Cada servico pode ser executado sozinho para desenvolvimento local.
 
-```text
-../../docs/postman/FlexCheck-Hotel.postman_collection.json
+### checkin-service
+
+```bash
+cd backend/services/checkin-service
+mvn spring-boot:run
 ```
+
+### api-gateway
+
+```bash
+cd backend/services/api-gateway
+mvn spring-boot:run
+```
+
+### identity-service
+
+```bash
+cd backend/services/identity-service
+mvn spring-boot:run
+```
+
+### notification-service
+
+```bash
+cd backend/services/notification-service
+mvn spring-boot:run
+```
+
+## Observacoes importantes
+
+- `checkin-service` orquestra o fluxo principal do totem.
+- `reservation-service`, `payment-service`, `key-service`, `admin-service` e `device-service` podem ser consumidos pelo gateway ou direto via HTTP.
+- `identity-service` e `notification-service` usam armazenamento em memoria no MVP.
+- `biometry-service` e `pms-adapter-service` continuam como contratos de integracao para evolucao futura.

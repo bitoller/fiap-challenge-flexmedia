@@ -1,0 +1,10 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: identity-service
+
+logging:
+  level:
+    br.com.fiap.flexcheck: INFO

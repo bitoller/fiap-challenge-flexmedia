@@ -31,3 +31,9 @@
 - [x] 5.1 Add or update tests for the refactored service boundaries.
 - [x] 5.2 Verify the Oracle bootstrap runs cleanly on the empty schema.
 - [x] 5.3 Verify the main check-in journey still works end to end through the gateway after the split.
+
+## Handoff
+
+- See [handoff.md](handoff.md) for the current restart point and validation summary.
+- The change is complete and validated; the next natural area is the frontend.
+- Keep the current backend service boundaries stable if future backend work resumes.

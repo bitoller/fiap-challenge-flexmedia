@@ -18,6 +18,10 @@ services:
     url: ${ADMIN_SERVICE_URL:http://localhost:8085}
   device:
     url: ${DEVICE_SERVICE_URL:http://localhost:8089}
+  identity:
+    url: ${IDENTITY_SERVICE_URL:http://localhost:8090}
+  notification:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8091}
 
 app:
   cors:

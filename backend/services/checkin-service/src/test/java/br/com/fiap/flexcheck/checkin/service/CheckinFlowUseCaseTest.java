@@ -19,6 +19,7 @@ import br.com.fiap.flexcheck.checkin.service.result.BiometryVerificationResult;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.BiometryServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
+import br.com.fiap.flexcheck.checkin.infrastructure.client.NotificationServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
@@ -65,6 +66,8 @@ class CheckinFlowUseCaseTest {
     private BiometryServiceClient biometryServiceClient;
     @MockBean
     private PmsAdapterServiceClient pmsAdapterServiceClient;
+    @MockBean
+    private NotificationServiceClient notificationServiceClient;
 
     @Test
     void shouldCompleteCheckinAndCheckoutThroughUseCases() {

@@ -1,33 +1,56 @@
 # notification-service
 
-Microservico planejado para comunicacoes, comprovantes e alertas operacionais.
+Servico de comunicacoes do FlexCheck.
+
+## O que ele faz
+
+- registra comprovantes de check-in e check-out
+- registra alertas operacionais
+- lista notificacoes enviadas
+- consulta uma notificacao especifica
 
 ## Status
 
-Planejado. Ainda nao possui codigo Java neste repositorio.
+Implementado para o MVP com armazenamento em memoria.
 
-## Responsabilidades
+## Como subir
 
-- Enviar comprovante de check-in e checkout.
-- Enviar chave digital por canal configurado.
-- Alertar recepcao sobre falhas e handoff.
-- Registrar status de envio.
-- Consumir eventos de dominio.
+### Via Docker Compose
 
-## Eventos Planejados
+Na raiz do projeto:
 
-- `CheckinCompleted`
-- `KeyIssued`
-- `CheckoutCompleted`
-- `KioskDeviceFailed`
-- `SessionHandedOff`
+```bash
+docker compose up -d --build notification-service
+```
 
-## Endpoints Planejados
+Porta padrao:
+
+- `http://localhost:8091`
+
+### Via Spring Boot
+
+```bash
+cd backend/services/notification-service
+mvn spring-boot:run
+```
+
+## Endpoints
 
 - `POST /api/v1/notifications/receipts`
 - `POST /api/v1/notifications/alerts`
+- `GET /api/v1/notifications`
 - `GET /api/v1/notifications/{id}`
 
-## MVP Atual
+## Exemplo rapido
 
-O envio e apresentado na tela final do totem como comportamento simulado. A persistencia de notificacoes fica para evolucao.
+```bash
+curl -X POST http://localhost:8091/api/v1/notifications/alerts \
+  -H "Content-Type: application/json" \
+  -d "{\"channel\":\"IN_APP\",\"recipient\":\"reception\",\"subject\":\"Test\",\"message\":\"Hello\",\"relatedResourceType\":\"SESSION\",\"relatedResourceId\":\"1\"}"
+```
+
+## Observacoes
+
+- O armazenamento e em memoria no MVP.
+- O servico foi desenhado para evoluir depois para e-mail, SMS e WhatsApp.
+- O contrato e usado pelo `checkin-service` para avisos e comprovantes.

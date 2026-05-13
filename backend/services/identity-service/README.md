@@ -1,45 +1,58 @@
 # identity-service
 
-Microservico planejado para identidade, autenticacao e autorizacao.
+Servico de identidade do FlexCheck.
+
+## O que ele faz
+
+- autentica usuarios da operacao
+- emite e renova sessoes de acesso
+- lista usuarios internos
+- registra credenciais tecnicas de totens
 
 ## Status
 
-Planejado. Ainda nao possui codigo Java neste repositorio.
+Implementado para o MVP com armazenamento em memoria.
 
-## Responsabilidades
+## Como subir
 
-- Login de operadores administrativos.
-- Cadastro de usuarios internos.
-- Perfis e permissoes.
-- Emissao e validacao de JWT.
-- Credenciais tecnicas para totens.
-- Auditoria de acessos.
+### Via Docker Compose
 
-## Papeis
+Na raiz do projeto:
 
-- `ADMIN`
-- `MANAGER`
-- `RECEPTIONIST`
-- `AUDITOR`
-- `KIOSK`
+```bash
+docker compose up -d --build identity-service
+```
 
-## Endpoints Planejados
+Porta padrao:
+
+- `http://localhost:8090`
+
+### Via Spring Boot
+
+```bash
+cd backend/services/identity-service
+mvn spring-boot:run
+```
+
+## Endpoints
 
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/refresh`
 - `GET /api/v1/users/me`
 - `GET /api/v1/users`
 - `POST /api/v1/kiosk-credentials`
+- `GET /api/v1/kiosk-credentials`
 
-## Banco
+## Exemplo rapido
 
-Tabelas planejadas:
+```bash
+curl -X POST http://localhost:8090/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"owner@flexcheck.local\",\"password\":\"Welcome123!\"}"
+```
 
-- `fc_user`
-- `fc_role`
-- `fc_user_role`
-- `fc_kiosk_credential`
+## Observacoes
 
-## MVP
-
-No MVP atual, autenticacao ainda nao bloqueia o fluxo do totem. A evolucao deve proteger endpoints administrativos e operacoes sensiveis com JWT.
+- O armazenamento e em memoria no MVP.
+- O contrato ja esta separado para evoluir para JWT real no futuro.
+- O servico e independente do Oracle nesta fase.

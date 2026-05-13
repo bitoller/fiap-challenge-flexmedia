@@ -17,8 +17,10 @@ services:
       KEY_SERVICE_URL: ${KEY_SERVICE_URL:-http://key-service:8084}
       ADMIN_SERVICE_URL: ${ADMIN_SERVICE_URL:-http://admin-service:8085}
       DEVICE_SERVICE_URL: ${DEVICE_SERVICE_URL:-http://device-service:8089}
+      IDENTITY_SERVICE_URL: ${IDENTITY_SERVICE_URL:-http://identity-service:8090}
       BIOMETRY_SERVICE_URL: ${BIOMETRY_SERVICE_URL:-http://biometry-service:8086}
       PMS_SERVICE_URL: ${PMS_SERVICE_URL:-http://pms-adapter-service:8087}
+      NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL:-http://notification-service:8091}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
       PMS_MODE: ${PMS_MODE:-MOCK}
       PAYMENT_MODE: ${PAYMENT_MODE:-MOCK}
@@ -33,8 +35,10 @@ services:
       - key-service
       - admin-service
       - device-service
+      - identity-service
       - biometry-service
       - pms-adapter-service
+      - notification-service
     networks:
       - flexcheck-net
 
@@ -52,8 +56,10 @@ services:
       KEY_SERVICE_URL: http://key-service:8084
       ADMIN_SERVICE_URL: http://admin-service:8085
       DEVICE_SERVICE_URL: http://device-service:8089
+      IDENTITY_SERVICE_URL: http://identity-service:8090
       BIOMETRY_SERVICE_URL: http://biometry-service:8086
       PMS_SERVICE_URL: http://pms-adapter-service:8087
+      NOTIFICATION_SERVICE_URL: http://notification-service:8091
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "${GATEWAY_PORT:-8088}:8088"
@@ -64,8 +70,10 @@ services:
       - key-service
       - admin-service
       - device-service
+      - identity-service
       - biometry-service
       - pms-adapter-service
+      - notification-service
     networks:
       - flexcheck-net
 
@@ -174,6 +182,19 @@ services:
     networks:
       - flexcheck-net
 
+  identity-service:
+    build:
+      context: ./backend/services/identity-service
+    image: flexcheck/identity-service:demo
+    container_name: flexcheck-identity-service
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8090
+    ports:
+      - "${IDENTITY_PORT:-8090}:8090"
+    networks:
+      - flexcheck-net
+
   biometry-service:
     build:
       context: ./backend/services/biometry-service
@@ -207,6 +228,19 @@ services:
       ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
     ports:
       - "${PMS_PORT:-8087}:8087"
+    networks:
+      - flexcheck-net
+
+  notification-service:
+    build:
+      context: ./backend/services/notification-service
+    image: flexcheck/notification-service:demo
+    container_name: flexcheck-notification-service
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8091
+    ports:
+      - "${NOTIFICATION_PORT:-8091}:8091"
     networks:
       - flexcheck-net
 
