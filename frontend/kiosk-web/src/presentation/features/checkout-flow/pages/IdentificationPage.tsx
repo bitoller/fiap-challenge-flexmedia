@@ -22,14 +22,20 @@ function formatDocument(documentNumber: string) {
 export function IdentificationPage() {
   const { t, i18n } = useTranslation("checkout");
   const navigate = useNavigate();
-  const { lookupStay, identification, isLoading, setFlowStep, setRecovery, resetError } = useCheckoutFlow();
+  const { lookupStay, isLoading, setFlowStep, setRecovery, resetError } = useCheckoutFlow();
   const [activeField, setActiveField] = useState<InputField>("room");
-  const [roomNumber, setRoomNumber] = useState(identification.roomNumber);
-  const [documentNumber, setDocumentNumber] = useState(identification.documentNumber);
+  const [roomNumber, setRoomNumber] = useState("");
+  const [documentNumber, setDocumentNumber] = useState("");
+  const roomDigits = roomNumber.replace(/\D/g, "");
+  const documentDigits = documentNumber.replace(/\D/g, "");
+  const canConfirm = roomDigits.length > 0 || documentDigits.length > 0;
 
   useEffect(() => {
     setFlowStep("identification");
     resetError();
+    setActiveField("room");
+    setRoomNumber("");
+    setDocumentNumber("");
   }, [resetError, setFlowStep]);
 
   const locale = useMemo(() => {
@@ -57,10 +63,16 @@ export function IdentificationPage() {
   };
 
   const handleConfirm = async () => {
-    const roomValue = roomNumber.replace(/\D/g, "");
-    const documentValue = documentNumber.replace(/\D/g, "");
+    if (!canConfirm) {
+      setRecovery("STAY_NOT_FOUND", t("lookupValidationError"));
+      navigate("/checkout/recovery", {
+        replace: true,
+        state: { code: "STAY_NOT_FOUND", message: t("lookupValidationError") },
+      });
+      return;
+    }
 
-    if (!roomValue || documentValue.length < 11) {
+    if (documentDigits.length > 0 && documentDigits.length < 11) {
       setRecovery("STAY_NOT_FOUND", t("lookupValidationError"));
       navigate("/checkout/recovery", {
         replace: true,
@@ -70,7 +82,7 @@ export function IdentificationPage() {
     }
 
     try {
-      await lookupStay(roomValue, documentValue);
+      await lookupStay(roomDigits, documentDigits);
       navigate("/checkout/summary");
     } catch {
       navigate("/checkout/recovery", { replace: true });
@@ -92,7 +104,6 @@ export function IdentificationPage() {
                 </svg>
               </span>
               <span className="checkout-input-card__title">{t("roomLabel")}</span>
-              <span className="checkout-input-card__value">{roomNumber || t("roomPlaceholder")}</span>
               <span className="checkout-input-card__caption">{t("roomCaption")}</span>
             </button>
 
@@ -105,7 +116,6 @@ export function IdentificationPage() {
                 </svg>
               </span>
               <span className="checkout-input-card__title">{t("documentLabel")}</span>
-              <span className="checkout-input-card__value">{documentNumber ? formatDocument(documentNumber) : t("documentPlaceholder")}</span>
               <span className="checkout-input-card__caption">{t("documentCaption")}</span>
             </button>
 
@@ -139,14 +149,14 @@ export function IdentificationPage() {
               onDigit={handleDigit}
               onBackspace={handleBackspace}
               onConfirm={handleConfirm}
-              confirmDisabled={isLoading}
+              confirmDisabled={isLoading || !canConfirm}
             />
 
             <div className="checkout-identification__actions">
               <Button variant="secondary" size="lg" onClick={() => navigate("/")}>
                 {t("home")}
               </Button>
-              <Button variant="primary" size="lg" onClick={handleConfirm} isLoading={isLoading}>
+              <Button variant="primary" size="lg" onClick={handleConfirm} isLoading={isLoading} disabled={!canConfirm}>
                 {t("confirm")}
               </Button>
             </div>

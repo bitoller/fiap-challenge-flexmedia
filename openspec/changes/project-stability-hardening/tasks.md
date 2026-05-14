@@ -14,4 +14,4 @@
 
 - [x] 3.1 Run the backend and frontend builds and the focused tests for the critical flows.
 - [x] 3.2 Verify the kiosk, checkout, admin login, dashboard, and reservation management still persist to Oracle.
-- [ ] 3.3 Update OpenSpec handoff with the stabilized project baseline and any remaining follow-up items.
+- [x] 3.3 Update OpenSpec handoff with the stabilized project baseline and any remaining follow-up items.

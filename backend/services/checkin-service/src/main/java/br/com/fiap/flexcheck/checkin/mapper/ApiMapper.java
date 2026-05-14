@@ -82,9 +82,9 @@ public final class ApiMapper {
     public static CheckoutLookupCommand toCommand(CheckoutLookupRequest request) {
         return new CheckoutLookupCommand(
                 request.hotelId(),
-                request.roomNumber(),
-                request.documentType(),
-                request.documentNumber()
+                normalize(request.roomNumber()),
+                normalize(request.documentType()),
+                normalize(request.documentNumber())
         );
     }
 
@@ -167,5 +167,9 @@ public final class ApiMapper {
 
     private static CheckoutChargeResponse toResponse(CheckoutChargeResult charge) {
         return new CheckoutChargeResponse(charge.code(), charge.description(), charge.amount());
+    }
+
+    private static String normalize(String value) {
+        return value == null || value.isBlank() ? null : value;
     }
 }

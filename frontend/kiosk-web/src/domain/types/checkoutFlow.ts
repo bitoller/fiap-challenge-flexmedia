@@ -10,6 +10,7 @@ export type CheckoutFlowStep =
 
 export type CheckoutRecoveryCode =
   | "STAY_NOT_FOUND"
+  | "STAY_ALREADY_CHECKED_OUT"
   | "PAYMENT_DECLINED"
   | "CHECKOUT_LOOKUP_FAILED";
 

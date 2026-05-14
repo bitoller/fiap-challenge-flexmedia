@@ -17,12 +17,14 @@ export const checkoutRepository = {
     documentNumber: string
   ): Promise<CheckoutStayPreview> {
     try {
-      const response = await apiPost<any>(buildUrl(API_ENDPOINTS.CHECKOUT_LOOKUP), {
-        hotelId,
-        roomNumber,
-        documentType,
-        documentNumber,
-      });
+      const response = await apiPost<any>(
+        buildUrl(API_ENDPOINTS.CHECKOUT_LOOKUP),
+        {
+          hotelId,
+          ...(roomNumber ? { roomNumber } : {}),
+          ...(documentNumber ? { documentType, documentNumber } : {}),
+        }
+      );
 
       return checkoutLookupResponseInterceptor(response);
     } catch (error) {

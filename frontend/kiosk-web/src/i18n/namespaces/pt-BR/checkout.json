@@ -11,7 +11,7 @@
   "cardComingSoonTitle": "Inserir cartão",
   "cardComingSoonBody": "Em breve",
   "cardComingSoonCaption": "Para fechamento de conta",
-  "lookupValidationError": "Informe um número de quarto e CPF válidos.",
+  "lookupValidationError": "Informe um número de quarto válido. O CPF é opcional.",
   "confirm": "Confirmar",
   "home": "Início",
   "stepSummary": "PASSO 2 DE 7 - REVISÃO",

@@ -38,6 +38,7 @@ export function CheckoutKeypad({
       <button
         type="button"
         className={`checkout-keypad__key checkout-keypad__key--confirm ${confirmDisabled ? "is-disabled" : ""}`.trim()}
+        disabled={confirmDisabled}
         onClick={onConfirm}
         aria-label="Confirm"
       >

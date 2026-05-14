@@ -11,7 +11,7 @@
   "cardComingSoonTitle": "Insertar tarjeta",
   "cardComingSoonBody": "Próximamente",
   "cardComingSoonCaption": "Para el cierre de cuenta",
-  "lookupValidationError": "Ingrese un número de habitación y CPF válidos.",
+  "lookupValidationError": "Ingrese un número de habitación válido. El CPF es opcional.",
   "confirm": "Confirmar",
   "home": "Inicio",
   "stepSummary": "PASO 2 DE 7 - REVISIÓN",

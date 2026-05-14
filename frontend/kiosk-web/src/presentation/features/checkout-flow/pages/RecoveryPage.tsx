@@ -15,12 +15,14 @@ interface RecoveryLocationState {
 function getRecoveryTitle(code: CheckoutRecoveryCode | undefined, t: (key: string) => string) {
   if (code === "PAYMENT_DECLINED") return t("recoveryPaymentTitle");
   if (code === "STAY_NOT_FOUND") return t("recoveryStayTitle");
+  if (code === "STAY_ALREADY_CHECKED_OUT") return t("recoveryStayTitle");
   return t("recoveryGenericTitle");
 }
 
 function getRecoveryBody(code: CheckoutRecoveryCode | undefined, t: (key: string) => string) {
   if (code === "PAYMENT_DECLINED") return t("recoveryPaymentBody");
   if (code === "STAY_NOT_FOUND") return t("recoveryStayBody");
+  if (code === "STAY_ALREADY_CHECKED_OUT") return t("recoveryStayBody");
   return t("recoveryGenericBody");
 }
 
@@ -52,6 +54,9 @@ export function RecoveryPage() {
   }
 
   const retry = () => {
+    if (code !== "PAYMENT_DECLINED") {
+      clearFlow();
+    }
     navigate(getRecoveryRetryPath(code), { replace: true });
   };
 

@@ -11,7 +11,7 @@
   "cardComingSoonTitle": "Insert card",
   "cardComingSoonBody": "Soon",
   "cardComingSoonCaption": "For payment closeout",
-  "lookupValidationError": "Please provide a valid room number and CPF.",
+  "lookupValidationError": "Please provide a valid room number. CPF is optional.",
   "confirm": "Confirm",
   "home": "Home",
   "stepSummary": "STEP 2 OF 7 - BILL REVIEW",

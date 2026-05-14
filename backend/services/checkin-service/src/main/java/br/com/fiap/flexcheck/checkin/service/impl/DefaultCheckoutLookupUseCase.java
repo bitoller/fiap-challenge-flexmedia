@@ -5,6 +5,7 @@ import br.com.fiap.flexcheck.checkin.repository.StayRepository;
 import br.com.fiap.flexcheck.checkin.service.CheckoutLookupUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutLookupCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckoutStayStateResult;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,16 +18,49 @@ public class DefaultCheckoutLookupUseCase implements CheckoutLookupUseCase {
 
     @Override
     public CheckoutPreviewResult execute(CheckoutLookupCommand command) {
-        return stayRepository.findCheckoutPreview(
+        if (isBlank(command.roomNumber()) && isBlank(command.documentNumber())) {
+            throw new BusinessException(
+                    "STAY_NOT_FOUND",
+                    "Nao encontramos uma estadia ativa com esses dados.",
+                    404
+            );
+        }
+
+        var preview = stayRepository.findCheckoutPreview(
                         command.hotelId(),
                         command.roomNumber(),
                         command.documentType(),
                         command.documentNumber()
                 )
-                .orElseThrow(() -> new BusinessException(
-                        "STAY_NOT_FOUND",
-                        "Nao encontramos uma estadia ativa com esses dados.",
-                        404
-                ));
+                .orElse(null);
+
+        if (preview != null) {
+            return preview;
+        }
+
+        CheckoutStayStateResult stayState = stayRepository.findCheckoutState(
+                command.hotelId(),
+                command.roomNumber(),
+                command.documentType(),
+                command.documentNumber()
+        ).orElse(null);
+
+        if (stayState != null && stayState.stayStatus() != null && stayState.stayStatus().equalsIgnoreCase("CHECKED_OUT")) {
+            throw new BusinessException(
+                    "STAY_ALREADY_CHECKED_OUT",
+                    "Essa estadia ja foi encerrada. Inicie uma nova consulta se precisar revisar outra hospedagem.",
+                    409
+            );
+        }
+
+        throw new BusinessException(
+                "STAY_NOT_FOUND",
+                "Nao encontramos uma estadia ativa com esses dados.",
+                404
+        );
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

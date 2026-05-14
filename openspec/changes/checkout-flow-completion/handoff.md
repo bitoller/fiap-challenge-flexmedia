@@ -4,7 +4,8 @@
 
 - Added a backend active-stay lookup path in `checkin-service`:
   - `POST /api/v1/stays/lookup`
-  - scopes by hotel, room number, and guest document
+  - scopes by hotel, room number, and guest document when present
+  - also works with room-only lookups for kiosk checkout recovery
   - returns stay preview data with itemized charges for the kiosk summary
 - Kept the existing checkout settlement endpoint in `checkin-service` as the source of truth for closing the stay.
 - Added a dedicated `checkout-flow` module in `frontend/kiosk-web` with:
@@ -19,11 +20,11 @@
 
 - `npm run build` passed in `frontend/kiosk-web`
 - `mvn test` passed in `backend/services/checkin-service`
-- The checkout flow compiles and is ready for end-to-end smoke testing against a real active stay
+- The checkout flow compiles and was validated against a real active stay after forcing the live containers to rebuild from the current repository state
 
 ## Current flow
 
-1. Guest enters room number and CPF on the checkout identification screen.
+1. Guest enters room number, CPF, or both on the checkout identification screen.
 2. Frontend resolves the active stay through `POST /api/v1/stays/lookup`.
 3. The bill summary renders the backend charges and stay details.
 4. Guest can ask for reconciliation help or continue.
@@ -36,6 +37,8 @@
 - The receipt email screen is currently a kiosk UI state and does not yet send a real notification.
 - The folio breakdown is backed by the current preview contract and can be enriched later if PMS data becomes available.
 - The concierge/services path remains a placeholder and should be handled in a separate change.
+- The checkout UX no longer relies on placeholder values echoing back the typed room or document in the side cards.
+- If the checkout endpoint ever starts demanding document fields again, the first place to rebuild is the `checkin-service` image.
 
 ## Where to continue
 

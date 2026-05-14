@@ -36,6 +36,12 @@
 - `npm install` passed for `frontend/admin-web`
 - `npm run build` passed for `frontend/admin-web`
 
+## Notes
+
+- The admin portal now depends on the Oracle-backed runtime, not memory-only state, for its operational data.
+- The dashboard and reservation test area are meant to survive logout/login and browser refreshes.
+- If the dashboard ever returns a raw `500`, the first rebuild target is `admin-service`, not the Oracle schema.
+
 ## Resume Here Next
 
 - Improve the identity view if a real backend contract is added later.

@@ -46,6 +46,10 @@ function mapApiErrorToRecoveryCode(error: ApiError): CheckoutRecoveryCode {
     return "STAY_NOT_FOUND";
   }
 
+  if (error.code === "STAY_ALREADY_CHECKED_OUT") {
+    return "STAY_ALREADY_CHECKED_OUT";
+  }
+
   return "CHECKOUT_LOOKUP_FAILED";
 }
 
