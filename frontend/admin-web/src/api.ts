@@ -30,8 +30,13 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || `HTTP ${response.status}`);
+    const raw = await response.text();
+    try {
+      const parsed = JSON.parse(raw) as { message?: string; error?: string; code?: string };
+      throw new Error(parsed.message || parsed.error || `HTTP ${response.status}`);
+    } catch {
+      throw new Error(raw || `HTTP ${response.status}`);
+    }
   }
 
   if (response.status === 204) {

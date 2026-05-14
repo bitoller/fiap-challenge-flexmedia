@@ -136,6 +136,9 @@ public class ProxyController {
         if (path.startsWith("/api/v1/admin")) {
             return adminServiceUrl;
         }
+        if (path.startsWith("/api/v1/hotels")) {
+            return adminServiceUrl;
+        }
         if (path.startsWith("/api/v1/devices")) {
             return deviceServiceUrl;
         }

@@ -112,7 +112,7 @@ export const hotelRepository = {
     const hotelId = getActiveHotelId();
 
     try {
-      const response = await apiGet<any>(buildUrl(API_ENDPOINTS.ADMIN_HOTEL_PROFILE(hotelId)));
+      const response = await apiGet<any>(buildUrl(API_ENDPOINTS.PUBLIC_HOTEL_PROFILE(hotelId)));
       return normalizeHotelProfile(response);
     } catch (error) {
       if (error instanceof TimeoutError || USE_MOCKS) {

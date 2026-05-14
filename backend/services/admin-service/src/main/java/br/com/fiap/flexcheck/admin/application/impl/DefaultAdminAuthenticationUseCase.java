@@ -2,7 +2,7 @@ package br.com.fiap.flexcheck.admin.application.impl;
 
 import br.com.fiap.flexcheck.admin.application.AdminAuthenticationUseCase;
 import br.com.fiap.flexcheck.admin.application.command.AdminLoginCommand;
-import br.com.fiap.flexcheck.admin.infrastructure.repository.InMemoryHotelRepository;
+import br.com.fiap.flexcheck.admin.infrastructure.persistence.OracleHotelRepository;
 import br.com.fiap.flexcheck.admin.infrastructure.session.InMemoryAdminSessionRepository;
 import br.com.fiap.flexcheck.admin.service.result.AdminSessionResult;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,14 +14,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Service
 public class DefaultAdminAuthenticationUseCase implements AdminAuthenticationUseCase {
     private final InMemoryAdminSessionRepository sessionRepository;
-    private final InMemoryHotelRepository hotelRepository;
+    private final OracleHotelRepository hotelRepository;
     private final String adminUsername;
     private final String adminPassword;
     private final String adminName;
 
     public DefaultAdminAuthenticationUseCase(
             InMemoryAdminSessionRepository sessionRepository,
-            InMemoryHotelRepository hotelRepository,
+            OracleHotelRepository hotelRepository,
             @Value("${ADMIN_USERNAME:admin@flexcheck.local}") String adminUsername,
             @Value("${ADMIN_PASSWORD:FlexCheck@2026}") String adminPassword,
             @Value("${ADMIN_NAME:FlexCheck Administrator}") String adminName

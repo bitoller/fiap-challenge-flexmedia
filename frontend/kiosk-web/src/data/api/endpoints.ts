@@ -31,6 +31,9 @@ export const API_ENDPOINTS = {
   ADMIN_HOTELS: '/admin/hotels',
   ADMIN_HOTEL_PROFILE: (hotelId: number | string) => `/admin/hotels/${hotelId}`,
   ADMIN_DASHBOARD: '/admin/dashboard',
+
+  // Public Hotel Branding
+  PUBLIC_HOTEL_PROFILE: (hotelId: number | string) => `/hotels/${hotelId}`,
 } as const;
 
 export const buildUrl = (path: string): string => {

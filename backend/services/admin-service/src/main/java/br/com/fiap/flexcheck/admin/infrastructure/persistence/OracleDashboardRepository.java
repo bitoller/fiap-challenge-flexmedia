@@ -90,7 +90,7 @@ public class OracleDashboardRepository {
                     item.put("resourceId", event.resourceId());
                     item.put("result", event.result());
                     item.put("correlationId", event.correlationId());
-                    return Map.copyOf(item);
+                    return item;
                 })
                 .toList();
 
