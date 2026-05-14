@@ -1,7 +1,8 @@
 services:
   checkin-service:
     build:
-      context: ./backend/services/checkin-service
+      context: ./backend
+      dockerfile: services/checkin-service/Dockerfile
     image: flexcheck/checkin-service:demo
     container_name: flexcheck-checkin-service
     restart: unless-stopped
@@ -44,7 +45,8 @@ services:
 
   api-gateway:
     build:
-      context: ./backend/services/api-gateway
+      context: ./backend
+      dockerfile: services/api-gateway/Dockerfile
     image: flexcheck/api-gateway:demo
     container_name: flexcheck-api-gateway
     restart: unless-stopped
@@ -109,7 +111,8 @@ services:
 
   reservation-service:
     build:
-      context: ./backend/services/reservation-service
+      context: ./backend
+      dockerfile: services/reservation-service/Dockerfile
     image: flexcheck/reservation-service:demo
     container_name: flexcheck-reservation-service
     restart: unless-stopped
@@ -128,7 +131,8 @@ services:
 
   payment-service:
     build:
-      context: ./backend/services/payment-service
+      context: ./backend
+      dockerfile: services/payment-service/Dockerfile
     image: flexcheck/payment-service:demo
     container_name: flexcheck-payment-service
     restart: unless-stopped
@@ -147,7 +151,8 @@ services:
 
   key-service:
     build:
-      context: ./backend/services/key-service
+      context: ./backend
+      dockerfile: services/key-service/Dockerfile
     image: flexcheck/key-service:demo
     container_name: flexcheck-key-service
     restart: unless-stopped
@@ -166,7 +171,8 @@ services:
 
   admin-service:
     build:
-      context: ./backend/services/admin-service
+      context: ./backend
+      dockerfile: services/admin-service/Dockerfile
     image: flexcheck/admin-service:demo
     container_name: flexcheck-admin-service
     restart: unless-stopped
@@ -186,7 +192,8 @@ services:
 
   device-service:
     build:
-      context: ./backend/services/device-service
+      context: ./backend
+      dockerfile: services/device-service/Dockerfile
     image: flexcheck/device-service:demo
     container_name: flexcheck-device-service
     restart: unless-stopped
@@ -199,7 +206,8 @@ services:
 
   identity-service:
     build:
-      context: ./backend/services/identity-service
+      context: ./backend
+      dockerfile: services/identity-service/Dockerfile
     image: flexcheck/identity-service:demo
     container_name: flexcheck-identity-service
     restart: unless-stopped
@@ -212,7 +220,8 @@ services:
 
   biometry-service:
     build:
-      context: ./backend/services/biometry-service
+      context: ./backend
+      dockerfile: services/biometry-service/Dockerfile
     image: flexcheck/biometry-service:demo
     container_name: flexcheck-biometry-service
     restart: unless-stopped
@@ -230,7 +239,8 @@ services:
 
   pms-adapter-service:
     build:
-      context: ./backend/services/pms-adapter-service
+      context: ./backend
+      dockerfile: services/pms-adapter-service/Dockerfile
     image: flexcheck/pms-adapter-service:demo
     container_name: flexcheck-pms-adapter-service
     restart: unless-stopped
@@ -248,7 +258,8 @@ services:
 
   notification-service:
     build:
-      context: ./backend/services/notification-service
+      context: ./backend
+      dockerfile: services/notification-service/Dockerfile
     image: flexcheck/notification-service:demo
     container_name: flexcheck-notification-service
     restart: unless-stopped

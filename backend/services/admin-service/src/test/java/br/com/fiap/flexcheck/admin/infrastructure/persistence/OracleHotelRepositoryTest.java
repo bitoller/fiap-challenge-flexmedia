@@ -21,10 +21,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OracleHotelRepositoryTest {
+public class OracleHotelRepositoryTest {
 
     @Test
-    void findByIdShouldCreateDefaultHotelWhenMissing() {
+    public void findByIdShouldCreateDefaultHotelWhenMissing() {
         JdbcTemplate jdbc = mock(JdbcTemplate.class);
         ObjectMapper objectMapper = new ObjectMapper();
         AtomicBoolean persisted = new AtomicBoolean(false);

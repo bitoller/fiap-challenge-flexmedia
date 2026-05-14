@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("h2")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class CheckinFlowUseCaseTest {
+public class CheckinFlowUseCaseTest {
     @Autowired
     private CreateSessionUseCase createSessionUseCase;
     @Autowired
@@ -74,7 +74,7 @@ class CheckinFlowUseCaseTest {
     private NotificationServiceClient notificationServiceClient;
 
     @Test
-    void shouldCompleteCheckinAndCheckoutThroughUseCases() {
+    public void shouldCompleteCheckinAndCheckoutThroughUseCases() {
         ReservationResult reservationResult = new ReservationResult(
                 1L,
                 1L,

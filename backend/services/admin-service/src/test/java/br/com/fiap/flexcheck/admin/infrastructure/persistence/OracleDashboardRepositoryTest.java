@@ -19,10 +19,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OracleDashboardRepositoryTest {
+public class OracleDashboardRepositoryTest {
 
     @Test
-    void dashboardShouldPreserveNullFieldsInRecentAuditEntries() {
+    public void dashboardShouldPreserveNullFieldsInRecentAuditEntries() {
         JdbcTemplate jdbc = mock(JdbcTemplate.class);
         OracleAuditRepository auditRepository = mock(OracleAuditRepository.class);
 
