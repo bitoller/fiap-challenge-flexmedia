@@ -1,0 +1,11 @@
+flowchart LR
+    Guest["Guest"] --> Kiosk["Kiosk de autoatendimento"]
+    Reception["Reception"] --> Admin["Dashboard administrativo"]
+    Kiosk --> Plataforma["Plataforma FlexCheck hotel"]
+    Admin --> Plataforma
+    Plataforma --> PMS["Sistema PMS"]
+    Plataforma --> Payment["Gateway de Payment"]
+    Plataforma --> Keys["Emissor de Keys"]
+    Plataforma --> Biometry["Validador facial"]
+    Plataforma --> Notificacao["email/WhatsApp"]
+

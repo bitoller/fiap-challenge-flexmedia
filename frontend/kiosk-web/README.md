@@ -1,38 +1,40 @@
 # kiosk-web
 
-Frontend React do totem de autoatendimento do FlexCheck Hotel.
+React frontend for the FlexCheck self-service kiosk.
 
-## Arquitetura
+## Architecture
 
-O frontend foi organizado em camadas para manter o fluxo previsível:
+The app is organized in layers to keep the guest flow predictable:
 
-- `src/domain/`: tipos e regras de validação.
-- `src/data/`: cliente HTTP, endpoints, interceptores, repositórios e mocks.
-- `src/presentation/`: layout, componentes, features e hooks.
-- `src/i18n/`: configuração do `react-i18next` e traduções por namespace.
-- `src/core/`: providers e constantes globais.
-- `src/shared/styles/`: tokens visuais, layout kiosk e customizações do Bootstrap.
+- `src/domain/`: types and validation rules
+- `src/data/`: HTTP client, endpoints, interceptors, repositories, and compatibility fixtures
+- `src/presentation/`: layout, components, features, and hooks
+- `src/i18n/`: `react-i18next` setup and namespaces
+- `src/core/`: global providers and constants
+- `src/shared/styles/`: visual tokens, kiosk layout, and Bootstrap customizations
 
-Veja também [ARCHITECTURE.md](./ARCHITECTURE.md).
+See also [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-## Como rodar
+## Running Locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra:
+Open:
 
 ```text
 http://127.0.0.1:5173
 ```
 
-## Mocks ou API real
+## Canonical Runtime and Compatibility Mode
 
-O frontend tenta a API primeiro e cai para mocks quando houver timeout ou quando os mocks estiverem habilitados.
+The kiosk uses the API as the canonical runtime path.
 
-### Usar API real
+When the backend is unavailable or when compatibility mode is explicitly enabled, the repository layer can still fall back to mock fixtures so the UI remains usable during development.
+
+### Use the real API
 
 ```text
 VITE_USE_MOCKS=false
@@ -40,57 +42,57 @@ VITE_API_URL=http://127.0.0.1:8088/api/v1
 VITE_ACTIVE_HOTEL_ID=1
 ```
 
-### Usar mocks sempre
+### Force compatibility fixtures
 
 ```text
 VITE_USE_MOCKS=true
 VITE_MOCK_SCENARIO=SUCCESS
 ```
 
-### Trocar cenário de mock
+### Mock scenarios
 
 - `SUCCESS`
 - `NOT_FOUND`
 - `INVALID_DOCUMENT`
 - `PAYMENT_DECLINED`
 
-## Variáveis de ambiente
+## Environment Variables
 
-- `VITE_API_URL`: base da API.
-- `VITE_API_TIMEOUT_MS`: timeout em milissegundos.
-- `VITE_USE_MOCKS`: força mocks sem acessar a rede.
-- `VITE_MOCK_SCENARIO`: escolhe qual cenário mock usar.
-- `VITE_DEFAULT_LANGUAGE`: idioma inicial.
-- `VITE_ACTIVE_HOTEL_ID`: hotel usado pelo kiosk para carregar branding e conteúdo.
+- `VITE_API_URL`: API base URL
+- `VITE_API_TIMEOUT_MS`: request timeout in milliseconds
+- `VITE_USE_MOCKS`: forces compatibility fixtures without hitting the network
+- `VITE_MOCK_SCENARIO`: chooses which mock scenario to use
+- `VITE_DEFAULT_LANGUAGE`: initial language
+- `VITE_ACTIVE_HOTEL_ID`: hotel used by the kiosk to load branding and content
 
-## Seleção de hotel
+## Hotel Selection
 
-O kiosk carrega o perfil do hotel por `VITE_ACTIVE_HOTEL_ID`.
+The kiosk loads the hotel profile using `VITE_ACTIVE_HOTEL_ID`.
 
-- O valor padrão é `1`.
-- O frontend consulta `GET /api/v1/admin/hotels/{hotelId}` através do gateway.
-- Se a API ficar indisponível, o kiosk mantém um branding de fallback para não quebrar a tela.
+- The default value is `1`.
+- The frontend calls `GET /api/v1/admin/hotels/{hotelId}` through the gateway.
+- If the API becomes unavailable, the kiosk keeps a fallback brand profile so the screen does not break.
 
-## Idiomas
+## Supported Languages
 
-O kiosk suporta:
+The kiosk supports:
 
-- inglês (`en`)
-- português do Brasil (`pt-BR`)
-- espanhol (`es`)
+- English (`en`)
+- Brazilian Portuguese (`pt-BR`)
+- Spanish (`es`)
 
-As traduções ficam em namespaces:
+Namespaces:
 
 - `common`
 - `home`
 - `errors`
 
-## Fluxos disponíveis
+## Available Flows
 
-- Home com seleção de idioma.
-- Check-in com rota reservada para o fluxo futuro.
-- Check-out com rota reservada para o fluxo futuro.
-- Services com rota reservada para o fluxo futuro.
+- Home with language selection
+- Check-in flow placeholder for the current release
+- Check-out flow placeholder for the current release
+- Services flow placeholder for the current release
 
 ## Build
 
@@ -98,8 +100,8 @@ As traduções ficam em namespaces:
 npm run build
 ```
 
-## Observações
+## Notes
 
-- O layout é otimizado para orientação vertical.
-- Os botões usam áreas de toque grandes.
-- O cliente HTTP injeta `X-Correlation-Id` automaticamente.
+- The layout is optimized for portrait orientation.
+- Touch targets are intentionally large for kiosk hardware.
+- The HTTP client injects `X-Correlation-Id` automatically.

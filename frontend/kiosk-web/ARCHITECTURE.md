@@ -2,12 +2,13 @@
 
 ## Goals
 
-The kiosk frontend is built to be:
+The kiosk frontend is designed to be:
 
 - easy to extend for new guest flows,
-- safe to switch between API and mock data,
-- localized in English, Portuguese-Brazil, and Spanish,
-- readable on a tall, portrait display.
+- stable in the canonical API-backed runtime,
+- compatible with opt-in mock fixtures for development,
+- localized in English, Brazilian Portuguese, and Spanish,
+- readable on a tall portrait display.
 
 ## Layers
 
@@ -34,9 +35,9 @@ It includes:
 - `data/api/interceptors.ts`
 - `data/repositories/checkinRepository.ts`
 - `data/repositories/sessionRepository.ts`
-- fixture-based mocks
+- compatibility fixtures
 
-The repository decides whether to call the API or fall back to mock data.
+The repository decides whether to call the API or use compatibility fixtures.
 
 ### Presentation
 
@@ -58,7 +59,7 @@ Shared application wiring lives here:
 
 ### i18n
 
-Translation setup is isolated in its own folder so new languages and namespaces can be added without touching the rest of the app.
+Translation setup is isolated so new languages and namespaces can be added without touching the rest of the app.
 
 ### Shared styles
 
@@ -70,11 +71,11 @@ Visual tokens and kiosk-specific layout rules live under `shared/styles`.
 2. The hook calls a repository.
 3. The repository calls the API client.
 4. The API client injects headers, enforces timeout, and parses errors.
-5. If needed, the repository falls back to mocks.
+5. If needed, the repository uses compatibility fixtures.
 
 ## Design Notes
 
 - The kiosk is optimized for portrait displays.
-- Touch targets are kept large for public-use hardware.
+- Touch targets are kept large for public hardware.
 - The language preference is persisted to localStorage.
-- Placeholder routes are used until the future flows are implemented.
+- Placeholder routes are kept until the future flows are implemented.

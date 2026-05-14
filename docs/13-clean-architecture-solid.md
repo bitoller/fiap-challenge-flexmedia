@@ -2,7 +2,7 @@
 
 ## 1. Decisao
 
-O `checkin-service` foi reorganizado para seguir Clean Architecture.
+O `checkin-service` foi reorganized para seguir Clean Architecture.
 
 A regra principal adotada:
 
@@ -54,7 +54,7 @@ Responsabilidades:
 - Validar DTOs com Bean Validation.
 - Tratar erros.
 
-Nao deve conter regra de negocio.
+Nao deve conter regra de Business.
 
 ### dto
 
@@ -74,24 +74,24 @@ Responsabilidades:
 
 - Converter DTOs para comandos de service.
 - Converter resultados de service para DTOs de resposta.
-- Isolar mudancas de contrato HTTP das regras de negocio.
+- Isolar mudancas de contrato HTTP das Business Rules.
 
 ### service
 
-Camada de casos de uso.
+Camada de use cases.
 
 Responsabilidades:
 
-- Orquestrar fluxos de negocio.
+- Orquestrar Flows de Business.
 - Usar interfaces de repository.
 - Controlar transacoes.
 - Decidir mensagens de erro de caso de uso.
 
-Casos de uso atuais:
+use cases atuais:
 
 - `CreateSessionUseCase`
-- `AttachReservationUseCase`
-- `SearchReservationUseCase`
+- `AttachreservationUseCase`
+- `SearchreservationUseCase`
 - `ConfirmGuestUseCase`
 - `RegisterConsentsUseCase`
 - `CompleteCheckinUseCase`
@@ -100,21 +100,21 @@ Casos de uso atuais:
 
 ### domain
 
-Centro da regra de negocio.
+Centro da regra de Business.
 
 Responsabilidades:
 
-- Modelos de negocio.
+- Modelos de Business.
 - Politicas de dominio.
-- Excecoes de negocio sem dependencia de framework.
+- Excecoes de Business sem dependency de framework.
 
 Exemplo:
 
-- `Reservation`
+- `reservation`
 - `Guest`
 - `Room`
 - `Stay`
-- `ReservationEligibilityPolicy`
+- `reservationEligibilityPolicy`
 
 ### infrastructure
 
@@ -122,24 +122,24 @@ Camada de detalhes tecnicos.
 
 Responsabilidades:
 
-- Entidades JPA para criacao das tabelas pelo Hibernate.
+- Entidades JPA para criacao das tables pelo Hibernate.
 - JDBC.
 - Oracle/H2.
 - Queries SQL.
-- Implementacao concreta das interfaces de repository.
+- Implementation concreta das interfaces de repository.
 
-Implementacao atual:
+Implementation atual:
 
 - `JdbcFlexcheckRepository`
 - `*JpaEntity` em `infrastructure/persistence/entity`
 
-As entidades JPA ficam na infraestrutura para preservar o dominio limpo. Assim, o banco nasce pelas entidades sem acoplar as regras de negocio ao Hibernate.
+As entidades JPA ficam na infraestrutura para preservationr o dominio limpo. Assim, o banco nasce pelas entidades sem acoplar as Business Rules ao Hibernate.
 
 ## 4. Interfaces de Repository
 
 Os services dependem de interfaces, nao do banco diretamente:
 
-- `ReservationRepository`
+- `reservationRepository`
 - `SessionRepository`
 - `GuestRepository`
 - `ConsentRepository`
@@ -150,21 +150,21 @@ Os services dependem de interfaces, nao do banco diretamente:
 - `AuditRepository`
 - `DashboardRepository`
 
-Isso permite trocar Oracle por mock, outro banco ou API externa sem mudar os casos de uso.
+Isso permite trocar Oracle por mock, outro banco ou API externa sem mudar os use cases.
 
 ## 5. Aplicacao dos Principios SOLID
 
 ### S - Single Responsibility
 
-Cada caso de uso tem uma responsabilidade clara. Exemplo: `CheckoutUseCase` cuida apenas do encerramento da estadia.
+Cada caso de uso tem uma responsabilidade clara. Exemplo: `CheckoutUseCase` cuida apenas do stay checkout.
 
 ### O - Open/Closed
 
-Novas integracoes podem ser adicionadas criando novas implementacoes das interfaces, sem alterar os casos de uso.
+Novas integracoes podem ser adicionadas criando novas implementacoes das interfaces, sem alterar os use cases.
 
 ### L - Liskov Substitution
 
-Qualquer implementacao de repository pode substituir outra, desde que respeite o contrato.
+Qualquer Implementation de repository pode substituir outra, desde que respeite o contrato.
 
 ### I - Interface Segregation
 
@@ -172,11 +172,11 @@ As interfaces foram separadas por capacidade, evitando uma interface gigante par
 
 ### D - Dependency Inversion
 
-Os casos de uso dependem de abstracoes. O JDBC implementa os repositories, mas nao e conhecido pelo dominio.
+Os use cases dependem de abstracoes. O JDBC implementa os repositories, mas nao e conhecido pelo dominio.
 
-## 6. Teste Criado
+## 6. test Criado
 
-Foi criado um teste de fluxo direto nos casos de uso:
+Foi criado um test de Flow direto nos use cases:
 
 ```text
 CheckinFlowUseCaseTest
@@ -184,23 +184,23 @@ CheckinFlowUseCaseTest
 
 Ele valida:
 
-1. Criacao de sessao.
-2. Busca/anexo de reserva.
-3. Confirmacao de dados.
+1. Criacao de Session.
+2. Busca/anexo de reservation.
+3. Confirmation de Data.
 4. Registro de consentimentos.
-5. Check-in.
-6. Emissao de chave.
-7. Check-out.
+5. check-in.
+6. key issuance.
+7. check-out.
 
-Esse teste roda sem servidor web, usando H2 em memoria.
-No perfil de teste, o H2 tambem cria as tabelas pelas entidades JPA e usa `data.sql` apenas para popular dados.
+Esse test roda sem servidor web, usando H2 em memoria.
+No perfil de test, o H2 tambem cria as tables pelas entidades JPA e usa `data.sql` apenas para popular Data.
 
 ## 7. Como Evoluir
 
-Proximos passos mantendo a arquitetura:
+Next steps mantendo a Architecture:
 
 - Separar `reservation-service` real implementando os mesmos conceitos.
-- Criar `payment-service` e trocar a implementacao de `PaymentRepository` por client REST.
-- Criar `key-service` e trocar a implementacao de `KeyRepository` por client REST.
-- Adicionar testes unitarios para `ReservationEligibilityPolicy`.
-- Adicionar testes de casos de erro, como pagamento recusado e documento rejeitado.
+- Criar `payment-service` e trocar a Implementation de `PaymentRepository` por client REST.
+- Criar `key-service` e trocar a Implementation de `KeyRepository` por client REST.
+- Adicionar tests unitarios para `reservationEligibilityPolicy`.
+- Adicionar tests de casos de erro, como Payment recusado e document rejeitado.

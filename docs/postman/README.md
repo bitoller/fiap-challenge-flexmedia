@@ -1,34 +1,34 @@
 # Postman
 
-Collection oficial para testar o MVP do FlexCheck Hotel.
+Official collection for testing the FlexCheck hotel MVP.
 
-## Arquivos
+## Files
 
-- `FlexCheck-Hotel.postman_collection.json`: collection com health checks, busca de reserva, fluxo completo de check-in, checkout e dashboard.
+- `FlexCheck-Hotel.postman_collection.json`: collection with health checks, reservation lookup, full check-in flow, checkout, and dashboard checks.
 
-## Como usar
+## How to Use
 
-1. Importe `FlexCheck-Hotel.postman_collection.json` no Postman.
-2. Suba o `checkin-service`.
-3. Ajuste a variavel `baseUrl` se o backend estiver em outra porta.
-4. Rode a pasta `Check-in Flow` em ordem.
-5. Rode `Checkout` depois que `Complete Check-in` preencher a variavel `stayId`.
+1. Import `FlexCheck-Hotel.postman_collection.json` into Postman.
+2. Start `checkin-service`.
+3. Adjust the `baseUrl` variable if the backend is running on a different port.
+4. Run the `Check-in Flow` folder in order.
+5. Run `Checkout` after `Complete Check-in` populates the `stayId` variable.
 
-Variaveis principais:
+Main variables:
 
-- `baseUrl`: API direta do `checkin-service`, padrao `http://127.0.0.1:8081/api/v1` na demo Docker.
-- `gatewayUrl`: gateway opcional, padrao `http://127.0.0.1:8088`.
-- `reservationCode`: reserva de demonstracao, padrao `RSV-2026-0001`.
-- `sessionId`, `guestId`, `stayId`: preenchidas automaticamente pelos testes da collection.
+- `baseUrl`: direct API for `checkin-service`, default `http://127.0.0.1:8081/api/v1` in the Docker demo.
+- `gatewayUrl`: optional gateway, default `http://127.0.0.1:8088`.
+- `reservationCode`: demo reservation, default `RSV-2026-0001`.
+- `sessionId`, `guestId`, `stayId`: populated automatically by the collection tests.
 
-Se estiver rodando sem Docker e a porta `8080` estiver ocupada, suba o backend com:
+If you are running without Docker and port `8080` is already in use, start the backend with:
 
 ```bash
 cd backend/services/checkin-service
 SERVER_PORT=8081 mvn spring-boot:run
 ```
 
-Depois altere `baseUrl` para:
+Then set `baseUrl` to:
 
 ```text
 http://127.0.0.1:8081/api/v1

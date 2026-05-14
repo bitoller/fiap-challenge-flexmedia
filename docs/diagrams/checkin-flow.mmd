@@ -1,0 +1,19 @@
+flowchart TD
+    A["Inicio no Kiosk"] --> B["Criar Session"]
+    B --> C["Buscar reservation"]
+    C --> D{"reservation elegivel?"}
+    D -- "Nao" --> E["Encaminhar Reception"]
+    D -- "Sim" --> F["Confirmar Data"]
+    F --> G["Aceitar terms e LGPD"]
+    G --> H["Validar document"]
+    H --> I{"document aprovado?"}
+    I -- "Nao" --> E
+    I -- "Sim" --> J["Biometry opcional"]
+    J --> K["Payment ou pre-authorization"]
+    K --> L{"Payment aprovado?"}
+    L -- "Nao" --> E
+    L -- "Sim" --> M["Atribuir quarto"]
+    M --> N["Concluir check-in"]
+    N --> O["Emitir Key"]
+    O --> P["Mostrar comprovante"]
+

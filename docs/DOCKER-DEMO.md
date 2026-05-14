@@ -1,11 +1,11 @@
 # Demo Docker
 
-Guia padronizado para subir a demo completa do FlexCheck Hotel.
+Guia padronizado para subir a demo completa do FlexCheck hotel.
 
-## Pre-requisitos
+## Pre-Requirements
 
 - Docker Desktop instalado e aberto.
-- `.env` configurado na raiz com acesso ao Oracle FIAP.
+- `.env` configurado na raiz com access ao Oracle FIAP.
 - Internet ativa para baixar imagens e dependencias no primeiro build.
 
 Verifique o Docker:
@@ -18,7 +18,7 @@ Se aparecer erro de `docker.sock`, abra o Docker Desktop e espere finalizar a in
 
 ## Configurar Ambiente
 
-Na raiz do projeto:
+Na raiz do Project:
 
 ```bash
 cp .env.demo.example .env
@@ -36,7 +36,7 @@ ORACLE_PASSWORD=060892
 docker compose up --build
 ```
 
-Servicos iniciados:
+services iniciados:
 
 - `checkin-service`
 - `api-gateway`
@@ -44,7 +44,7 @@ Servicos iniciados:
 
 ## URLs
 
-- Totem: `http://127.0.0.1:3000`
+- Kiosk: `http://127.0.0.1:3000`
 - Gateway health: `http://127.0.0.1:8088/gateway/health`
 - API health: `http://127.0.0.1:8081/api/v1/health`
 
@@ -56,7 +56,7 @@ docker compose down
 
 ## Porta 8080 Ocupada
 
-A demo publica o `checkin-service` em `8081` por padrao para evitar conflito com processos locais. Dentro do Docker, o servico continua em `8080`.
+A demo publica o `checkin-service` em `8081` por padrao para evitar conflito com processos locais. Dentro do Docker, o Service continua em `8080`.
 
 Se precisar trocar:
 

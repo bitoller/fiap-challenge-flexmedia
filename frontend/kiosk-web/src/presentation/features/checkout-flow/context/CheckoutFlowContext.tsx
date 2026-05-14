@@ -8,7 +8,7 @@ import {
   CheckoutRecoveryCode,
 } from "../../../../domain/types";
 import { KIOSK_CONFIG } from "../../../../core/constants";
-import { checkoutFlowRepository } from "../../../../data/repositories/checkoutFlowRepository";
+import { checkoutRepository } from "../../../../data/repositories/checkoutRepository";
 
 interface RecoveryState {
   code: CheckoutRecoveryCode;
@@ -101,7 +101,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
     setIdentification({ roomNumber, documentNumber });
 
     try {
-      const preview = await checkoutFlowRepository.lookupStay(
+      const preview = await checkoutRepository.lookupStay(
         KIOSK_CONFIG.ACTIVE_HOTEL_ID,
         roomNumber,
         "CPF",
@@ -138,7 +138,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
     setError(null);
 
     try {
-      const result = await checkoutFlowRepository.completeCheckout(stayPreview.stayId, paymentMethod);
+      const result = await checkoutRepository.completeCheckout(stayPreview.stayId, paymentMethod);
       setCheckoutResult(result);
       setFlowStepState("receipt");
       return result;

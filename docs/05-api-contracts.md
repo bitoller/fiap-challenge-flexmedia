@@ -1,24 +1,24 @@
-# Contratos de API
+# API Contracts
 
-## 1. Padroes Gerais
+## 1. General Conventions
 
-Base path sugerido:
+Base path:
 
 - `/api/v1`
 
-Cabecalhos:
+Headers:
 
-- `Authorization: Bearer <token>` para painel administrativo.
-- `X-Kiosk-Token: <token>` para totem.
-- `X-Correlation-Id: <uuid>` para rastreabilidade.
-- `Idempotency-Key: <uuid>` em operacoes criticas.
+- `Authorization: Bearer <token>` for administrative access
+- `X-Kiosk-Token: <token>` for kiosk requests
+- `X-Correlation-Id: <uuid>` for traceability
+- `Idempotency-Key: <uuid>` for operations that must not be processed twice
 
-Formato de erro:
+Standard error payload:
 
 ```json
 {
   "code": "RESERVATION_NOT_ELIGIBLE",
-  "message": "A reserva ainda nao esta liberada para check-in.",
+  "message": "The reservation is not yet eligible for check-in.",
   "details": {
     "reason": "CHECKIN_WINDOW_NOT_OPEN"
   },
@@ -28,7 +28,7 @@ Formato de erro:
 
 ## 2. Check-in Service
 
-### Criar sessao
+### Create session
 
 `POST /api/v1/checkin-sessions`
 
@@ -52,7 +52,7 @@ Response:
 }
 ```
 
-### Associar reserva a sessao
+### Attach reservation to session
 
 `POST /api/v1/checkin-sessions/{sessionId}/reservation`
 
@@ -83,7 +83,7 @@ Response:
 }
 ```
 
-### Confirmar dados
+### Confirm guest data
 
 `POST /api/v1/checkin-sessions/{sessionId}/guest-confirmation`
 
@@ -101,7 +101,7 @@ Request:
 }
 ```
 
-### Registrar consentimentos
+### Register consents
 
 `POST /api/v1/checkin-sessions/{sessionId}/consents`
 
@@ -124,7 +124,7 @@ Request:
 }
 ```
 
-### Concluir check-in
+### Complete check-in
 
 `POST /api/v1/checkin-sessions/{sessionId}/complete-checkin`
 
@@ -153,7 +153,7 @@ Response:
 }
 ```
 
-### Concluir check-out
+### Complete check-out
 
 `POST /api/v1/stays/{stayId}/checkout`
 
@@ -179,7 +179,7 @@ Response:
 
 ## 3. Reservation Service
 
-### Buscar reserva
+### Search reservation
 
 `GET /api/v1/reservations/search?type=RESERVATION_CODE&value=RSV-2026-0001`
 
@@ -200,7 +200,7 @@ Response:
 }
 ```
 
-### Validar elegibilidade
+### Validate eligibility
 
 `POST /api/v1/reservations/{reservationId}/eligibility`
 
@@ -216,7 +216,7 @@ Response:
 
 ## 4. Payment Service
 
-### Pre-autorizar pagamento
+### Pre-authorize payment
 
 `POST /api/v1/payments/pre-authorizations`
 
@@ -242,7 +242,7 @@ Response:
 
 ## 5. Key Service
 
-### Emitir chave
+### Issue key
 
 `POST /api/v1/keys`
 
@@ -260,62 +260,61 @@ Response:
 
 ```json
 {
-  "keyId": 7001,
+  "keyId": 3001,
   "status": "ACTIVE",
-  "keyValue": "KEY-5001-1204",
-  "expiresAt": "2026-05-13T12:00:00"
+  "value": "KEY-5001-1204"
+}
+```
+
+### Revoke key
+
+`DELETE /api/v1/keys/{keyId}`
+
+Response:
+
+```json
+{
+  "keyId": 3001,
+  "status": "REVOKED"
 }
 ```
 
 ## 6. Device Service
 
-### Heartbeat do totem
+### Register heartbeat
 
-`POST /api/v1/devices/{kioskId}/heartbeat`
+`POST /api/v1/devices/{deviceId}/heartbeat`
 
 Request:
 
 ```json
 {
   "status": "ONLINE",
-  "components": {
-    "camera": "OK",
-    "printer": "OK",
-    "keyEncoder": "OK"
-  }
+  "lastSeenAt": "2026-05-11T18:30:00"
 }
 ```
 
-## 7. Eventos de Dominio
-
-Eventos recomendados:
-
-- `ReservationSynchronized`
-- `CheckinSessionStarted`
-- `GuestDataConfirmed`
-- `ConsentRegistered`
-- `DocumentVerificationCompleted`
-- `BiometryVerificationCompleted`
-- `PaymentAuthorized`
-- `CheckinCompleted`
-- `KeyIssued`
-- `CheckoutCompleted`
-- `PmsSyncFailed`
-- `KioskDeviceFailed`
-
-Exemplo:
+Response:
 
 ```json
 {
-  "eventType": "CheckinCompleted",
-  "eventVersion": 1,
-  "occurredAt": "2026-05-11T18:10:00",
-  "correlationId": "3b2a7e8c-4d9a-4e13-9c88-3d3f1d6f0c11",
-  "payload": {
-    "reservationId": 10,
-    "stayId": 5001,
-    "kioskId": 1
-  }
+  "deviceId": 1,
+  "status": "ONLINE"
 }
 ```
 
+## 7. Domain Events
+
+Services emit domain events for operational visibility and auditability. The exact transport may vary, but the event shape should remain stable.
+
+Suggested event example:
+
+```json
+{
+  "eventType": "CHECKIN_COMPLETED",
+  "occurredAt": "2026-05-11T18:30:00",
+  "correlationId": "3b2a7e8c-4d9a-4e13-9c88-3d3f1d6f0c11",
+  "hotelId": 1,
+  "reservationCode": "RSV-2026-0001"
+}
+```

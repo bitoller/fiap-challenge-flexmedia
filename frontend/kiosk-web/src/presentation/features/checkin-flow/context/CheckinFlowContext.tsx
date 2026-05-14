@@ -14,7 +14,6 @@ import {
   GuestContactDraft,
 } from "../../../../domain/types";
 import { checkinRepository } from "../../../../data/repositories/checkinRepository";
-import { checkinFlowRepository } from "../../../../data/repositories/checkinFlowRepository";
 import { sessionRepository } from "../../../../data/repositories/sessionRepository";
 
 interface RecoveryState {
@@ -147,14 +146,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       setRecoveryState(null);
 
       try {
-        const createdSession = await checkinFlowRepository.createSession(language);
+        const createdSession = await checkinRepository.createSession("CHECKIN", language);
         sessionRepository.setCurrentSession(createdSession);
         setSession(createdSession);
 
-        const attachedSession = await checkinFlowRepository.attachReservation(
+        const attachedSession = await checkinRepository.attachReservation(
           createdSession.sessionId,
-          searchType,
-          value
+          value,
+          searchType
         );
 
         sessionRepository.setCurrentSession(attachedSession);

@@ -202,8 +202,4 @@ export const checkinRepository = {
       throw error;
     }
   },
-
-  async searchReservations(type: string, value: string): Promise<Reservation[]> {
-    return this.searchReservation(type, value);
-  },
 };
