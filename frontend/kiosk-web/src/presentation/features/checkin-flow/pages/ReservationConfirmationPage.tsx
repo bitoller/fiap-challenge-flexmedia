@@ -15,10 +15,30 @@ function formatDate(date: string, locale: string) {
 }
 
 function formatCurrency(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
+  const parts = new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
-  }).format(amount);
+  }).formatToParts(amount);
+
+  if (locale.startsWith("en")) {
+    const currencyIndex = parts.findIndex((part) => part.type === "currency");
+    const integerIndex = parts.findIndex((part) => part.type === "integer");
+
+    if (currencyIndex !== -1 && integerIndex !== -1 && currencyIndex < integerIndex) {
+      const formatted: string[] = [];
+
+      parts.forEach((part, index) => {
+        formatted.push(part.value);
+        if (index === currencyIndex) {
+          formatted.push("\u00A0");
+        }
+      });
+
+      return formatted.join("");
+    }
+  }
+
+  return parts.map((part) => part.value).join("");
 }
 
 function getStayNights(arrivalDate: string, departureDate: string) {

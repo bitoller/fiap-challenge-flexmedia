@@ -13,6 +13,7 @@
 - The continue action is aligned to the same visual width as the reservation total card, keeping the screen balanced in portrait mode.
 - The summary screen was further tightened with wider fixed kiosk columns and additional reserved space for localized text so EN, PT, and ES keep a stable rhythm without the cards resizing against each other.
 - The action area now keeps the separator visually tied to the total card boundary instead of leaving a dark line under the summary card, and the Back / Continue actions remain anchored to the outer edges in landscape while portrait uses the same edge-aligned row behavior instead of stacking.
+- The reservation total formatting preserves the expected currency spacing in English so the value reads consistently across locales without altering the card layout.
 
 ## Validation
 - `npm run build` completed successfully for `frontend/kiosk-web`.
