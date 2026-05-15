@@ -97,6 +97,7 @@ export function IdentificationPage() {
   const searchType = buildSearchType(method);
   const normalizedValue = useMemo(() => buildSearchValue(method, value), [method, value]);
   const displayValue = useMemo(() => formatDisplayValue(method, value), [method, value]);
+  const isQrMode = method === "qr-code";
   const digits = stripDigits(value);
   const isValid =
     method === "reservation-code"
@@ -223,10 +224,10 @@ export function IdentificationPage() {
             />
           </div>
 
-          <div className="checkin-identification__entry">
-            {method === "qr-code" ? (
+          <div className={`checkin-identification__entry ${isQrMode ? "is-qr" : "is-lookup"}`.trim()}>
+            {isQrMode ? (
               <QrScannerPanel
-                active={method === "qr-code"}
+                active={isQrMode}
                 onTokenDetected={handleQrToken}
                 onFallback={handleQrFallback}
               />

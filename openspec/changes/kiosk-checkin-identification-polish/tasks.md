@@ -18,5 +18,5 @@
 ## 4. Validation
 
 - [x] 4.1 Build the kiosk web app and confirm the identification screen still renders in portrait-oriented kiosk dimensions.
-- [ ] 4.2 Verify that CPF, reservation number, and QR code flows still behave exactly as before.
+- [x] 4.2 Verify that CPF, reservation number, and QR code flows still behave exactly as before.
 - [x] 4.3 Confirm that header, footer, and the broader check-in routing remain unchanged.
