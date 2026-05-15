@@ -66,6 +66,10 @@ function buildInitialGuestContact(
 }
 
 function mapApiErrorToRecoveryCode(error: ApiError): CheckinRecoveryCode {
+  if (error.code === "RESERVATION_NOT_ELIGIBLE") {
+    return "RESERVATION_NOT_ELIGIBLE";
+  }
+
   if (error.code === "PAYMENT_DECLINED") {
     return "PAYMENT_DECLINED";
   }

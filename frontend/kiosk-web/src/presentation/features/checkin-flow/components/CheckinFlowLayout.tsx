@@ -1,34 +1,17 @@
 import { ReactNode } from "react";
-import { CheckinBottomNavKey } from "../../../../domain/types";
-import { FlowBottomNav } from "./FlowBottomNav";
-import { FlowTopBar } from "./FlowTopBar";
-
-interface BottomNavItem {
-  key: CheckinBottomNavKey;
-  label: string;
-  icon: "home" | "assistant" | "emergency";
-  active?: boolean;
-  onClick?: () => void;
-}
+import { KioskLayout } from "../../../components/layouts/KioskLayout";
 
 interface CheckinFlowLayoutProps {
   children: ReactNode;
-  topRightContent: ReactNode;
-  bottomItems: BottomNavItem[];
+  topRightContent?: ReactNode;
+  bottomItems?: Array<unknown>;
   className?: string;
 }
 
-export function CheckinFlowLayout({
-  children,
-  topRightContent,
-  bottomItems,
-  className = "",
-}: CheckinFlowLayoutProps) {
+export function CheckinFlowLayout({ children }: CheckinFlowLayoutProps) {
   return (
-    <div className={`checkin-layout ${className}`.trim()}>
-      <FlowTopBar rightContent={topRightContent} />
-      <main className="checkin-layout__main">{children}</main>
-      <FlowBottomNav items={bottomItems} />
-    </div>
+    <KioskLayout>
+      <section className="checkin-layout__main">{children}</section>
+    </KioskLayout>
   );
 }

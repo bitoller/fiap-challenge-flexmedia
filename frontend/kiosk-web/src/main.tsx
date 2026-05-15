@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import "./shared/styles/variables.css";
 import "./shared/styles/layout.css";
@@ -9,9 +8,7 @@ import { Providers } from "./core/providers";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Providers>
-      <App />
-    </Providers>
-  </React.StrictMode>
+  <Providers>
+    <App />
+  </Providers>
 );

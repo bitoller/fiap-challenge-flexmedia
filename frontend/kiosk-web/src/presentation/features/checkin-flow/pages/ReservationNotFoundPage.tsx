@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { CheckinSearchType } from "../../../../domain/types";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
@@ -8,6 +9,7 @@ import { FlowStepHeader } from "../components/FlowStepHeader";
 interface ReservationNotFoundState {
   code?: string;
   message?: string;
+  searchType?: CheckinSearchType;
 }
 
 function ErrorRightContent() {
@@ -30,6 +32,34 @@ function isForbiddenMessage(message: string | undefined) {
   return message.toLowerCase() === "forbidden" || message.toLowerCase() === "access denied";
 }
 
+function getNotFoundTitle(searchType: CheckinSearchType | undefined, t: (key: string) => string) {
+  if (searchType === "QR_TOKEN") {
+    return t("qrNotFoundTitle");
+  }
+
+  return t("notFoundTitle");
+}
+
+function getNotFoundBody(
+  searchType: CheckinSearchType | undefined,
+  message: string | undefined,
+  t: (key: string) => string
+) {
+  if (searchType === "QR_TOKEN") {
+    return message && !isForbiddenMessage(message) ? message : t("qrNotFoundBody");
+  }
+
+  if (searchType === "CPF") {
+    return message && !isForbiddenMessage(message) ? message : t("notFoundCpfBody");
+  }
+
+  if (searchType === "RESERVATION_CODE") {
+    return message && !isForbiddenMessage(message) ? message : t("notFoundReservationBody");
+  }
+
+  return message && !isForbiddenMessage(message) ? message : t("genericLookupBody");
+}
+
 export function ReservationNotFoundPage() {
   const { t } = useTranslation("checkin");
   const navigate = useNavigate();
@@ -38,6 +68,7 @@ export function ReservationNotFoundPage() {
   const state = (location.state ?? {}) as ReservationNotFoundState;
   const currentError = error ?? (state.code || state.message ? { code: state.code ?? "", message: state.message ?? "" } : null);
   const isNotFound = currentError?.code === "RESERVATION_NOT_FOUND" || !currentError?.code;
+  const title = getNotFoundTitle(state.searchType, t);
 
   useEffect(() => {
     if (!currentError) {
@@ -46,7 +77,7 @@ export function ReservationNotFoundPage() {
   }, [currentError, navigate]);
 
   const bodyCopy = isNotFound
-    ? t("notFoundBody")
+    ? getNotFoundBody(state.searchType, currentError?.message, t)
     : isForbiddenMessage(currentError?.message)
       ? t("genericLookupBody")
       : currentError?.message || t("genericLookupBody");
@@ -56,7 +87,7 @@ export function ReservationNotFoundPage() {
     navigate("/checkin", { replace: true });
   };
 
-  const goReception = () => {
+  const goHome = () => {
     clearFlow();
     navigate("/", { replace: true });
   };
@@ -79,7 +110,7 @@ export function ReservationNotFoundPage() {
         },
       ]}
     >
-      <section className="checkin-not-found" aria-label={t("notFoundTitle")}>
+      <section className="checkin-not-found" aria-label={title}>
         <div className="checkin-not-found__icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="6.2" />
@@ -88,7 +119,7 @@ export function ReservationNotFoundPage() {
           </svg>
         </div>
 
-        <FlowStepHeader step={t("stepRecovery")} title={t("notFoundTitle")} subtitle={bodyCopy} />
+        <FlowStepHeader step={t("stepRecovery")} title={title} subtitle={bodyCopy} />
 
         <div className="checkin-not-found__actions">
           <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={retry}>
@@ -101,7 +132,7 @@ export function ReservationNotFoundPage() {
             <span>{t("retryLookup")}</span>
           </button>
 
-          <button type="button" className="checkin-action-button checkin-action-button--secondary" onClick={goReception}>
+          <button type="button" className="checkin-action-button checkin-action-button--secondary" onClick={goHome}>
             <span className="checkin-action-button__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M7 13a5 5 0 0 1 10 0v4H7v-4Z" />
@@ -109,7 +140,7 @@ export function ReservationNotFoundPage() {
                 <path d="M9.5 8.5h5" />
               </svg>
             </span>
-            <span>{t("goReception")}</span>
+            <span>{t("backToHome")}</span>
           </button>
         </div>
       </section>

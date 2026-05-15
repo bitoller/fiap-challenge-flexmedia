@@ -16,6 +16,7 @@ function getRecoveryTitle(code: CheckinRecoveryCode | undefined, t: (key: string
   if (code === "PAYMENT_DECLINED") return t("recoveryPaymentTitle");
   if (code === "BIOMETRY_REJECTED") return t("recoveryBiometryTitle");
   if (code === "DOCUMENT_REJECTED") return t("recoveryDocumentTitle");
+  if (code === "RESERVATION_NOT_ELIGIBLE") return t("recoveryReservationTitle");
   return t("recoveryGenericTitle");
 }
 
@@ -23,12 +24,14 @@ function getRecoveryBody(code: CheckinRecoveryCode | undefined, t: (key: string)
   if (code === "PAYMENT_DECLINED") return t("recoveryPaymentBody");
   if (code === "BIOMETRY_REJECTED") return t("recoveryBiometryBody");
   if (code === "DOCUMENT_REJECTED") return t("recoveryDocumentBody");
+  if (code === "RESERVATION_NOT_ELIGIBLE") return t("recoveryReservationBody");
   return t("recoveryGenericBody");
 }
 
 function getRecoveryRetryPath(code: CheckinRecoveryCode | undefined) {
   if (code === "PAYMENT_DECLINED") return "/checkin/payment";
   if (code === "BIOMETRY_REJECTED" || code === "DOCUMENT_REJECTED") return "/checkin/contact";
+  if (code === "RESERVATION_NOT_ELIGIBLE") return "/checkin";
   return "/checkin";
 }
 
@@ -97,7 +100,7 @@ export function RecoveryPage() {
             {t("retryLookup")}
           </Button>
           <Button variant="secondary" size="lg" onClick={goHome}>
-            {t("goReception")}
+            {t("backToHome")}
           </Button>
         </div>
       </section>

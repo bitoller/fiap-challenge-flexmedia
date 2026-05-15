@@ -1,6 +1,6 @@
-export type CheckinSearchType = "CPF" | "RESERVATION_CODE";
+export type CheckinSearchType = "CPF" | "RESERVATION_CODE" | "QR_TOKEN";
 
-export type CheckinMethod = "cpf" | "reservation-code" | "qr-code" | "card";
+export type CheckinMethod = "cpf" | "reservation-code" | "qr-code";
 
 export type CheckinBottomNavKey = "home" | "assistant" | "emergency";
 
@@ -15,6 +15,7 @@ export type CheckinFlowStep =
 
 export type CheckinRecoveryCode =
   | "RESERVATION_NOT_FOUND"
+  | "RESERVATION_NOT_ELIGIBLE"
   | "DOCUMENT_REJECTED"
   | "BIOMETRY_REJECTED"
   | "PAYMENT_DECLINED";

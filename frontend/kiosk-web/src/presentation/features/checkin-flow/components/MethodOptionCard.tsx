@@ -28,8 +28,10 @@ export function MethodOptionCard({
       <span className="checkin-method-card__icon" aria-hidden="true">
         {icon}
       </span>
-      <span className="checkin-method-card__title">{title}</span>
-      {subtitle ? <span className="checkin-method-card__subtitle">{subtitle}</span> : null}
+      <span className="checkin-method-card__copy">
+        <span className="checkin-method-card__title">{title}</span>
+        {subtitle ? <span className="checkin-method-card__subtitle">{subtitle}</span> : null}
+      </span>
     </button>
   );
 }

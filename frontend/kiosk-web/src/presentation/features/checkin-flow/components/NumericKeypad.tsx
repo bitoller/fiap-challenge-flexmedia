@@ -1,3 +1,5 @@
+import { Check, Delete } from "lucide-react";
+
 interface NumericKeypadProps {
   onDigit: (digit: string) => void;
   onBackspace: () => void;
@@ -30,17 +32,15 @@ export function NumericKeypad({
           {digit}
         </button>
       ))}
-      <button type="button" className="checkin-keypad__key checkin-keypad__key--soft" onClick={onBackspace} aria-label="Delete">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M9 6h8l4 6-4 6H9L3 12l6-6Zm1.7 4.2L8.4 13l2.3 2.8m0-5.6L8.4 11m2.3 1.2 3.1-3.1"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+      <button
+        type="button"
+        className="checkin-keypad__key checkin-keypad__key--soft"
+        onClick={onBackspace}
+        aria-label="Delete entry"
+      >
+        <span className="checkin-keypad__icon" aria-hidden="true">
+          <Delete />
+        </span>
       </button>
       <button type="button" className="checkin-keypad__key" onClick={() => onDigit("0")}>
         0
@@ -51,16 +51,9 @@ export function NumericKeypad({
         onClick={onConfirm}
         aria-label="Confirm"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M7.5 12.1l3.1 3.1 6-6.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <span className="checkin-keypad__icon" aria-hidden="true">
+          <Check />
+        </span>
       </button>
     </div>
   );

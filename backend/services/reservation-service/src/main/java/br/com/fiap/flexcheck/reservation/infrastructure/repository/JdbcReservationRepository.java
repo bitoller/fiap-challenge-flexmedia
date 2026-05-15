@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +26,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> searchReservation(Long kioskId, Long hotelId, String searchType, String value) {
         String normalizedType = searchType == null ? "" : searchType.toUpperCase();
+        String searchValue = value == null ? "" : value.trim();
+        String searchDigits = searchValue.replaceAll("\\D", "");
         String where = switch (normalizedType) {
             case "CPF", "DOCUMENT", "PASSPORT" -> "g.document_number = ?";
             case "EMAIL" -> "LOWER(g.email) = LOWER(?)";
+            case "QR_TOKEN" -> "(UPPER(r.reservation_code) = UPPER(?) OR REGEXP_REPLACE(UPPER(r.reservation_code), '[^0-9]', '') = ?)";
             default -> "UPPER(r.reservation_code) = UPPER(?)";
         };
 
@@ -66,19 +70,23 @@ public class JdbcReservationRepository implements ReservationRepository {
                  FETCH FIRST 1 ROWS ONLY
                 """.formatted(where, kioskClause, hotelClause);
 
-        if (kioskId != null && hotelId != null) {
-            return jdbc.query(sql, reservationRowMapper, value, kioskId, hotelId).stream().findFirst();
+        List<Object> args = new ArrayList<>();
+        if (normalizedType.equals("QR_TOKEN")) {
+            args.add(searchValue);
+            args.add(searchDigits);
+        } else {
+            args.add(value);
         }
 
         if (kioskId != null) {
-            return jdbc.query(sql, reservationRowMapper, value, kioskId).stream().findFirst();
+            args.add(kioskId);
         }
 
         if (hotelId != null) {
-            return jdbc.query(sql, reservationRowMapper, value, hotelId).stream().findFirst();
+            args.add(hotelId);
         }
 
-        List<Reservation> results = jdbc.query(sql, reservationRowMapper, value);
+        List<Reservation> results = jdbc.query(sql, reservationRowMapper, args.toArray());
         return results.stream().findFirst();
     }
 
