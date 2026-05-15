@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { BadgeCheck } from "lucide-react";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
@@ -144,12 +145,18 @@ export function ReservationConfirmationPage() {
           </article>
 
           <aside className="checkin-confirmation__aside">
-            <div className="checkin-confirmation__image-card">
-              <div className="checkin-confirmation__image-overlay" />
-              <div className="checkin-confirmation__image-copy">
+            <div className="checkin-confirmation__summary-card" aria-label={t("summaryVisualAriaLabel")}>
+              <div className="checkin-confirmation__summary-card-badge" aria-hidden="true">
+                <BadgeCheck />
+              </div>
+              <p className="checkin-confirmation__summary-card-eyebrow">{t("summaryVisualEyebrow")}</p>
+              <h3 className="checkin-confirmation__summary-card-title">{t("summaryVisualTitle")}</h3>
+              <p className="checkin-confirmation__summary-card-copy">{t("summaryVisualBody")}</p>
+              <div className="checkin-confirmation__summary-card-stat">
                 <span>{t("durationLabel")}</span>
                 <strong>{t("nightsValue", { count: nights })}</strong>
               </div>
+              <div className="checkin-confirmation__summary-card-chip">{t("summaryVisualChip")}</div>
             </div>
 
             <div className="checkin-confirmation__total-card">
