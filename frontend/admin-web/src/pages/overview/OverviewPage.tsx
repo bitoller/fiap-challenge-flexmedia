@@ -65,11 +65,11 @@ function OverviewPage({
 
       <section className="admin-overview-layout">
         <article className="admin-card admin-card--chart">
-            <div className="admin-card__head">
-              <div>
+          <div className="admin-card__head">
+            <div>
               <h2>{trafficAndDemandLabel}</h2>
               <p className="admin-copy">{trafficAndDemandSubtitle}</p>
-              </div>
+            </div>
             <div className="admin-card__actions">
               <button className="admin-secondary-button" type="button" onClick={onRefresh}>
                 {exportDataLabel}

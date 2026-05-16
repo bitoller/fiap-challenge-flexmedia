@@ -1,12 +1,19 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { adminApi } from "./api";
 import type { AdminSession, AuditEvent, DashboardResult, HotelProfile, HotelSummary, ReservationSummary } from "./types";
-import type { Language, ViewKey } from "./admin/types";
+import type { Language, ReservationFormState, ViewKey } from "./admin/types";
 import { COPY } from "./admin/copy";
-import { formatCurrency } from "./admin/dashboard";
 import AdminSidebar from "./components/AdminSidebar";
 import OverviewPage from "./pages/overview/OverviewPage";
-import PlaceholderPage from "./pages/placeholder/PlaceholderPage";
+import ReservationsPage from "./pages/reservations/ReservationsPage";
+import BrandingPage from "./pages/branding/BrandingPage";
+import DevicesPage from "./pages/devices/DevicesPage";
+import AuditPage from "./pages/audit/AuditPage";
+import IdentityPage from "./pages/identity/IdentityPage";
+
+function createAvailableRoomNumber() {
+  return `9${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 10)}`;
+}
 
 function App() {
   const [language, setLanguage] = useState<Language>("en");
@@ -27,9 +34,9 @@ function App() {
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [reservationForm, setReservationForm] = useState({
+  const [reservationForm, setReservationForm] = useState<ReservationFormState>({
     hotelName: "",
-    roomNumber: "2201",
+    roomNumber: createAvailableRoomNumber(),
     roomType: "DELUXE",
     arrivalDate: new Date().toISOString().slice(0, 10),
     departureDate: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10),
@@ -204,6 +211,11 @@ function App() {
         reservationCode: reservationForm.reservationCode || undefined,
       });
       setReservations((current) => [created, ...current]);
+      setReservationForm((current) => ({
+        ...current,
+        roomNumber: createAvailableRoomNumber(),
+        reservationCode: "",
+      }));
       setMessage(`Reservation ${created.code} created.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Failed to create reservation.");
@@ -212,6 +224,10 @@ function App() {
 
   const deleteReservation = async (reservationId: number) => {
     if (!selectedHotelId) {
+      return;
+    }
+    const shouldDelete = window.confirm("Do you really want to delete this reservation?");
+    if (!shouldDelete) {
       return;
     }
     try {
@@ -330,111 +346,37 @@ function App() {
         ) : null}
 
         {selectedView === "reservations" ? (
-          <section className="admin-panel">
-            <div className="admin-card">
-              <h2>{t.testArea}</h2>
-              <p className="admin-copy">{t.testHelp}</p>
-              <div className="admin-form-grid">
-                <input value={reservationForm.hotelName} onChange={(event) => setReservationForm((current) => ({ ...current, hotelName: event.target.value }))} placeholder="Hotel name" />
-                <input value={reservationForm.roomNumber} onChange={(event) => setReservationForm((current) => ({ ...current, roomNumber: event.target.value }))} placeholder="Room number" />
-                <input value={reservationForm.roomType} onChange={(event) => setReservationForm((current) => ({ ...current, roomType: event.target.value }))} placeholder="Room type" />
-                <input value={reservationForm.reservationCode} onChange={(event) => setReservationForm((current) => ({ ...current, reservationCode: event.target.value }))} placeholder="Reservation code" />
-                <input type="date" value={reservationForm.arrivalDate} onChange={(event) => setReservationForm((current) => ({ ...current, arrivalDate: event.target.value }))} />
-                <input type="date" value={reservationForm.departureDate} onChange={(event) => setReservationForm((current) => ({ ...current, departureDate: event.target.value }))} />
-                <input value={reservationForm.guestFullName} onChange={(event) => setReservationForm((current) => ({ ...current, guestFullName: event.target.value }))} placeholder="Guest name" />
-                <input value={reservationForm.guestDocumentNumber} onChange={(event) => setReservationForm((current) => ({ ...current, guestDocumentNumber: event.target.value }))} placeholder="Guest document" />
-                <input value={reservationForm.guestEmail} onChange={(event) => setReservationForm((current) => ({ ...current, guestEmail: event.target.value }))} placeholder="Guest email" />
-                <input value={String(reservationForm.totalAmount)} onChange={(event) => setReservationForm((current) => ({ ...current, totalAmount: Number(event.target.value) }))} placeholder="Total amount" />
-              </div>
-              <button className="admin-primary-button" onClick={createReservation}>
-                {t.createReservation}
-              </button>
-            </div>
-            <div className="admin-card">
-              <h2>Reservations</h2>
-              {reservations.length ? (
-                <ul className="admin-reservation-list">
-                  {reservations.map((reservation) => (
-                    <li key={reservation.id}>
-                      <div>
-                        <strong>{reservation.code}</strong>
-                        <span>{reservation.guest.fullName}</span>
-                        <small>
-                          Room {reservation.room.number} - {formatCurrency(reservation.totalAmount, reservation.currency)}
-                        </small>
-                      </div>
-                      <button className="admin-secondary-button" onClick={() => deleteReservation(reservation.id)}>
-                        {t.deleteReservation}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="admin-empty">{t.emptyState}</p>
-              )}
-            </div>
-          </section>
+          <ReservationsPage
+            emptyState={t.emptyState}
+            testAreaLabel={t.testArea}
+            testHelpLabel={t.testHelp}
+            createReservationLabel={t.createReservation}
+            deleteReservationLabel={t.deleteReservation}
+            reservationForm={reservationForm}
+            setReservationForm={setReservationForm}
+            reservations={reservations}
+            onCreateReservation={createReservation}
+            onDeleteReservation={deleteReservation}
+          />
         ) : null}
 
-        {selectedView === "branding" && hotelProfile ? (
-          <section className="admin-panel admin-panel--two">
-            <div className="admin-card">
-              <h2>Branding</h2>
-              <label><span>Welcome headline</span><input value={hotelProfile.branding.welcomeHeadline} onChange={(event) => setHotelProfile({ ...hotelProfile, branding: { ...hotelProfile.branding, welcomeHeadline: event.target.value } })} /></label>
-              <label><span>Welcome subheadline</span><input value={hotelProfile.branding.welcomeSubheadline} onChange={(event) => setHotelProfile({ ...hotelProfile, branding: { ...hotelProfile.branding, welcomeSubheadline: event.target.value } })} /></label>
-              <label><span>Primary color</span><input value={hotelProfile.branding.primaryColor} onChange={(event) => setHotelProfile({ ...hotelProfile, branding: { ...hotelProfile.branding, primaryColor: event.target.value } })} /></label>
-              <label><span>Accent color</span><input value={hotelProfile.branding.accentColor} onChange={(event) => setHotelProfile({ ...hotelProfile, branding: { ...hotelProfile.branding, accentColor: event.target.value } })} /></label>
-              <button className="admin-primary-button" onClick={saveBranding}>Save branding</button>
-            </div>
-            <div className="admin-card">
-              <h2>Content</h2>
-              <label><span>Support message</span><textarea value={hotelProfile.content.supportMessage} onChange={(event) => setHotelProfile({ ...hotelProfile, content: { ...hotelProfile.content, supportMessage: event.target.value } })} /></label>
-              <label><span>Map URL</span><input value={hotelProfile.content.mapUrl} onChange={(event) => setHotelProfile({ ...hotelProfile, content: { ...hotelProfile.content, mapUrl: event.target.value } })} /></label>
-              <button className="admin-primary-button" onClick={saveContent}>Save content</button>
-            </div>
-          </section>
+        {selectedView === "branding" ? (
+          <BrandingPage
+            hotelProfile={hotelProfile}
+            emptyState={t.emptyState}
+            saveBrandingLabel={t.saveBranding}
+            saveContentLabel={t.saveContent}
+            setHotelProfile={setHotelProfile}
+            onSaveBranding={saveBranding}
+            onSaveContent={saveContent}
+          />
         ) : null}
 
-        {selectedView === "devices" ? (
-          <section className="admin-panel">
-            <div className="admin-card">
-              <h2>Devices</h2>
-              {devices.length ? (
-                <ul className="admin-list">
-                  {devices.map((device, index) => (
-                    <li key={index}>{JSON.stringify(device)}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="admin-empty">{t.emptyState}</p>
-              )}
-            </div>
-          </section>
-        ) : null}
+        {selectedView === "devices" ? <DevicesPage devices={devices} emptyState={t.emptyState} /> : null}
 
-        {selectedView === "audit" ? (
-          <section className="admin-panel">
-            <div className="admin-card">
-              <h2>Audit</h2>
-              {audit.length ? (
-                <ul className="admin-list">
-                  {audit.map((event, index) => (
-                    <li key={index}>
-                      <strong>{event.action}</strong>
-                      <span>{event.result}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="admin-empty">{t.emptyState}</p>
-              )}
-            </div>
-          </section>
-        ) : null}
+        {selectedView === "audit" ? <AuditPage audit={audit} emptyState={t.emptyState} /> : null}
 
-        {selectedView === "identity" ? (
-          <PlaceholderPage title={t.identity} message={t.emptyState} />
-        ) : null}
+        {selectedView === "identity" ? <IdentityPage title={t.identity} message={t.emptyState} /> : null}
       </main>
     </div>
   );

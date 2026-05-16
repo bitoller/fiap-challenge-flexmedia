@@ -227,6 +227,17 @@ button:disabled {
   background: rgba(255, 255, 255, 0.86);
 }
 
+.admin-danger-button {
+  color: #8a2f2f;
+  border-color: rgba(197, 102, 102, 0.24);
+  background: rgba(255, 245, 245, 0.92);
+}
+
+.admin-danger-button:hover {
+  border-color: rgba(197, 102, 102, 0.4);
+  box-shadow: 0 12px 24px rgba(138, 47, 47, 0.08);
+}
+
 .admin-language-switcher {
   display: flex;
   gap: 0.5rem;
@@ -607,23 +618,114 @@ button:disabled {
   gap: 0.75rem;
 }
 
-.admin-reservation-list li {
-  display: flex;
-  justify-content: space-between;
+.admin-reservation-card {
+  display: grid;
   gap: 1rem;
-  padding: 0.85rem 0;
+  padding: 1rem 0;
   border-bottom: 1px solid rgba(167, 139, 84, 0.12);
 }
 
-.admin-reservation-list strong {
+.admin-reservation-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.admin-reservation-card__kicker {
+  margin: 0 0 0.35rem;
+  color: var(--admin-primary);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.admin-reservation-card strong {
   display: block;
   font-size: 1.05rem;
   font-weight: 600;
 }
 
-.admin-reservation-list span,
-.admin-reservation-list small {
+.admin-reservation-card span,
+.admin-reservation-card small {
   display: block;
+  color: var(--admin-subtle);
+}
+
+.admin-reservation-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.admin-reservation-card__badge--good {
+  color: #41623d;
+  background: rgba(110, 156, 100, 0.12);
+  border-color: rgba(110, 156, 100, 0.22);
+}
+
+.admin-reservation-card__badge--warning {
+  color: #8b6420;
+  background: rgba(200, 162, 79, 0.14);
+  border-color: rgba(200, 162, 79, 0.24);
+}
+
+.admin-reservation-card__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-reservation-card__field {
+  padding: 0.8rem 0.85rem;
+  border: 1px solid rgba(167, 139, 84, 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.admin-reservation-card__field span {
+  margin-bottom: 0.35rem;
+  font-size: 0.72rem;
+}
+
+.admin-reservation-card__field strong {
+  margin: 0;
+  font-size: 0.96rem;
+}
+
+.admin-reservation-card__reasons {
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  background: rgba(200, 162, 79, 0.1);
+  border: 1px solid rgba(200, 162, 79, 0.16);
+}
+
+.admin-reservation-card__reasons span {
+  margin-bottom: 0.35rem;
+}
+
+.admin-reservation-card__reasons p {
+  margin: 0;
+  color: var(--admin-subtle);
+  line-height: 1.5;
+}
+
+.admin-reservation-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-reservation-card__footer small {
   color: var(--admin-subtle);
 }
 
@@ -637,6 +739,22 @@ button:disabled {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   margin: 1rem 0;
+}
+
+.admin-form-grid label {
+  padding: 0.75rem;
+  border: 1px solid rgba(167, 139, 84, 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.admin-form-grid label span {
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.admin-form-grid label input {
+  width: 100%;
 }
 
 .admin-panel--two {
@@ -684,7 +802,7 @@ button:disabled {
   .admin-unit-card__title-row,
   .admin-unit-card__footer,
   .admin-health-stats,
-  .admin-reservation-list li {
+  .admin-reservation-card {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: flex-start;
@@ -697,7 +815,8 @@ button:disabled {
   .admin-metrics,
   .admin-panel--two,
   .admin-form-grid,
-  .admin-unit-grid {
+  .admin-unit-grid,
+  .admin-reservation-card__grid {
     grid-template-columns: 1fr;
   }
 }

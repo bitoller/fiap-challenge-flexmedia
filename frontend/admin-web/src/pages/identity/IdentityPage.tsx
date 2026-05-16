@@ -1,9 +1,9 @@
-type PlaceholderPageProps = {
+type IdentityPageProps = {
   title: string;
   message: string;
 };
 
-function PlaceholderPage({ title, message }: PlaceholderPageProps) {
+function IdentityPage({ title, message }: IdentityPageProps) {
   return (
     <section className="admin-panel">
       <div className="admin-card">
@@ -14,4 +14,4 @@ function PlaceholderPage({ title, message }: PlaceholderPageProps) {
   );
 }
 
-export default PlaceholderPage;
+export default IdentityPage;

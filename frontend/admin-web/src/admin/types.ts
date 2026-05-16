@@ -28,3 +28,23 @@ export type TrendPoint = {
   label: string;
   value: number;
 };
+
+export type ReservationFormState = {
+  hotelName: string;
+  roomNumber: string;
+  roomType: string;
+  arrivalDate: string;
+  departureDate: string;
+  adults: number;
+  children: number;
+  totalAmount: number;
+  currency: string;
+  guestFullName: string;
+  guestDocumentType: string;
+  guestDocumentNumber: string;
+  guestBirthDate: string;
+  guestNationality: string;
+  guestEmail: string;
+  guestPhone: string;
+  reservationCode: string;
+};
