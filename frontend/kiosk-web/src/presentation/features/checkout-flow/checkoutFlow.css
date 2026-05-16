@@ -12,6 +12,12 @@
   padding: 2rem 2.4rem 3rem;
 }
 
+.checkout-layout--recovery .checkout-layout__main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .checkout-step-header {
   text-align: center;
   margin-bottom: 2rem;

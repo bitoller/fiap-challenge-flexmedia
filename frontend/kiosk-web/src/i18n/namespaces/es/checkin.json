@@ -2,6 +2,8 @@
   "stepOne": "PASO 1 DE 6 - IDENTIFICACIÓN",
   "stepOneTitle": "Identificación del check-in",
   "stepRecovery": "PASO 1 DE 6 - ASISTENCIA",
+  "sharedRecoveryTitle": "Necesitamos ayuda",
+  "sharedRecoveryBody": "Algo interrumpió este paso. Intente nuevamente o vuelva al inicio.",
   "stepConfirmation": "PASO 2 DE 6 - RESUMEN",
   "stepContact": "PASO 3 DE 6 - REVISIÓN DE CONTACTO",
   "stepTerms": "PASO 4 DE 6 - TÉRMINOS Y CONDICIONES",

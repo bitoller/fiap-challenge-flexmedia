@@ -80,6 +80,8 @@
   "successEndButton": "End session",
   "successDownload": "Download final bill",
   "stepRecovery": "STEP 1 OF 7 - ASSISTANCE",
+  "sharedRecoveryTitle": "We need a little help",
+  "sharedRecoveryBody": "Something interrupted this step. Please try again or return to the beginning.",
   "recoveryPaymentTitle": "Payment declined",
   "recoveryStayTitle": "Stay not found",
   "recoveryGenericTitle": "We need a little help",

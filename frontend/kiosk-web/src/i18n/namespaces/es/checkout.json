@@ -80,6 +80,8 @@
   "successEndButton": "Cerrar sesión",
   "successDownload": "Descargar cuenta final",
   "stepRecovery": "PASO 1 DE 7 - ASISTENCIA",
+  "sharedRecoveryTitle": "Necesitamos ayuda",
+  "sharedRecoveryBody": "Algo interrumpió este paso. Intente nuevamente o vuelva al inicio.",
   "recoveryPaymentTitle": "Pago rechazado",
   "recoveryStayTitle": "Estadía no encontrada",
   "recoveryGenericTitle": "Necesitamos ayuda",

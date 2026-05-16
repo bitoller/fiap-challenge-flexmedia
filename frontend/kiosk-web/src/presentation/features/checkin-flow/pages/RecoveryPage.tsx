@@ -1,11 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../components/common/Button";
 import { CheckinRecoveryCode } from "../../../../domain/types";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
-import { FlowStepHeader } from "../components/FlowStepHeader";
+import { RecoveryScreen } from "../../../components/common/RecoveryScreen";
 
 interface RecoveryLocationState {
   code?: CheckinRecoveryCode;
@@ -13,26 +12,7 @@ interface RecoveryLocationState {
 }
 
 function getRecoveryTitle(code: CheckinRecoveryCode | undefined, t: (key: string) => string) {
-  if (code === "PAYMENT_DECLINED") return t("recoveryPaymentTitle");
-  if (code === "BIOMETRY_REJECTED") return t("recoveryBiometryTitle");
-  if (code === "DOCUMENT_REJECTED") return t("recoveryDocumentTitle");
-  if (code === "RESERVATION_NOT_ELIGIBLE") return t("recoveryReservationTitle");
-  return t("recoveryGenericTitle");
-}
-
-function getRecoveryBody(code: CheckinRecoveryCode | undefined, t: (key: string) => string) {
-  if (code === "PAYMENT_DECLINED") return t("recoveryPaymentBody");
-  if (code === "BIOMETRY_REJECTED") return t("recoveryBiometryBody");
-  if (code === "DOCUMENT_REJECTED") return t("recoveryDocumentBody");
-  if (code === "RESERVATION_NOT_ELIGIBLE") return t("recoveryReservationBody");
-  return t("recoveryGenericBody");
-}
-
-function getRecoveryRetryPath(code: CheckinRecoveryCode | undefined) {
-  if (code === "PAYMENT_DECLINED") return "/checkin/payment";
-  if (code === "BIOMETRY_REJECTED" || code === "DOCUMENT_REJECTED") return "/checkin/contact";
-  if (code === "RESERVATION_NOT_ELIGIBLE") return "/checkin";
-  return "/checkin";
+  return t("sharedRecoveryTitle");
 }
 
 export function RecoveryPage() {
@@ -50,15 +30,22 @@ export function RecoveryPage() {
   }, [currentRecovery, navigate]);
 
   const code = currentRecovery?.code;
-  const title = useMemo(() => getRecoveryTitle(code, t), [code, t]);
-  const body = useMemo(() => getRecoveryBody(code, t), [code, t]);
+  const title = getRecoveryTitle(code, t);
+  const body = t("sharedRecoveryBody");
 
   if (!currentRecovery) {
     return null;
   }
 
   const retry = () => {
-    navigate(getRecoveryRetryPath(code), { replace: true });
+    const retryPath =
+      code === "PAYMENT_DECLINED"
+        ? "/checkin/payment"
+        : code === "BIOMETRY_REJECTED" || code === "DOCUMENT_REJECTED"
+          ? "/checkin/contact"
+          : "/checkin";
+
+    navigate(retryPath, { replace: true });
   };
 
   const goHome = () => {
@@ -67,43 +54,22 @@ export function RecoveryPage() {
   };
 
   return (
-    <CheckinFlowLayout
-      topRightContent={<span className="checkin-topbar__confirmation-label">{t("recoveryTag")}</span>}
-      bottomItems={[
-        {
-          key: "home",
-          label: t("bottomHomeCompact"),
-          icon: "home",
-          onClick: () => navigate("/"),
-        },
-        {
-          key: "assistant",
-          label: t("bottomSupport"),
-          icon: "assistant",
-          active: true,
-        },
-      ]}
-    >
-      <section className="checkin-recovery" aria-label={title}>
-        <div className="checkin-recovery__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="8.2" />
-            <path d="M12 8.2v4.6" />
-            <path d="M12 15.7h.01" />
-          </svg>
-        </div>
-
-        <FlowStepHeader step={t("stepRecovery")} title={title} subtitle={body} />
-
-        <div className="checkin-recovery__actions">
-          <Button variant="primary" size="lg" onClick={retry}>
-            {t("retryLookup")}
-          </Button>
-          <Button variant="secondary" size="lg" onClick={goHome}>
-            {t("backToHome")}
-          </Button>
-        </div>
-      </section>
+    <CheckinFlowLayout>
+      <RecoveryScreen
+        eyebrow={t("stepRecovery")}
+        title={title}
+        body={body}
+        primaryAction={{
+          label: t("retryLookup"),
+          onClick: retry,
+          variant: "primary",
+        }}
+        secondaryAction={{
+          label: t("backToHome"),
+          onClick: goHome,
+          variant: "secondary",
+        }}
+      />
     </CheckinFlowLayout>
   );
 }
