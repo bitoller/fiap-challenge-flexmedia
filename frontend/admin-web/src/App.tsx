@@ -1,85 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { adminApi } from "./api";
-import { AdminSession, AuditEvent, DashboardResult, HotelProfile, HotelSummary, ReservationSummary } from "./types";
-
-type ViewKey = "overview" | "reservations" | "branding" | "devices" | "audit" | "identity";
-type Language = "en" | "pt-BR" | "es";
-
-const COPY: Record<Language, Record<string, string>> = {
-  en: {
-    portal: "L'Éclat Administration",
-    loginTitle: "Administrator access",
-    loginSubtitle: "Sign in to manage hotels, reservations, and operational views.",
-    username: "Username",
-    password: "Password",
-    login: "Sign in",
-    hotelContext: "Hotel context",
-    overview: "Overview",
-    reservations: "Reservations",
-    branding: "Branding",
-    devices: "Devices",
-    audit: "Audit",
-    identity: "Identity",
-    testArea: "Reservation test area",
-    createReservation: "Create reservation",
-    deleteReservation: "Delete",
-    logout: "Logout",
-    emptyState: "No data available for the selected hotel.",
-    chooseHotel: "Choose a hotel to begin.",
-    role: "Administrator",
-    testHelp: "Create and remove real reservations persisted in Oracle.",
-  },
-  "pt-BR": {
-    portal: "L'Éclat Administração",
-    loginTitle: "Acesso administrativo",
-    loginSubtitle: "Entre para gerenciar hotéis, reservas e visões operacionais.",
-    username: "Usuário",
-    password: "Senha",
-    login: "Entrar",
-    hotelContext: "Contexto do hotel",
-    overview: "Visão geral",
-    reservations: "Reservas",
-    branding: "Branding",
-    devices: "Dispositivos",
-    audit: "Auditoria",
-    identity: "Identidade",
-    testArea: "Área de testes de reservas",
-    createReservation: "Criar reserva",
-    deleteReservation: "Excluir",
-    logout: "Sair",
-    emptyState: "Nenhum dado disponível para o hotel selecionado.",
-    chooseHotel: "Escolha um hotel para começar.",
-    role: "Administrador",
-    testHelp: "Crie e remova reservas reais persistidas no Oracle.",
-  },
-  es: {
-    portal: "L'Éclat Administración",
-    loginTitle: "Acceso administrativo",
-    loginSubtitle: "Ingrese para gestionar hoteles, reservas y vistas operativas.",
-    username: "Usuario",
-    password: "Contraseña",
-    login: "Ingresar",
-    hotelContext: "Contexto del hotel",
-    overview: "Resumen",
-    reservations: "Reservas",
-    branding: "Branding",
-    devices: "Dispositivos",
-    audit: "Auditoría",
-    identity: "Identidad",
-    testArea: "Área de pruebas de reservas",
-    createReservation: "Crear reserva",
-    deleteReservation: "Eliminar",
-    logout: "Salir",
-    emptyState: "No hay datos disponibles para el hotel seleccionado.",
-    chooseHotel: "Elija un hotel para comenzar.",
-    role: "Administrador",
-    testHelp: "Cree y elimine reservas reales persistidas en Oracle.",
-  },
-};
-
-function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(value);
-}
+import type { AdminSession, AuditEvent, DashboardResult, HotelProfile, HotelSummary, ReservationSummary } from "./types";
+import type { Language, ViewKey } from "./admin/types";
+import { COPY } from "./admin/copy";
+import { formatCurrency } from "./admin/dashboard";
+import AdminSidebar from "./components/AdminSidebar";
+import OverviewPage from "./pages/overview/OverviewPage";
+import PlaceholderPage from "./pages/placeholder/PlaceholderPage";
 
 function App() {
   const [language, setLanguage] = useState<Language>("en");
@@ -173,6 +100,7 @@ function App() {
         setReservations(reservationsResult);
         setDevices(devicesResult.devices ?? []);
         setAudit(auditResult);
+        setMessage("");
       })
       .catch((error) => {
         setMessage(error instanceof Error ? error.message : "Failed to load portal data.");
@@ -195,6 +123,7 @@ function App() {
       setSession(result);
       setHotels(result.hotels);
       setSelectedHotelId(result.hotels[0]?.id ?? null);
+      setSelectedView("overview");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Login failed.");
     } finally {
@@ -211,6 +140,7 @@ function App() {
     setReservations([]);
     setDevices([]);
     setAudit([]);
+    setMessage("");
     localStorage.removeItem("admin-session");
     localStorage.removeItem("admin-token");
   };
@@ -219,7 +149,10 @@ function App() {
     if (!selectedHotelId) {
       return;
     }
+
     setLoading(true);
+    setMessage("");
+
     try {
       const [dashboardResult, profileResult, reservationsResult, devicesResult, auditResult] = await Promise.all([
         adminApi.getDashboard(selectedHotelId),
@@ -228,11 +161,14 @@ function App() {
         adminApi.getDevices(selectedHotelId),
         adminApi.getAudit(selectedHotelId),
       ]);
+
       setDashboard(dashboardResult);
       setHotelProfile(profileResult);
       setReservations(reservationsResult);
       setDevices(devicesResult.devices ?? []);
       setAudit(auditResult);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Failed to refresh overview data.");
     } finally {
       setLoading(false);
     }
@@ -303,6 +239,18 @@ function App() {
               <span>{t.password}</span>
               <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
             </label>
+            <div className="admin-language-switcher" aria-label="Language selector">
+              {(["en", "pt-BR", "es"] as Language[]).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={language === option ? "is-active" : ""}
+                  onClick={() => setLanguage(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
             <button className="admin-primary-button" type="submit" disabled={loading}>
               {loading ? "..." : t.login}
             </button>
@@ -313,30 +261,31 @@ function App() {
     );
   }
 
+  const loadingOverview = loading && selectedView === "overview";
+  const viewLabels = {
+    overview: t.overview,
+    reservations: t.reservations,
+    branding: t.branding,
+    devices: t.devices,
+    audit: t.audit,
+    identity: t.identity,
+  } satisfies Record<ViewKey, string>;
+
   return (
     <div className="admin-app">
-      <aside className="admin-sidebar">
-        <div>
-          <p className="admin-brand">{t.portal}</p>
-          <span className="admin-role">{t.role}</span>
-        </div>
-
-        <nav className="admin-nav">
-          {(["overview", "reservations", "branding", "devices", "audit", "identity"] as ViewKey[]).map((view) => (
-            <button key={view} className={selectedView === view ? "is-active" : ""} onClick={() => setSelectedView(view)}>
-              {t[view]}
-            </button>
-          ))}
-        </nav>
-
-        <button className="admin-secondary-button" onClick={logout}>
-          {t.logout}
-        </button>
-      </aside>
+      <AdminSidebar
+        portal={t.portal}
+        role={t.role}
+        labels={viewLabels}
+        logoutLabel={t.logout}
+        selectedView={selectedView}
+        onSelectView={setSelectedView}
+        onLogout={logout}
+      />
 
       <main className="admin-main">
         <header className="admin-header">
-          <div>
+          <div className="admin-header-copy">
             <p className="admin-eyebrow">{t.hotelContext}</p>
             <h1>{selectedHotel?.name ?? t.chooseHotel}</h1>
           </div>
@@ -349,7 +298,7 @@ function App() {
               ))}
             </select>
             <button className="admin-secondary-button" onClick={refreshData}>
-              Refresh
+              {t.refresh}
             </button>
           </div>
         </header>
@@ -357,43 +306,27 @@ function App() {
         {message ? <p className="admin-message admin-message--inline">{message}</p> : null}
 
         {selectedView === "overview" ? (
-          <section className="admin-grid">
-            <article className="admin-card admin-card--metric">
-              <span>Reservations today</span>
-              <strong>{dashboard?.reservationsToday ?? 0}</strong>
-            </article>
-            <article className="admin-card admin-card--metric">
-              <span>Active stays</span>
-              <strong>{dashboard?.activeStays ?? 0}</strong>
-            </article>
-            <article className="admin-card admin-card--metric">
-              <span>Completed check-ins</span>
-              <strong>{dashboard?.completedCheckins ?? 0}</strong>
-            </article>
-            <article className="admin-card admin-card--metric">
-              <span>Completed check-outs</span>
-              <strong>{dashboard?.completedCheckouts ?? 0}</strong>
-            </article>
-
-            <article className="admin-card admin-card--wide">
-              <h2>Recent activity</h2>
-              {dashboard?.recentSessions?.length ? (
-                <ul className="admin-list">
-                  {dashboard.recentSessions.map((item, index) => (
-                    <li key={index}>{JSON.stringify(item)}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="admin-empty">{t.emptyState}</p>
-              )}
-            </article>
-            <article className="admin-card admin-card--wide">
-              <h2>Device status</h2>
-              <p className="admin-copy">
-                {dashboard?.deviceStatus.totalDevices ?? 0} devices, {dashboard?.deviceStatus.onlineDevices ?? 0} online
-              </p>
-            </article>
-          </section>
+          <OverviewPage
+            dashboard={dashboard}
+            hotelProfile={hotelProfile}
+            selectedHotel={selectedHotel}
+            loading={loadingOverview}
+            emptyState={t.emptyState}
+            loadingLabel={t.loading}
+            noActivityLabel={t.noActivity}
+            noUnitsLabel={t.noUnits}
+            liveActivityLabel={t.liveActivity}
+            performanceTitle={t.performanceTitle}
+            performanceSubtitle={t.performanceSubtitle}
+            trafficAndDemandLabel={t.trafficAndDemand}
+            trafficAndDemandSubtitle={t.trafficAndDemandSubtitle}
+            manageFleetLabel={t.manageFleet}
+            viewAllLogsLabel={t.viewAllLogs}
+            exportDataLabel={t.exportData}
+            viewLiveLabel={t.viewLive}
+            onRefresh={refreshData}
+            onOpenAudit={() => setSelectedView("audit")}
+          />
         ) : null}
 
         {selectedView === "reservations" ? (
@@ -500,12 +433,7 @@ function App() {
         ) : null}
 
         {selectedView === "identity" ? (
-          <section className="admin-panel">
-            <div className="admin-card">
-              <h2>Identity</h2>
-              <p className="admin-empty">{t.emptyState}</p>
-            </div>
-          </section>
+          <PlaceholderPage title={t.identity} message={t.emptyState} />
         ) : null}
       </main>
     </div>

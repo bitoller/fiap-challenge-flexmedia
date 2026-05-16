@@ -11,6 +11,8 @@ dist/
 .vite/
 *.tsbuildinfo
 npm-debug.log*
+.npm-cache/
+frontend/admin-web/.npm-cache/
 
 # IDE
 .idea/
