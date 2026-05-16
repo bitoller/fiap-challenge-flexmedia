@@ -381,7 +381,7 @@ function App() {
           />
         ) : null}
 
-        {selectedView === "audit" ? <AuditPage audit={audit} emptyState={t.emptyState} /> : null}
+        {selectedView === "audit" ? <AuditPage audit={audit} emptyState={t.emptyState} onRefresh={refreshData} /> : null}
 
         {selectedView === "identity" ? <IdentityPage title={t.identity} message={t.emptyState} /> : null}
       </main>
