@@ -59,7 +59,7 @@ export interface DeviceStatus {
   offlineDevices: number;
   maintenanceDevices: number;
   errorDevices: number;
-  devices: Array<Record<string, unknown>>;
+  devices: KioskDevice[];
 }
 
 export interface AuditEvent {
@@ -71,6 +71,18 @@ export interface AuditEvent {
   resourceId: string | null;
   result: string;
   correlationId: string | null;
+}
+
+export interface KioskDevice {
+  id: number;
+  hotelId: number;
+  deviceCode: string;
+  name: string;
+  status: string;
+  batteryLevel: number | null;
+  cameraOnline: boolean;
+  printerOnline: boolean;
+  lastSeenAt: string;
 }
 
 export interface ReservationSummary {

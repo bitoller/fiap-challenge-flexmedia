@@ -1,4 +1,4 @@
-import type { DashboardResult, HotelProfile, HotelSummary, ReservationSummary } from "../types";
+import type { DashboardResult, HotelProfile, HotelSummary, KioskDevice, ReservationSummary } from "../types";
 import type { OverviewActivity, OverviewMetric, OverviewUnit, TrendPoint } from "./types";
 
 const TREND_LABELS = ["00:00", "06:00", "12:00", "18:00", "AGORA"];
@@ -175,10 +175,10 @@ export function buildUnits(dashboard: DashboardResult | null, selectedHotel: Hot
   const amenity = hotelProfile?.content.amenities?.[0] ?? "Guest flow";
 
   const deviceUnits: OverviewUnit[] = devices.slice(0, 3).map((device, index) => {
-    const record = device as Record<string, unknown>;
-    const name = normalizeText(getRecordValue(record, ["name", "label", "deviceName", "kioskName", "location", "area"]), `Kiosk ${index + 1}`);
-    const status = normalizeText(getRecordValue(record, ["status", "state"]), "ONLINE");
-    const uptime = normalizeText(getRecordValue(record, ["uptime", "health", "lastHeartbeat"]), "Monitoring active");
+    const kiosk = device as KioskDevice;
+    const name = normalizeText(kiosk.name, `Kiosk ${index + 1}`);
+    const status = normalizeText(kiosk.status, "ONLINE");
+    const uptime = normalizeText(kiosk.lastSeenAt, "Monitoring active");
     const statusUpper = status.toUpperCase();
 
     return {
@@ -190,7 +190,7 @@ export function buildUnits(dashboard: DashboardResult | null, selectedHotel: Hot
         : statusUpper.includes("MAINT") || statusUpper.includes("WARN")
           ? "warning"
           : "good",
-      metric: normalizeText(getRecordValue(record, ["traffic", "throughput", "usage", "load"]), "Live"),
+      metric: kiosk.batteryLevel === null ? "Battery N/A" : `${kiosk.batteryLevel}% battery`,
       detail: `${hotelName} ${index === 0 ? "front line" : "operations"}`,
       accent: pickAccent(index),
     } satisfies OverviewUnit;

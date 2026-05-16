@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { adminApi } from "./api";
-import type { AdminSession, AuditEvent, DashboardResult, HotelProfile, HotelSummary, ReservationSummary } from "./types";
+import type { AdminSession, AuditEvent, DashboardResult, DeviceStatus, HotelProfile, HotelSummary, ReservationSummary } from "./types";
 import type { Language, ReservationFormState, ViewKey } from "./admin/types";
 import { COPY } from "./admin/copy";
 import AdminSidebar from "./components/AdminSidebar";
@@ -30,7 +30,7 @@ function App() {
   const [dashboard, setDashboard] = useState<DashboardResult | null>(null);
   const [hotelProfile, setHotelProfile] = useState<HotelProfile | null>(null);
   const [reservations, setReservations] = useState<ReservationSummary[]>([]);
-  const [devices, setDevices] = useState<Array<Record<string, unknown>>>([]);
+  const [deviceStatus, setDeviceStatus] = useState<DeviceStatus | null>(null);
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -64,10 +64,10 @@ function App() {
   }, [session]);
 
   useEffect(() => {
-    if (hotels.length === 0) {
+    if (session && hotels.length === 0) {
       adminApi.listHotels().then(setHotels).catch(() => setHotels([]));
     }
-  }, [hotels.length]);
+  }, [hotels.length, session]);
 
   useEffect(() => {
     if (!selectedHotelId && hotels.length > 0) {
@@ -101,11 +101,11 @@ function App() {
       adminApi.getDevices(selectedHotelId),
       adminApi.getAudit(selectedHotelId),
     ])
-      .then(([dashboardResult, profileResult, reservationsResult, devicesResult, auditResult]) => {
+      .then(([dashboardResult, profileResult, reservationsResult, deviceStatusResult, auditResult]) => {
         setDashboard(dashboardResult);
         setHotelProfile(profileResult);
         setReservations(reservationsResult);
-        setDevices(devicesResult.devices ?? []);
+        setDeviceStatus(deviceStatusResult);
         setAudit(auditResult);
         setMessage("");
       })
@@ -145,7 +145,7 @@ function App() {
     setDashboard(null);
     setHotelProfile(null);
     setReservations([]);
-    setDevices([]);
+    setDeviceStatus(null);
     setAudit([]);
     setMessage("");
     localStorage.removeItem("admin-session");
@@ -161,7 +161,7 @@ function App() {
     setMessage("");
 
     try {
-      const [dashboardResult, profileResult, reservationsResult, devicesResult, auditResult] = await Promise.all([
+      const [dashboardResult, profileResult, reservationsResult, deviceStatusResult, auditResult] = await Promise.all([
         adminApi.getDashboard(selectedHotelId),
         adminApi.getHotel(selectedHotelId),
         adminApi.listReservations(selectedHotelId),
@@ -172,7 +172,7 @@ function App() {
       setDashboard(dashboardResult);
       setHotelProfile(profileResult);
       setReservations(reservationsResult);
-      setDevices(devicesResult.devices ?? []);
+      setDeviceStatus(deviceStatusResult);
       setAudit(auditResult);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Failed to refresh overview data.");
@@ -372,7 +372,14 @@ function App() {
           />
         ) : null}
 
-        {selectedView === "devices" ? <DevicesPage devices={devices} emptyState={t.emptyState} /> : null}
+        {selectedView === "devices" ? (
+          <DevicesPage
+            deviceStatus={deviceStatus}
+            hotelName={selectedHotel?.name ?? null}
+            emptyState={t.emptyState}
+            onRefresh={refreshData}
+          />
+        ) : null}
 
         {selectedView === "audit" ? <AuditPage audit={audit} emptyState={t.emptyState} /> : null}
 

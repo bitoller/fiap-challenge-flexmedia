@@ -3,6 +3,7 @@ import {
   AuditEvent,
   CreateReservationPayload,
   DashboardResult,
+  DeviceStatus,
   HotelProfile,
   HotelSummary,
   ReservationSummary,
@@ -75,7 +76,7 @@ export const adminApi = {
     return request<DashboardResult>(`/admin/dashboard?hotelId=${hotelId}`);
   },
   getDevices(hotelId: number) {
-    return request<{ devices: Array<Record<string, unknown>> }>(`/admin/devices?hotelId=${hotelId}`);
+    return request<DeviceStatus>(`/admin/devices?hotelId=${hotelId}`);
   },
   getAudit(hotelId: number) {
     return request<AuditEvent[]>(`/admin/audit?hotelId=${hotelId}`);
