@@ -20,7 +20,6 @@ export const useLanguage = () => {
     try {
       localStorage.setItem(LANGUAGE_KEY, currentLanguage);
     } catch {
-      // Ignore restricted kiosk storage environments.
     }
   }, [currentLanguage, i18n]);
 
@@ -30,7 +29,6 @@ export const useLanguage = () => {
     try {
       localStorage.setItem(LANGUAGE_KEY, language);
     } catch {
-      // Ignore restricted kiosk storage environments.
     }
 
     setCurrentLanguage(language);

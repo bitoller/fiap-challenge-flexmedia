@@ -11,7 +11,7 @@
 - `identity-service` was added for authentication, user listing, and kiosk credentials.
 - `notification-service` was added for receipts and operational alerts.
 - `biometry-service` and `pms-adapter-service` were kept as future integration contracts.
-- Oracle configuration and bootstrap scripts were aligned to `rm553134` and password `060892`.
+- Oracle configuration and bootstrap scripts were aligned to environment-provided credentials and local placeholder credentials.
 - Gateway routing was updated to cover the new public service boundaries.
 - Docker Compose now boots the full backend stack successfully.
 

@@ -1,10 +1,5 @@
 import { CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, Reservation, Room, Session, SessionReservation } from "../../domain/models";
 
-/**
- * API Response Interceptors
- * Transform API responses to domain models
- */
-
 export const checkoutResponseInterceptor = (data: any): CheckoutResponse => {
   return {
     stayId: data.stayId,
@@ -105,11 +100,6 @@ const roomResponseInterceptor = (data: any): Room => {
     status: data.status,
   };
 };
-
-/**
- * Request Interceptors
- * Transform domain models to API requests
- */
 
 export const createSessionRequestInterceptor = (flowType: 'CHECKIN' | 'CHECKOUT', language: string = 'en') => {
   return {

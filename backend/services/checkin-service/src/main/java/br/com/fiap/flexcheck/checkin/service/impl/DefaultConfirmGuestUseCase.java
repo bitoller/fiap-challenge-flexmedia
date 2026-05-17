@@ -30,7 +30,7 @@ public class DefaultConfirmGuestUseCase implements ConfirmGuestUseCase {
     @Transactional
     public void execute(Long sessionId, GuestConfirmationCommand command) {
         SessionContext sessionContext = sessionRepository.findSessionContext(sessionId)
-                .orElseThrow(() -> new BusinessException("SESSION_NOT_FOUND", "Sessao nao encontrada.", 404));
+                .orElseThrow(() -> new BusinessException("SESSION_NOT_FOUND", "Session not found.", 404));
         Long reservationId = sessionContext.reservation().id();
         Long hotelId = sessionContext.reservation().hotelId();
         reservationServiceClient.confirmGuest(reservationId, command);

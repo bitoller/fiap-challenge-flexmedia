@@ -1,42 +1,46 @@
-# Demo Docker
+# Docker Demo
 
-Guia padronizado para subir a demo completa do FlexCheck hotel.
+Standard guide for running the complete FlexCheck Hotel demo.
 
-## Pre-Requirements
+## Prerequisites
 
-- Docker Desktop instalado e aberto.
-- `.env` configurado na raiz com access ao Oracle FIAP.
-- Internet ativa para baixar imagens e dependencias no primeiro build.
+- Docker Desktop installed and running.
+- `.env` configured in the project root with Oracle FIAP access.
+- Active internet connection for downloading images and dependencies during the first build.
 
-Verifique o Docker:
+Check Docker:
 
 ```bash
 docker info
 ```
 
-Se aparecer erro de `docker.sock`, abra o Docker Desktop e espere finalizar a inicializacao.
+If a `docker.sock` error appears, open Docker Desktop and wait until initialization completes.
 
-## Configurar Ambiente
+## Configure The Environment
 
-Na raiz do Project:
+From the project root:
 
 ```bash
 cp .env.demo.example .env
 ```
 
-Preencha:
+Fill in:
 
 ```text
-ORACLE_PASSWORD=060892
+ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
+ORACLE_USER=your_oracle_user
+ORACLE_PASSWORD=your_oracle_password
+ADMIN_USERNAME=admin@example.local
+ADMIN_PASSWORD=change_me_admin_password
 ```
 
-## Subir Tudo
+## Start The Stack
 
 ```bash
 docker compose up --build
 ```
 
-services iniciados:
+Started services:
 
 - `checkin-service`
 - `api-gateway`
@@ -48,30 +52,30 @@ services iniciados:
 - Gateway health: `http://127.0.0.1:8088/gateway/health`
 - API health: `http://127.0.0.1:8081/api/v1/health`
 
-## Parar
+## Stop
 
 ```bash
 docker compose down
 ```
 
-## Porta 8080 Ocupada
+## Port 8080 Already In Use
 
-A demo publica o `checkin-service` em `8081` por padrao para evitar conflito com processos locais. Dentro do Docker, o Service continua em `8080`.
+The demo publishes `checkin-service` on `8081` by default to avoid conflicts with local processes. Inside Docker, the service still listens on `8080`.
 
-Se precisar trocar:
+To change the published port:
 
 ```text
 CHECKIN_PORT=8082
 ```
 
-Depois:
+Then run:
 
 ```bash
 docker compose down
 docker compose up --build
 ```
 
-## Rebuild Limpo
+## Clean Rebuild
 
 ```bash
 docker compose down
@@ -79,17 +83,17 @@ docker compose build --no-cache
 docker compose up
 ```
 
-## Oracle Local Opcional
+## Optional Local Oracle
 
-O Oracle local nao sobe por padrao. Ele fica em profile separado:
+The local Oracle container does not start by default. It remains under a separate profile:
 
 ```bash
 docker compose --profile oracle-local up -d oracle-db
 ```
 
-Para a demo principal, prefira Oracle FIAP remoto.
+For the main demo, prefer the remote Oracle FIAP instance.
 
-## Fallback Sem Docker
+## Fallback Without Docker
 
 Backend:
 

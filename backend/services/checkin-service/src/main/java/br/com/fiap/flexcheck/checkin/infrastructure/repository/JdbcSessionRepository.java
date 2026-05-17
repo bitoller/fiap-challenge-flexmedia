@@ -58,7 +58,7 @@ public class JdbcSessionRepository implements SessionRepository {
                  WHERE id = ?
                 """, reservationId, sessionId);
         if (updated == 0) {
-            throw new BusinessException("SESSION_NOT_FOUND", "Sessao nao encontrada.", 404);
+            throw new BusinessException("SESSION_NOT_FOUND", "Session not found.", 404);
         }
     }
 
@@ -75,7 +75,7 @@ public class JdbcSessionRepository implements SessionRepository {
     public void updateSessionStatus(Long sessionId, String status) {
         int updated = jdbc.update("UPDATE fc_checkin_session SET status = ? WHERE id = ?", status, sessionId);
         if (updated == 0) {
-            throw new BusinessException("SESSION_NOT_FOUND", "Sessao nao encontrada.", 404);
+            throw new BusinessException("SESSION_NOT_FOUND", "Session not found.", 404);
         }
     }
 

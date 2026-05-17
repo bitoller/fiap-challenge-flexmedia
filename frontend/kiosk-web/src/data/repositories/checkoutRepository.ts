@@ -29,7 +29,7 @@ export const checkoutRepository = {
       return checkoutLookupResponseInterceptor(response);
     } catch (error) {
       if (error instanceof TimeoutError || USE_MOCKS) {
-        throw new ApiError("CHECKOUT_LOOKUP_FAILED", "Nao foi possivel localizar a estadia agora.");
+        throw new ApiError("CHECKOUT_LOOKUP_FAILED", "The stay could not be located right now.");
       }
 
       throw error;

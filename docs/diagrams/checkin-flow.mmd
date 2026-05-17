@@ -1,19 +1,19 @@
 flowchart TD
-    A["Inicio no Kiosk"] --> B["Criar Session"]
-    B --> C["Buscar reservation"]
-    C --> D{"reservation elegivel?"}
-    D -- "Nao" --> E["Encaminhar Reception"]
-    D -- "Sim" --> F["Confirmar Data"]
-    F --> G["Aceitar terms e LGPD"]
-    G --> H["Validar document"]
-    H --> I{"document aprovado?"}
-    I -- "Nao" --> E
-    I -- "Sim" --> J["Biometry opcional"]
-    J --> K["Payment ou pre-authorization"]
-    K --> L{"Payment aprovado?"}
-    L -- "Nao" --> E
-    L -- "Sim" --> M["Atribuir quarto"]
-    M --> N["Concluir check-in"]
-    N --> O["Emitir Key"]
-    O --> P["Mostrar comprovante"]
+    A["Start at kiosk"] --> B["Create session"]
+    B --> C["Search reservation"]
+    C --> D{"Reservation eligible?"}
+    D -- "No" --> E["Route to reception"]
+    D -- "Yes" --> F["Confirm data"]
+    F --> G["Accept terms and LGPD"]
+    G --> H["Validate document"]
+    H --> I{"Document approved?"}
+    I -- "No" --> E
+    I -- "Yes" --> J["Optional biometrics"]
+    J --> K["Payment or pre-authorization"]
+    K --> L{"Payment approved?"}
+    L -- "No" --> E
+    L -- "Yes" --> M["Assign room"]
+    M --> N["Complete check-in"]
+    N --> O["Issue key"]
+    O --> P["Show receipt"]
 

@@ -101,7 +101,7 @@ public class JdbcPmsEventRepository implements PmsEventRepository {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {
-            throw new IllegalStateException("Nao foi possivel serializar o payload do PMS.", ex);
+            throw new IllegalStateException("The PMS payload could not be serialized.", ex);
         }
     }
 

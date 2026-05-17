@@ -5,7 +5,6 @@ interface SessionState {
   lastCorrelationId: string | null;
 }
 
-// In-memory session state for the active kiosk session.
 let sessionState: SessionState = {
   current: null,
   lastCorrelationId: null,

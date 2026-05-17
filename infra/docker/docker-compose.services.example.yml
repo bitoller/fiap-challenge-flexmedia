@@ -1,6 +1,3 @@
-# Exemplo de override para evolucoes futuras.
-# A demo atual usa o docker-compose.yml da raiz.
-
 services:
   checkin-service:
     environment:

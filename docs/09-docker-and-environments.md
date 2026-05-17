@@ -1,27 +1,27 @@
-# Docker e Environments
+# Docker And Environments
 
-## 1. Decisao
+## 1. Decision
 
-Docker sera usado desde o inicio, mas com escopo controlado.
+Docker is used from the start, with a controlled scope.
 
-Para o MVP, o uso principal e padronizar o Oracle SQL e os Data de Demo. Isso reduz diferencas entre as maquinas do grupo e torna a apresentacao mais previsivel.
+For the MVP, the main purpose is to standardize the database and demo runtime. This reduces differences between team machines and makes the presentation more predictable.
 
-## 2. Estrategia Recomendada
+## 2. Recommended Strategy
 
 ### MVP
 
 ```text
 Docker:
-  Oracle SQL
+  Remote Oracle FIAP-backed demo stack
 
 Local:
-  Backend Java Spring Boot
-  Frontend React
+  Java Spring Boot backend
+  React frontend
 ```
 
-Essa abordagem e a mais segura para comecar, porque evita perder tempo com empacotamento de services antes do Flow estar pronto.
+This approach is the safest starting point because it avoids spending time packaging services before the main flow is stable.
 
-### Depois do MVP
+### After The MVP
 
 ```text
 Docker:
@@ -33,7 +33,7 @@ Docker:
   admin-web
 ```
 
-### Architecture final
+### Final Architecture
 
 ```text
 Docker Compose:
@@ -45,59 +45,54 @@ Docker Compose:
   key-service
   biometry-service
   device-service
-  PMS-adapter-service
+  pms-adapter-service
   notification-service
   kiosk-web
   admin-web
   oracle-db
 ```
 
-## 3. Por que nao containerizar tudo agora
+## 3. Why Not Containerize Everything Immediately
 
-Containerizar tudo antes de existir code aumenta trabalho com portas, redes, build, variaveis, CORS e troubleshooting. Para o desafio, isso pode roubar energia do que mais pontua: MVP funcional.
+Containerizing everything before the product flow is stable adds work around ports, networks, builds, variables, CORS, and troubleshooting. For this challenge, that can drain energy from the most important goal: a functional MVP.
 
-A better leitura architectural e:
+A stronger architecture narrative is:
 
-- Estrutura completa desenhada.
-- Docker presente desde o inicio.
-- Implementation incremental.
-- Demo estavel.
+- Complete structure defined.
+- Docker available from the start.
+- Incremental implementation.
+- Stable demo.
 
-## 4. Compose Inicial
+## 4. Initial Compose
 
-O arquivo `docker-compose.yml` sobe:
+The root `docker-compose.yml` starts the complete demo stack and can optionally start local Oracle through a dedicated profile.
 
-- `oracle-db`
-- volume persistente `oracle-data`
-- rede `flexcheck-net`
-- scripts de inicializacao do banco
+## 5. Variables
 
-## 5. Variaveis
+`.env.example` documents:
 
-O arquivo `.env.example` documenta:
+- Oracle connection.
+- runtime ports.
+- application user.
+- JDBC URL.
+- mocked modes for PMS, payment, biometrics, and key issuance.
 
-- imagem Oracle.
-- senha administrativa local.
-- User da aplicacao.
-- URL JDBC.
-- modos mockados de PMS, Payment, Biometry e Key.
+## 6. Oracle In Docker
 
-## 6. Banco Oracle em Docker
-
-O container usa a imagem oficial do Oracle Database Free:
+The optional local container uses the official Oracle Database Free image:
 
 ```text
 container-registry.oracle.com/database/free:latest-lite
 ```
 
-Ao subir pela primeira vez com volume vazio, os scripts em `database/oracle/init` sao montados em `/opt/oracle/scripts/setup`, criam o User `rm553134`, executam o schema e carregam os Data de test.
+When started with an empty volume, scripts under `database/oracle/init` are mounted into `/opt/oracle/scripts/setup`, create the local user, run the schema, and load test data.
 
-## 7. Risco e Plano B
+## 7. Risk And Fallback Plan
 
-Oracle em container pode ser pesado, especialmente em maquinas com pouca memoria. O plano B e usar o Oracle disponibilizado pela faculdade: o backend cria as tables via JPA/Hibernate e o `seed.sql` carrega os Data de Demo. Os scripts completos continuam como alternativa para reset controlado.
+Oracle in a container can be heavy, especially on machines with limited memory. The fallback is to use the faculty Oracle instance. The backend can create tables through JPA/Hibernate and `seed.sql` can load demo data. The complete scripts remain available for controlled resets.
 
-## 8. Como explicar na banca
+## 8. Presentation Talking Point
 
-Resposta sugerida:
+Suggested explanation:
 
-"Usamos Docker para padronizar o ambiente de development e Demo. No MVP, o Oracle roda containerizado com carga automatica de schema e Data. A Architecture ja possui templates para containerizar os services Java e os frontends React, mas priorizamos Deliveryr o Flow funcional antes de transformar todos os componentes em containers."
+"We use Docker to standardize the development and demo environment. The MVP uses an Oracle-backed runtime with automated schema and data setup. The architecture already includes templates for packaging Java services and React frontends, but we prioritized delivering the functional flow before containerizing every component."

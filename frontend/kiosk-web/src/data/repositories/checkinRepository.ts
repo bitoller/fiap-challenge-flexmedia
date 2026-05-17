@@ -26,9 +26,6 @@ import {
 const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 const MOCK_SCENARIO = import.meta.env.VITE_MOCK_SCENARIO || 'SUCCESS';
 
-/**
- * Get mock data based on scenario configuration
- */
 const getMockReservation = () => {
   if (MOCK_SCENARIO === MOCK_SCENARIOS.NOT_FOUND) {
     return MOCK_RESERVATION_NOT_FOUND;
@@ -40,9 +37,6 @@ const getMockReservation = () => {
 };
 
 export const checkinRepository = {
-  /**
-   * Create a new check-in session
-   */
   async createSession(flowType: 'CHECKIN' | 'CHECKOUT', language: string = 'en'): Promise<Session> {
     try {
       const body = createSessionRequestInterceptor(flowType, language);
@@ -57,9 +51,6 @@ export const checkinRepository = {
     }
   },
 
-  /**
-   * Search and attach reservation to session
-   */
   async attachReservation(
     sessionId: number,
     searchValue: string,
@@ -88,9 +79,6 @@ export const checkinRepository = {
     }
   },
 
-  /**
-   * Confirm guest information
-   */
   async confirmGuest(
     sessionId: number,
     guest: {
@@ -127,9 +115,6 @@ export const checkinRepository = {
     }
   },
 
-  /**
-   * Register guest consents
-   */
   async registerConsents(
     sessionId: number,
     biometricsAccepted: boolean
@@ -150,9 +135,6 @@ export const checkinRepository = {
     }
   },
 
-  /**
-   * Complete check-in process
-   */
   async completeCheckin(
     sessionId: number,
     paymentMethod: string,
@@ -181,9 +163,6 @@ export const checkinRepository = {
     }
   },
 
-  /**
-   * Search reservations by criteria
-   */
   async searchReservation(type: string, value: string): Promise<Reservation[]> {
     try {
       const response = await apiGet<any>(

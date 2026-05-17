@@ -131,7 +131,7 @@ Then configure the backend:
 
 ```env
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm553134
+ORACLE_USER=your_oracle_user
 ORACLE_PASSWORD=your-password
 ```
 

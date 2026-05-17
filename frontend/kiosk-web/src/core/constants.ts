@@ -1,7 +1,3 @@
-/**
- * Core Constants and Configuration
- */
-
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_URL || '/api/v1',
   TIMEOUT_MS: parseInt(import.meta.env.VITE_API_TIMEOUT_MS || '10000', 10),
@@ -22,14 +18,12 @@ export const KIOSK_CONFIG = {
   DEBUG: import.meta.env.MODE === 'development',
 };
 
-// Validation patterns
 export const VALIDATION_PATTERNS = {
   RESERVATION_CODE: /^RSV-\d{4}-\d{4}$/,
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   PHONE: /^[\d\s\-\+\(\)]{10,20}$/,
 };
 
-// UI Constants
 export const UI_CONFIG = {
   BUTTON_MIN_HEIGHT: '60px',
   TOUCH_TARGET_MIN: '50px',

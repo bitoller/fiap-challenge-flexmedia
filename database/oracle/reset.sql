@@ -1,6 +1,3 @@
--- FlexCheck Hotel - reset do schema Oracle
--- Use este script no usuario/schema do projeto antes de recriar as tabelas.
-
 BEGIN
     FOR table_name IN (
         SELECT 'FC_AUDIT_LOG' AS name FROM dual UNION ALL

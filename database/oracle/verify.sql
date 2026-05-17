@@ -1,5 +1,3 @@
--- FlexCheck Hotel - validacao rapida do banco
-
 SELECT 'FC_HOTEL' AS table_name, COUNT(*) AS total FROM fc_hotel
 UNION ALL
 SELECT 'FC_ROOM', COUNT(*) FROM fc_room

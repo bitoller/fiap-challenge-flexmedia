@@ -1,13 +1,13 @@
 package br.com.fiap.flexcheck.reservation.application.command;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public record CreateReservationCommand(
         @NotNull Long hotelId,

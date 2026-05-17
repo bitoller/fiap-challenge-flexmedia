@@ -1,6 +1,3 @@
-# Template para servicos Java Spring Boot
-# Copie este arquivo para o diretorio do servico quando o pom.xml existir.
-
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 

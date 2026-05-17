@@ -1,21 +1,15 @@
 # Frontend
 
-Web applications for FlexCheck Hotel.
+The frontend workspace contains two React/Vite applications:
 
-## Applications
+- `kiosk-web`: the vertical hotel kiosk experience.
+- `admin-web`: the administration portal for hotel operations and test reservation management.
 
-- `kiosk-web`: implemented. React kiosk interface.
-- `admin-web`: implemented. Administrative portal separated from the kiosk.
+Both applications use the API gateway by default.
 
-## Stack
+## Kiosk Web
 
-- React
-- TypeScript
-- Vite
-- Simple CSS in the MVP
-- API via `VITE_API_URL`
-
-## Run the Kiosk
+Run locally:
 
 ```bash
 cd frontend/kiosk-web
@@ -23,31 +17,33 @@ npm install
 npm run dev
 ```
 
-Default API endpoint:
+Default local URL:
 
 ```text
-http://127.0.0.1:8080/api/v1
+http://127.0.0.1:5173
 ```
 
-With backend on another port:
+Build:
 
 ```bash
-VITE_API_URL=http://127.0.0.1:8081/api/v1 npm run dev
+npm run build
 ```
 
-Through the gateway:
+Environment:
 
-```bash
-VITE_API_URL=http://127.0.0.1:8088/api/v1 VITE_ACTIVE_HOTEL_ID=1 npm run dev
+```env
+VITE_API_URL=/api/v1
+VITE_API_TIMEOUT_MS=10000
+VITE_USE_MOCKS=false
+VITE_MOCK_SCENARIO=SUCCESS
+VITE_DEFAULT_LANGUAGE=en
 ```
 
-Environment example:
+The kiosk supports the home screen, check-in, checkout, shared error recovery, and language switching. QR check-in uses the browser camera and requires camera permission in the browser.
 
-- [frontend/kiosk-web/.env.example](./kiosk-web/.env.example)
+## Admin Web
 
-The kiosk resolves the active hotel using `VITE_ACTIVE_HOTEL_ID` and uses the profile returned by `admin-service` for branding and hotel copy.
-
-## Run the Admin Portal
+Run locally:
 
 ```bash
 cd frontend/admin-web
@@ -55,37 +51,42 @@ npm install
 npm run dev
 ```
 
-Default API endpoint:
+Default local URL:
 
 ```text
-http://127.0.0.1:8088/api/v1
+http://127.0.0.1:5175
 ```
 
-Environment example:
-
-- [frontend/admin-web/README.md](./admin-web/README.md)
-
-## Docker Demo
-
-From the project root:
+Build:
 
 ```bash
-docker compose up --build
+npm run build
 ```
 
-The kiosk is available at:
+Environment:
 
-```text
-http://127.0.0.1:3000
+```env
+VITE_API_URL=/api/v1
 ```
 
-The admin portal is available at:
+Admin credentials are not hardcoded in the frontend. They are validated by `admin-service` using the values configured in the root `.env`.
 
-```text
-http://127.0.0.1:3001
+## Docker
+
+The root `docker-compose.yml` builds and serves both frontends with Nginx:
+
+- Kiosk: `http://127.0.0.1:3000`
+- Admin portal: `http://127.0.0.1:3001`
+
+Start from the repository root:
+
+```bash
+docker compose up -d --build
 ```
 
-## App Folders
+## Development Notes
 
-- [kiosk-web](kiosk-web/README.md)
-- [admin-web](admin-web/README.md)
+- Keep kiosk UI text in i18n files.
+- Keep code, file names, folders, comments, and configuration in English.
+- Do not commit local `.env` files or real credentials.
+- Prefer the API gateway for local and Docker integration tests.

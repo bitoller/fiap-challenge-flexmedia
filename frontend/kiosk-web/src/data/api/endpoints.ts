@@ -1,15 +1,8 @@
-/**
- * API Endpoint Constants
- * Centralized configuration for all backend endpoints
- */
-
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 export const API_ENDPOINTS = {
-  // Health & System
   HEALTH: '/health',
 
-  // Check-in Flow
   CHECKIN_SESSIONS: '/checkin-sessions',
   CHECKIN_SESSION_RESERVATION: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/reservation`,
@@ -20,19 +13,15 @@ export const API_ENDPOINTS = {
   COMPLETE_CHECKIN: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/complete-checkin`,
 
-  // Reservations
   SEARCH_RESERVATIONS: '/reservations/search',
 
-  // Check-out Flow
   CHECKOUT_LOOKUP: '/stays/lookup',
   CHECKOUT: (stayId: number | string) => `/stays/${stayId}/checkout`,
 
-  // Admin & Dashboard
   ADMIN_HOTELS: '/admin/hotels',
   ADMIN_HOTEL_PROFILE: (hotelId: number | string) => `/admin/hotels/${hotelId}`,
   ADMIN_DASHBOARD: '/admin/dashboard',
 
-  // Public Hotel Branding
   PUBLIC_HOTEL_PROFILE: (hotelId: number | string) => `/hotels/${hotelId}`,
 } as const;
 

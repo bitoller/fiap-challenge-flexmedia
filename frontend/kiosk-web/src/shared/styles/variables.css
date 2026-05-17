@@ -1,28 +1,18 @@
-/* Luxury Hotel Color Palette */
 :root {
-  /* Primary Colors */
-  --kiosk-primary: #b8860b; /* Dark Goldenrod */
-  --kiosk-primary-light: #daa520; /* Goldenrod */
-  --kiosk-primary-dark: #8b6914; /* Darker Gold */
-
-  /* Neutral Colors */
-  --kiosk-bg-light: #faf8f3; /* Off-white/Cream */
-  --kiosk-bg-dark: #1a1410; /* Dark Brown */
-  --kiosk-text-primary: #2c2416; /* Charcoal Brown */
-  --kiosk-text-secondary: #666666; /* Gray */
-  --kiosk-text-light: #ffffff; /* White */
-
-  /* Accent Colors */
-  --kiosk-accent: #8b7355; /* Medium Brown */
-  --kiosk-accent-light: #a0826d; /* Light Brown */
-
-  /* Status Colors */
-  --kiosk-success: #28a745; /* Green */
-  --kiosk-danger: #dc3545; /* Red */
-  --kiosk-warning: #ffc107; /* Yellow */
-  --kiosk-info: #17a2b8; /* Cyan */
-
-  /* Spacing */
+  --kiosk-primary: #b8860b;
+  --kiosk-primary-light: #daa520;
+  --kiosk-primary-dark: #8b6914;
+  --kiosk-bg-light: #faf8f3;
+  --kiosk-bg-dark: #1a1410;
+  --kiosk-text-primary: #2c2416;
+  --kiosk-text-secondary: #666666;
+  --kiosk-text-light: #ffffff;
+  --kiosk-accent: #8b7355;
+  --kiosk-accent-light: #a0826d;
+  --kiosk-success: #28a745;
+  --kiosk-danger: #dc3545;
+  --kiosk-warning: #ffc107;
+  --kiosk-info: #17a2b8;
   --kiosk-spacing-xs: 0.25rem;
   --kiosk-spacing-sm: 0.5rem;
   --kiosk-spacing-md: 1rem;
@@ -30,7 +20,6 @@
   --kiosk-spacing-xl: 2rem;
   --kiosk-spacing-2xl: 3rem;
 
-  /* Typography */
   --kiosk-font-family: "Georgia", "Times New Roman", serif;
   --kiosk-font-size-base: 16px;
   --kiosk-font-size-lg: 24px;
@@ -38,7 +27,6 @@
   --kiosk-font-size-2xl: 48px;
   --kiosk-font-size-3xl: 64px;
 
-  /* Shadows & Borders */
   --kiosk-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --kiosk-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
   --kiosk-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -60,7 +48,6 @@ body {
   font-family: var(--kiosk-font-family);
 }
 
-/* Bootstrap Color Overrides */
 .btn-primary {
   background-color: var(--kiosk-primary);
   border-color: var(--kiosk-primary);

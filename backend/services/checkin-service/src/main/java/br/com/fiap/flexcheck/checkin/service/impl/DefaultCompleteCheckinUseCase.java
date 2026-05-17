@@ -61,7 +61,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         if (!reservation.eligible()) {
             throw new BusinessException(
                     "RESERVATION_NOT_ELIGIBLE",
-                    "Essa reserva nao pode concluir check-in automaticamente.",
+                    "This reservation cannot complete check-in automatically.",
                     409
             );
         }
@@ -77,7 +77,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                     "SESSION",
                     String.valueOf(sessionId)
             );
-            throw new BusinessException("DOCUMENT_REJECTED", "Documento rejeitado. Procure a recepcao.", 409);
+            throw new BusinessException("DOCUMENT_REJECTED", "Document rejected. Please contact reception.", 409);
         }
 
         verificationRepository.insertDocumentVerification(sessionId, reservation.guest().id(), documentStatus);
@@ -96,7 +96,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                     "SESSION",
                     String.valueOf(sessionId)
             );
-            throw new BusinessException("BIOMETRY_REJECTED", "Biometria rejeitada. Procure a recepcao.", 409);
+            throw new BusinessException("BIOMETRY_REJECTED", "Biometric verification rejected. Please contact reception.", 409);
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
@@ -109,7 +109,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                     "SESSION",
                     String.valueOf(sessionId)
             );
-            throw new BusinessException("PAYMENT_DECLINED", "Pagamento recusado. Tente outro cartao ou procure a recepcao.", 409);
+            throw new BusinessException("PAYMENT_DECLINED", "Payment declined. Try another card or contact reception.", 409);
         }
 
         paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "APPROVED", reservation.totalAmount(), "AUTH-" + sessionId);

@@ -1,5 +1,7 @@
 package br.com.fiap.flexcheck.reservation.application.impl;
 
+import org.springframework.stereotype.Service;
+
 import br.com.fiap.flexcheck.reservation.application.CreateReservationUseCase;
 import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCommand;
 import br.com.fiap.flexcheck.reservation.domain.entity.ReservationEligibility;
@@ -7,7 +9,6 @@ import br.com.fiap.flexcheck.reservation.domain.service.ReservationEligibilityPo
 import br.com.fiap.flexcheck.reservation.mapper.ReservationMapper;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
 import br.com.fiap.flexcheck.reservation.service.result.ReservationResult;
-import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultCreateReservationUseCase implements CreateReservationUseCase {
@@ -16,8 +17,7 @@ public class DefaultCreateReservationUseCase implements CreateReservationUseCase
 
     public DefaultCreateReservationUseCase(
             ReservationRepository reservationRepository,
-            ReservationEligibilityPolicy eligibilityPolicy
-    ) {
+            ReservationEligibilityPolicy eligibilityPolicy) {
         this.reservationRepository = reservationRepository;
         this.eligibilityPolicy = eligibilityPolicy;
     }

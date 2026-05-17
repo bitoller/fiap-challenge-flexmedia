@@ -35,7 +35,7 @@ public class DefaultAttachReservationUseCase implements AttachReservationUseCase
             sessionRepository.failSession(sessionId, "RESERVATION_NOT_ELIGIBLE");
             throw new BusinessException(
                     "RESERVATION_NOT_ELIGIBLE",
-                    "A reserva encontrada precisa de atendimento da recepcao.",
+                    "The selected reservation requires reception assistance.",
                     409
             );
         }

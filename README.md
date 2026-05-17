@@ -1,153 +1,126 @@
-# FlexCheck Hotel
+# FlexCheck Hotel Platform
 
-FlexCheck is organized into two products:
+FlexCheck is a hotel kiosk and administration platform for reservation lookup, check-in, checkout, operational monitoring, and test reservation management. The current runtime is Docker-first and persists operational data in Oracle.
 
-- a guest kiosk for check-in and check-out
-- a separate admin portal for hotel operations
+## Repository Structure
 
-The backend is split into microservices with clean architecture, clean code, and clear domain boundaries.
+- `backend`: Spring Boot services and the Maven parent build.
+- `frontend`: Kiosk and administration React applications.
+- `database`: Oracle schema, seed, reset, and local bootstrap scripts.
+- `infra`: Docker templates and infrastructure support files.
+- `openspec`: product and implementation history.
+- `docs`: supporting historical notes, diagrams, and API collections.
 
-## What is ready
+## Required Environment
 
-- `checkin-service`: orchestrates the kiosk flow
-- `api-gateway`: entrypoint for `/api/v1/**`
-- `reservation-service`: reservation lookup, list, create, delete, and guest confirmation
-- `payment-service`: payment transactions
-- `key-service`: key issuance and revocation
-- `admin-service`: dashboard, devices, audit, branding, hotel profile, and admin login
-- `device-service`: kiosk heartbeat and status
-- `identity-service`: authentication, users, and technical credentials
-- `notification-service`: receipts and alerts
-- `biometry-service`: future biometric integration contract
-- `pms-adapter-service`: future PMS integration contract
-- `kiosk-web`: guest kiosk frontend
-- `admin-web`: admin portal frontend
-
-## Docker
-
-### 1. Configure the environment
-
-From the project root:
+Create a local `.env` file in the repository root:
 
 ```bash
-Copy-Item .env.demo.example .env
+cp .env.example .env
 ```
 
-The demo env already uses:
+Fill the values with local or FIAP Oracle credentials:
 
-- `ORACLE_USER=rm553134`
-- `ORACLE_PASSWORD=060892`
+```env
+ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
+ORACLE_USER=your_oracle_user
+ORACLE_PASSWORD=your_oracle_password
+JPA_DDL_AUTO=update
 
-If you use the FIAP Oracle instance, make sure the schema exists before starting the stack.
+ADMIN_USERNAME=admin@example.local
+ADMIN_PASSWORD=change_me_admin_password
+ADMIN_NAME=FlexCheck Administrator
 
-### 2. Start everything
+KIOSK_PORT=3000
+ADMIN_WEB_PORT=3001
+GATEWAY_PORT=8088
+```
+
+Keep `.env` private. Do not commit real database credentials, admin credentials, tokens, or local secrets.
+
+## Run With Docker
+
+Start the full application stack:
 
 ```bash
 docker compose up -d --build
 ```
 
-This starts:
+Main URLs:
 
-- `checkin-service`
-- `api-gateway`
-- `reservation-service`
-- `payment-service`
-- `key-service`
-- `admin-service`
-- `device-service`
-- `identity-service`
-- `notification-service`
-- `biometry-service`
-- `pms-adapter-service`
-- `kiosk-web`
-- `admin-web`
+- Kiosk: `http://127.0.0.1:3000`
+- Admin portal: `http://127.0.0.1:3001`
+- API gateway: `http://127.0.0.1:8088`
+- Check-in service: `http://127.0.0.1:8081`
+- Reservation service: `http://127.0.0.1:8082`
+- Admin service: `http://127.0.0.1:8085`
 
-### 3. Stop everything
+Stop the stack:
 
 ```bash
 docker compose down
 ```
 
-## Start only parts
-
-### Kiosk and API
+Rebuild from scratch when Docker images are stale:
 
 ```bash
-docker compose up -d --build checkin-service api-gateway kiosk-web
+docker compose build --no-cache
+docker compose up -d
 ```
 
-### Admin portal
+## Optional Local Oracle
+
+The default stack expects an Oracle database configured through `.env`. A local Oracle container is available behind the `oracle-local` profile:
 
 ```bash
-docker compose up -d --build admin-service reservation-service admin-web
+docker compose --profile oracle-local up -d oracle-db
 ```
 
-### Support services
+For local Oracle, set:
+
+```env
+ORACLE_SYS_PASSWORD=your_local_oracle_sys_password
+ORACLE_URL=jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
+ORACLE_USER=flexcheck_app
+ORACLE_PASSWORD=change_me_local_password
+```
+
+The local bootstrap scripts in `database/oracle/init` create the local application schema and load the versioned schema and seed data. For shared FIAP Oracle usage, use your own schema credentials and run only the scripts that are safe for that environment.
+
+## Build Locally
+
+Backend:
 
 ```bash
-docker compose up -d --build payment-service key-service device-service identity-service notification-service
+cd backend
+mvn -DskipTests clean package
 ```
 
-### Future integration contracts
-
-```bash
-docker compose up -d --build biometry-service pms-adapter-service
-```
-
-## Run locally without Docker
-
-### Kiosk frontend
+Kiosk:
 
 ```bash
 cd frontend/kiosk-web
 npm install
-npm run dev
+npm run build
 ```
 
-### Admin frontend
+Admin portal:
 
 ```bash
 cd frontend/admin-web
 npm install
-npm run dev
+npm run build
 ```
 
-### Backend services
+## Current Product Flows
 
-```bash
-cd backend/services/checkin-service
-mvn spring-boot:run
+- Kiosk home with hotel branding and language switching.
+- Check-in reservation lookup by CPF, reservation number, and QR token.
+- Check-in reservation summary before facial verification.
+- Checkout lookup, account review, payment path, key return, receipt, and completion screens.
+- Shared kiosk error screen for check-in and checkout failures.
+- Admin login, dashboard, hotel context selection, device/audit/branding views, and persistent reservation test area.
 
-cd backend/services/api-gateway
-mvn spring-boot:run
-```
+## Documentation
 
-## Service docs
-
-- [Backend services](backend/services/README.md)
-- [admin-web](frontend/admin-web/README.md)
-- [kiosk-web](frontend/kiosk-web/README.md)
-
-## Oracle
-
-The project uses schema `rm553134` in the FIAP Oracle environment and the versioned bootstrap scripts in `database/oracle/`.
-
-To recreate the physical schema, run:
-
-- `database/oracle/init/01_create_user.sql`
-- `database/oracle/init/02_run_schema.sql`
-- `database/oracle/init/03_run_seed.sql`
-
-## Main flows
-
-1. guest uses the kiosk for check-in
-2. guest uses the kiosk for check-out
-3. staff uses the admin portal to manage hotels and test reservations
-
-## Architecture notes
-
-- `checkin-service` remains the kiosk orchestrator.
-- `reservation-service` now owns hotel-scoped reservation CRUD for kiosk tests.
-- `admin-service` owns dashboard, branding, hotel profile, devices, audit, and login contracts.
-- `identity-service` and `notification-service` still use in-memory storage in the MVP.
-- `biometry-service` and `pms-adapter-service` remain future integration contracts.
+Use the root README for Docker, database, and project-wide setup. Use `backend/README.md` for backend service details and `frontend/README.md` for kiosk/admin development details. OpenSpec remains the source of implementation history and change decisions.

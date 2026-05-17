@@ -26,7 +26,7 @@ public class DefaultRegisterConsentsUseCase implements RegisterConsentsUseCase {
     @Transactional
     public void execute(Long sessionId, ConsentCommand command) {
         SessionContext sessionContext = sessionRepository.findSessionContext(sessionId)
-                .orElseThrow(() -> new BusinessException("SESSION_NOT_FOUND", "Sessao nao encontrada.", 404));
+                .orElseThrow(() -> new BusinessException("SESSION_NOT_FOUND", "Session not found.", 404));
         Long guestId = sessionContext.reservation().guest().id();
         Long hotelId = sessionContext.reservation().hotelId();
         for (ConsentCommand.ConsentItemCommand item : command.items()) {

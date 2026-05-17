@@ -22,8 +22,8 @@ function App() {
     const raw = localStorage.getItem("admin-session");
     return raw ? (JSON.parse(raw) as AdminSession) : null;
   });
-  const [username, setUsername] = useState("admin@flexcheck.local");
-  const [password, setPassword] = useState("FlexCheck@2026");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [hotels, setHotels] = useState<HotelSummary[]>(session?.hotels ?? []);
   const [selectedHotelId, setSelectedHotelId] = useState<number | null>(session?.hotels?.[0]?.id ?? null);
   const [selectedView, setSelectedView] = useState<ViewKey>("overview");

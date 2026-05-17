@@ -1,65 +1,66 @@
-# implemented MVP
+# Implemented MVP
 
-## 1. Status Atual
+## 1. Current Status
 
-A primeira fatia funcional do MVP foi implementada com:
+The first functional MVP slice includes:
 
-- Backend Java Spring Boot em `backend/services/checkin-service`.
-- API Gateway Spring Boot em `backend/services/api-gateway`.
-- Frontend React do Kiosk em `frontend/kiosk-web`.
-- Persistencia apontando para Oracle FIAP.
-- Criacao de tables por entidades JPA/Hibernate.
-- Flow de check-in e check-out testado por API.
-- `checkin-service` reorganized em Clean Architecture com principios SOLID.
-- test automatizado de Flow nos use cases.
+- Java Spring Boot backend under `backend/services`.
+- Spring Boot API Gateway under `backend/services/api-gateway`.
+- React kiosk frontend under `frontend/kiosk-web`.
+- React admin frontend under `frontend/admin-web`.
+- Persistence through Oracle FIAP.
+- Table creation through JPA/Hibernate entities and SQL scripts when needed.
+- Check-in and checkout flows validated through API and kiosk screens.
+- Backend services organized with Clean Architecture and SOLID principles.
+- Automated flow tests for use cases.
 
-## 2. O que ja funciona
+## 2. What Works
 
 ### Backend
 
-- Gateway MVP encaminhando `/api/v1/**` para o `checkin-service`.
-- use cases separados na camada `service`.
-- Dominio desacoplado de Spring/JDBC.
-- Adaptador JDBC implementando interfaces de repository.
-- Entidades JPA na infraestrutura para criacao automatica do schema.
-- Criar Session de atendimento.
-- Buscar reservation por code.
-- Validar elegibilidade da reservation.
-- Confirmar Data do Guest.
-- Registrar consentimentos LGPD.
-- Simular Validation documental.
-- Simular Biometry opcional.
-- Simular Payment aprovado ou recusado.
-- Criar estadia.
-- Emitir Key digital simulada.
-- Fazer check-out.
-- Revogar Key.
-- Atualizar reservation e quarto.
-- Registrar audit.
-- Expor dashboard administrativo basico.
+- MVP gateway forwarding `/api/v1/**` to the correct service.
+- Use cases separated in the `service` layer.
+- Domain logic decoupled from Spring/JDBC.
+- JDBC adapters implementing repository interfaces.
+- JPA entities in infrastructure for schema creation.
+- Session creation.
+- Reservation lookup by code, CPF, and QR token.
+- Reservation eligibility validation.
+- Guest data confirmation.
+- LGPD consent recording.
+- Simulated document validation.
+- Optional biometric verification.
+- Simulated approved or declined payment.
+- Stay creation.
+- Simulated digital key issuance.
+- Checkout.
+- Key revocation.
+- Reservation and room updates.
+- Audit recording.
+- Basic administrative dashboard.
 
-### Frontend do Kiosk
+### Kiosk Frontend
 
-- Tela inicial com escolha entre check-in e check-out.
-- Busca por code de reservation.
-- summary da reservation.
-- Confirmation de personal data.
-- consent de terms e Biometry opcional.
-- Payment simulado.
-- Tela de sucesso com quarto, Key digital e estadia.
-- Flow de check-out por numero de estadia.
-- Estados de erro com encaminhamento para Reception.
+- Home screen with check-in, checkout, and services entry points.
+- Reservation lookup by CPF, reservation code, or QR token.
+- Reservation summary.
+- Contact data confirmation.
+- Terms and optional biometric consent.
+- Simulated payment.
+- Success screen with room, digital key, and stay details.
+- Checkout by active stay lookup.
+- Error states with retry and reception fallback actions.
 
-## 3. Como rodar rapidamente
+## 3. Quick Start
 
-Backend com Oracle FIAP:
+Backend with Oracle FIAP:
 
 ```bash
 cd backend/services/checkin-service
 mvn spring-boot:run
 ```
 
-Se a porta `8080` estiver ocupada:
+If port `8080` is already in use:
 
 ```bash
 SERVER_PORT=8081 mvn spring-boot:run
@@ -73,40 +74,39 @@ npm install
 npm run dev
 ```
 
-Com backend em outra porta:
+With the backend on another port:
 
 ```bash
 VITE_API_URL=http://127.0.0.1:8081/api/v1 npm run dev
 ```
 
-Abrir:
+Open:
 
 ```text
 http://localhost:5173
 ```
 
-## 4. Data de test
+## 4. Test Data
 
-reservation:
+Reservations:
 
 - `RSV-2026-0001`
 - `RSV-2026-0002`
 
-Payments simulados:
+Simulated payments:
 
 - `TEST_CARD_APPROVED`
 - `TEST_CARD_DECLINED`
 
-## 5. Decisao tecnica
+## 5. Technical Decision
 
-O backend foi implemented dentro do `checkin-service` como MVP modular. Ele ja possui responsabilidades de reservation, check-in, Payment, Key e audit separadas internamente, mas ainda roda como um unico Service para reduce risco de Delivery.
+The backend started with a modular MVP inside `checkin-service` and has since been split into dedicated services for reservation, payment, key, identity, biometrics, notification, device, PMS, and admin concerns.
 
-Na evolucao, os modulos podem ser separados em microservices independentes usando os contratos documentados.
+Compatibility paths remain documented where they are still useful for local testing or safe fallback behavior.
 
-## 6. Next steps
+## 6. Next Steps
 
-- Criar `admin-web` consumindo `/api/v1/admin/dashboard`.
-- Validar o schema criado por JPA no Oracle FIAP.
-- Separar `reservation-service` quando o Flow principal estiver estavel.
-- Adicionar tests automatizados para regras de elegibilidade.
-- Melhorar acessibilidade e responsividade do Kiosk.
+- Continue refining the admin portal.
+- Validate the Oracle FIAP schema after each structural change.
+- Expand automated tests for reservation eligibility and error cases.
+- Improve accessibility and responsiveness in kiosk-specific layouts.

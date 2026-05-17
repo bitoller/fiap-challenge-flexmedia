@@ -69,7 +69,7 @@ async function parseErrorResponse(response: Response): Promise<never> {
 
   throw new ApiError(
     errorBody?.code ?? `HTTP_${response.status}`,
-    errorBody?.message ?? (response.statusText || "Nao foi possivel concluir a operacao."),
+    errorBody?.message ?? (response.statusText || "The operation could not be completed."),
     errorBody?.details
   );
 }
@@ -116,7 +116,7 @@ export async function apiRequest<T>(url: string, config: ApiRequestConfig = {}):
 
     throw new ApiError(
       "NETWORK_ERROR",
-      error instanceof Error ? error.message : "Nao foi possivel concluir a operacao."
+      error instanceof Error ? error.message : "The operation could not be completed."
     );
   } finally {
     clearTimeout(timeoutId);

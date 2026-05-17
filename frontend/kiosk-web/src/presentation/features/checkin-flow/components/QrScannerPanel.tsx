@@ -43,13 +43,11 @@ export function QrScannerPanel({ active, onTokenDetected, onFallback }: QrScanne
       try {
         await scanner.stop();
       } catch {
-        // Ignore stop errors when the scanner was not fully started yet.
       }
 
       try {
         await scanner.clear();
       } catch {
-        // Ignore clear errors during fast navigation or mode switches.
       }
     };
 
@@ -107,10 +105,7 @@ export function QrScannerPanel({ active, onTokenDetected, onFallback }: QrScanne
             void stopScanner();
             onTokenDetectedRef.current(token);
           },
-          () => {
-            // Intentionally ignored. The library invokes this callback on each
-            // unsuccessful frame, which is expected while the kiosk keeps scanning.
-          }
+          () => undefined
         );
 
         if (!cancelled) {

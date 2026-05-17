@@ -43,14 +43,14 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
     @Transactional
     public CheckoutResult execute(Long stayId, CheckoutCommand command) {
         if (!command.confirmCharges()) {
-            throw new BusinessException("CHARGES_NOT_CONFIRMED", "Confirme os valores para concluir o check-out.", 400);
+            throw new BusinessException("CHARGES_NOT_CONFIRMED", "Confirm the charges to complete checkout.", 400);
         }
 
         Stay stay = stayRepository.findStay(stayId)
-                .orElseThrow(() -> new BusinessException("STAY_NOT_FOUND", "Estadia nao encontrada.", 404));
+                .orElseThrow(() -> new BusinessException("STAY_NOT_FOUND", "Stay not found.", 404));
 
         if (!stay.isActiveForCheckout()) {
-            throw new BusinessException("STAY_NOT_ACTIVE", "Essa estadia ja foi encerrada ou nao esta ativa.", 409);
+            throw new BusinessException("STAY_NOT_ACTIVE", "This stay has already been closed or is not active.", 409);
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
@@ -62,7 +62,7 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
                     "STAY",
                     String.valueOf(stayId)
             );
-            throw new BusinessException("PAYMENT_DECLINED", "Pagamento recusado. Procure a recepcao.", 409);
+            throw new BusinessException("PAYMENT_DECLINED", "Payment declined. Please contact reception.", 409);
         }
 
         paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "APPROVED", stay.totalAmount(), "CAP-" + stayId);

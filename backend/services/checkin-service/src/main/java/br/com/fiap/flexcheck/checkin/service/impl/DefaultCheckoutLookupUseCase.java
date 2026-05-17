@@ -21,7 +21,7 @@ public class DefaultCheckoutLookupUseCase implements CheckoutLookupUseCase {
         if (isBlank(command.roomNumber()) && isBlank(command.documentNumber())) {
             throw new BusinessException(
                     "STAY_NOT_FOUND",
-                    "Nao encontramos uma estadia ativa com esses dados.",
+                    "No active stay was found for the provided details.",
                     404
             );
         }
@@ -48,14 +48,14 @@ public class DefaultCheckoutLookupUseCase implements CheckoutLookupUseCase {
         if (stayState != null && stayState.stayStatus() != null && stayState.stayStatus().equalsIgnoreCase("CHECKED_OUT")) {
             throw new BusinessException(
                     "STAY_ALREADY_CHECKED_OUT",
-                    "Essa estadia ja foi encerrada. Inicie uma nova consulta se precisar revisar outra hospedagem.",
+                    "This stay has already been checked out. Start a new lookup if you need to review another stay.",
                     409
             );
         }
 
         throw new BusinessException(
                 "STAY_NOT_FOUND",
-                "Nao encontramos uma estadia ativa com esses dados.",
+                "No active stay was found for the provided details.",
                 404
         );
     }

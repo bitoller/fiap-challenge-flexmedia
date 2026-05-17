@@ -1,107 +1,104 @@
 # Backend
 
-Backend Java/Spring do FlexCheck Hotel.
+The backend is a Spring Boot multi-service workspace managed by the Maven parent in `backend/pom.xml`.
 
-## Servicos
+## Services
 
-Implementados:
+- `api-gateway`: routes `/api/v1/**` requests to backend services.
+- `checkin-service`: orchestrates check-in, checkout, sessions, stays, payment, keys, and kiosk-facing flows.
+- `reservation-service`: owns reservation lookup and reservation test management.
+- `admin-service`: owns admin authentication, dashboard aggregation, hotel context, audit, branding, and reservation administration APIs.
+- `payment-service`: simulated payment adapter with Oracle persistence where applicable.
+- `key-service`: simulated key issuing adapter.
+- `biometry-service`: simulated biometric verification adapter.
+- `pms-adapter-service`: simulated PMS adapter.
+- `device-service`: kiosk device status and monitoring adapter.
+- `identity-service`: identity support adapter.
+- `notification-service`: notification support adapter.
 
-- `checkin-service`: orquestra check-in e checkout, coordenando os demais servicos.
-- `api-gateway`: proxy HTTP para centralizar entrada em `/api/v1/**`.
-- `reservation-service`: busca e confirmacao de reserva.
-- `payment-service`: gravacao de transacoes de pagamento.
-- `key-service`: emissao e revogacao de chaves.
-- `admin-service`: dashboard e auditoria operacional.
+## Environment
 
-Planejados:
+Backend services read Oracle and admin credentials from the root `.env` file or process environment:
 
-- `identity-service`: usuarios, tokens e perfis.
-- `reservation-service`: reservas, hospedes, quartos e elegibilidade.
-- `payment-service`: pre-autorizacao e captura.
-- `key-service`: emissao e revogacao de chaves.
-- `biometry-service`: validacao facial opcional.
-- `notification-service`: comprovantes e mensagens operacionais.
-- `device-service`: totens, heartbeat e eventos de hardware.
-- `pms-adapter-service`: integracao com PMS.
-
-## Como Rodar
-
-API principal:
-
-```bash
-cd backend/services/checkin-service
-mvn spring-boot:run
-```
-
-Gateway:
-
-```bash
-cd backend/services/api-gateway
-mvn spring-boot:run
-```
-
-Se a porta `8080` estiver ocupada:
-
-```bash
-cd backend/services/checkin-service
-SERVER_PORT=8081 mvn spring-boot:run
-```
-
-## Demo com Docker
-
-Na raiz do projeto:
-
-```bash
-cp .env.demo.example .env
-docker compose up --build
-```
-
-Servicos expostos:
-
-- `checkin-service`: `http://127.0.0.1:8081/api/v1`
-- `reservation-service`: `http://127.0.0.1:8082/api/v1`
-- `payment-service`: `http://127.0.0.1:8083/api/v1`
-- `key-service`: `http://127.0.0.1:8084/api/v1`
-- `admin-service`: `http://127.0.0.1:8085/api/v1`
-- `api-gateway`: `http://127.0.0.1:8088`
-- `kiosk-web`: `http://127.0.0.1:3000`
-
-## Banco
-
-O `checkin-service` usa Oracle FIAP e importa o `.env` da raiz do projeto.
-
-Variaveis principais:
-
-```text
+```env
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm553134
-ORACLE_PASSWORD=060892
+ORACLE_USER=your_oracle_user
+ORACLE_PASSWORD=your_oracle_password
 JPA_DDL_AUTO=update
+
+ADMIN_USERNAME=admin@example.local
+ADMIN_PASSWORD=change_me_admin_password
+ADMIN_NAME=FlexCheck Administrator
 ```
 
-## Padrao Java
+Do not place real credentials in service source files, READMEs, SQL examples, or OpenSpec documents.
 
-Para os servicos implementados:
+## Build
 
-```text
-controller/api -> service -> domain
-repository interfaces <- infrastructure adapters
-```
-
-Convencoes:
-
-- DTOs separados por request/response.
-- Controllers finos.
-- Services por interface.
-- Entidades JPA nao expostas na API.
-- Erro padronizado com `code`, `message`, `details` e `correlationId`.
-- `X-Correlation-Id` propagado nas chamadas.
-
-## Testes
+Build all services:
 
 ```bash
-cd backend/services/checkin-service
+mvn -DskipTests clean package
+```
+
+Run tests:
+
+```bash
 mvn test
 ```
 
-Os testes usam H2 apenas no escopo de teste para nao alterar o Oracle real.
+Run a single service from its folder:
+
+```bash
+cd services/checkin-service
+mvn spring-boot:run
+```
+
+## Docker
+
+The root `docker-compose.yml` builds all services from the `backend` context and each service-level `Dockerfile`.
+
+Common published ports:
+
+- `api-gateway`: `8088`
+- `checkin-service`: `8081`
+- `reservation-service`: `8082`
+- `payment-service`: `8083`
+- `key-service`: `8084`
+- `admin-service`: `8085`
+- `biometry-service`: `8086`
+- `pms-adapter-service`: `8087`
+- `device-service`: `8089`
+- `identity-service`: `8090`
+- `notification-service`: `8091`
+
+Start everything from the repository root:
+
+```bash
+docker compose up -d --build
+```
+
+## Database
+
+Versioned Oracle files live in `database/oracle`:
+
+- `schema.sql`: table definitions.
+- `seed.sql`: demo seed data.
+- `reset.sql`: removes FlexCheck tables.
+- `verify.sql`: checks table and data counts.
+- `setup_fiap.sql`: reset, schema, seed, and verify sequence for manual IDE execution.
+- `init`: local Oracle container bootstrap scripts.
+
+Use `JPA_DDL_AUTO=update` for normal development against Oracle. Use reset scripts only when intentionally resetting a development schema.
+
+## API Smoke Checks
+
+With Docker running:
+
+```bash
+curl http://127.0.0.1:8088/gateway/health
+curl http://127.0.0.1:8088/api/v1/admin/hotels
+curl http://127.0.0.1:8088/api/v1/reservations/hotels/1
+```
+
+Admin login credentials are whatever was configured in `.env`.

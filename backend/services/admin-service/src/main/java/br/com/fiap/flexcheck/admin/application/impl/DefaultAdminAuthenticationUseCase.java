@@ -22,8 +22,8 @@ public class DefaultAdminAuthenticationUseCase implements AdminAuthenticationUse
     public DefaultAdminAuthenticationUseCase(
             InMemoryAdminSessionRepository sessionRepository,
             OracleHotelRepository hotelRepository,
-            @Value("${ADMIN_USERNAME:admin@flexcheck.local}") String adminUsername,
-            @Value("${ADMIN_PASSWORD:FlexCheck@2026}") String adminPassword,
+            @Value("${ADMIN_USERNAME:}") String adminUsername,
+            @Value("${ADMIN_PASSWORD:}") String adminPassword,
             @Value("${ADMIN_NAME:FlexCheck Administrator}") String adminName
     ) {
         this.sessionRepository = sessionRepository;

@@ -14,9 +14,9 @@
 
 ## 3. Error clarity and consistency
 
-- [ ] 3.1 Normalize backend validation and business error responses so they return clear, stable messages and codes.
-- [ ] 3.2 Align frontend recovery and error copy so user-facing failures remain concise and actionable.
-- [ ] 3.3 Ensure unexpected failures do not expose stack traces or confusing low-level details to users.
+- [x] 3.1 Normalize backend validation and business error responses so they return clear, stable messages and codes.
+- [x] 3.2 Align frontend recovery and error copy so user-facing failures remain concise and actionable.
+- [x] 3.3 Ensure unexpected failures do not expose stack traces or confusing low-level details to users.
 
 ## 4. Verification and handoff
 

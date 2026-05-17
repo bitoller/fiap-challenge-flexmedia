@@ -33,7 +33,7 @@ public class ApiExceptionHandler {
 
         return ResponseEntity.badRequest().body(new ApiError(
                 "VALIDATION_ERROR",
-                "Revise os campos informados.",
+                "Review the submitted fields.",
                 details,
                 request.getHeader("X-Correlation-Id")
         ));
@@ -43,7 +43,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiError> unexpected(Exception exception, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiError(
                 "UNEXPECTED_ERROR",
-                "Nao foi possivel concluir a operacao agora.",
+                "The operation could not be completed right now.",
                 Map.of("exception", exception.getClass().getSimpleName()),
                 request.getHeader("X-Correlation-Id")
         ));

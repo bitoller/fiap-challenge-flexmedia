@@ -115,7 +115,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       const apiError =
         cause instanceof ApiError
           ? cause
-          : new ApiError("CHECKOUT_LOOKUP_FAILED", "Nao foi possivel localizar a estadia agora.");
+          : new ApiError("CHECKOUT_LOOKUP_FAILED", "The stay could not be located right now.");
 
       setError(apiError);
       setRecoveryState({
@@ -131,7 +131,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
 
   const completeCheckout = useCallback(async () => {
     if (!stayPreview) {
-      throw new ApiError("CHECKOUT_NOT_READY", "Nao foi possivel concluir o check-out agora.");
+      throw new ApiError("CHECKOUT_NOT_READY", "Checkout could not be completed right now.");
     }
 
     setIsLoading(true);
@@ -146,7 +146,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       const apiError =
         cause instanceof ApiError
           ? cause
-          : new ApiError("CHECKOUT_FAILED", "Nao foi possivel concluir o check-out agora.");
+          : new ApiError("CHECKOUT_FAILED", "Checkout could not be completed right now.");
 
       setError(apiError);
       setRecoveryState({

@@ -1,6 +1,3 @@
-# Template para frontends React com Vite
-# Copie este arquivo para kiosk-web ou admin-web quando o package.json existir.
-
 FROM node:22-alpine AS build
 WORKDIR /app
 

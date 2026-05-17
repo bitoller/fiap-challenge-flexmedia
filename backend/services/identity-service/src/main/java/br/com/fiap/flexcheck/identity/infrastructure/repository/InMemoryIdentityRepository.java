@@ -53,7 +53,7 @@ public class InMemoryIdentityRepository {
         }
         UserAccount user = users.get(record.userId());
         if (user == null || !user.active()) {
-            throw new IdentityException("USER_INACTIVE", "Usuario inativo.", 403);
+            throw new IdentityException("USER_INACTIVE", "User is inactive.", 403);
         }
         return createSession(user);
     }
@@ -65,7 +65,7 @@ public class InMemoryIdentityRepository {
         }
         UserAccount user = users.get(record.userId());
         if (user == null || !user.active()) {
-            throw new IdentityException("USER_INACTIVE", "Usuario inativo.", 403);
+            throw new IdentityException("USER_INACTIVE", "User is inactive.", 403);
         }
         return toProfile(user);
     }

@@ -1,6 +1,5 @@
 import { Reservation, Guest, Room } from "../../../domain/models";
 
-// Scenario 1: Successful check-in
 export const MOCK_RESERVATION_SUCCESS: Reservation = {
   id: 1,
   hotelId: 1,
@@ -30,14 +29,12 @@ export const MOCK_RESERVATION_SUCCESS: Reservation = {
   },
 };
 
-// Scenario 2: Reservation not found
 export const MOCK_RESERVATION_NOT_FOUND = {
   error: true,
   code: 'RESERVATION_NOT_FOUND',
   message: 'The reservation code was not found in the system',
 };
 
-// Scenario 3: Invalid document
 export const MOCK_RESERVATION_INVALID_DOCUMENT: Reservation = {
   ...MOCK_RESERVATION_SUCCESS,
   id: 3,
@@ -51,7 +48,6 @@ export const MOCK_RESERVATION_INVALID_DOCUMENT: Reservation = {
   },
 };
 
-// Scenario 4: Payment declined
 export const MOCK_PAYMENT_DECLINED = {
   error: true,
   code: 'PAYMENT_DECLINED',
@@ -59,7 +55,6 @@ export const MOCK_PAYMENT_DECLINED = {
   retryable: true,
 };
 
-// Scenario 5: Multiple reservations for search list
 export const MOCK_RESERVATIONS_LIST: Reservation[] = [
   MOCK_RESERVATION_SUCCESS,
   {
@@ -103,7 +98,6 @@ export const MOCK_RESERVATIONS_LIST: Reservation[] = [
   },
 ];
 
-// Session mock
 export const MOCK_SESSION = {
   sessionId: 12345,
   status: 'ACTIVE',
@@ -111,7 +105,6 @@ export const MOCK_SESSION = {
   correlationId: 'mock-correlation-id-12345',
 };
 
-// Complete checkin response mock
 export const MOCK_COMPLETE_CHECKIN_RESPONSE = {
   sessionId: 12345,
   status: 'COMPLETED',
@@ -127,7 +120,6 @@ export const MOCK_COMPLETE_CHECKIN_RESPONSE = {
   },
 };
 
-// Checkout response mock
 export const MOCK_CHECKOUT_RESPONSE = {
   stayId: 98765,
   status: 'COMPLETED',

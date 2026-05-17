@@ -8,7 +8,7 @@ The backend currently concentrates reservation, check-in, checkout, payment, key
 - Keep `checkin-service` focused on check-in orchestration and session flow.
 - Move reservation search, payment, key issuance, notification, device, identity, biometry, and PMS responsibilities into their own services.
 - Preserve the API gateway as the public entry point and update routing to the new services.
-- Update Oracle configuration and bootstrap scripts to use the new user `rm553134`.
+- Update Oracle configuration and bootstrap scripts to use explicit environment-provided database credentials.
 - Update SQL scripts so the empty Oracle schema can be created cleanly under the new user.
 - Standardize backend code in English and align each service to a clean MVC structure with clear application and infrastructure boundaries.
 
@@ -16,7 +16,7 @@ The backend currently concentrates reservation, check-in, checkout, payment, key
 
 ### New Capabilities
 - `backend-service-splitting`: Split the backend into microservices with clear ownership, routing, and service-level boundaries.
-- `oracle-user-alignment`: Bootstrap and run the Oracle database under the new user `rm553134` with matching configuration and SQL scripts.
+- `oracle-user-alignment`: Bootstrap and run the Oracle database under an application schema with matching configuration and SQL scripts.
 
 ### Modified Capabilities
 - None

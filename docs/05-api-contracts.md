@@ -74,7 +74,7 @@ Response:
   "reservation": {
     "id": 10,
     "code": "RSV-2026-0001",
-    "guestName": "Lucas Henrique",
+    "guestName": "Marcos Alberto",
     "arrivalDate": "2026-05-11",
     "departureDate": "2026-05-13",
     "roomType": "STANDARD",
@@ -92,11 +92,11 @@ Request:
 ```json
 {
   "guestId": 20,
-  "fullName": "Lucas Henrique Rodrigues",
+  "fullName": "Marcos Alberto",
   "documentType": "CPF",
   "documentNumber": "12345678909",
   "birthDate": "1995-08-15",
-  "email": "lucas@example.com",
+  "email": "marcos@example.com",
   "phone": "+5511999999999"
 }
 ```
@@ -195,7 +195,7 @@ Response:
   "hotelId": 1,
   "primaryGuest": {
     "id": 20,
-    "name": "Lucas Henrique Rodrigues"
+    "name": "Marcos Alberto"
   }
 }
 ```

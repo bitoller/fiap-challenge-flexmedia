@@ -7,7 +7,7 @@ The repository already contains folder placeholders for future backend services,
 **Goals:**
 - Split backend responsibilities into real microservices with clear service ownership.
 - Keep the public API stable behind the gateway while internal ownership changes.
-- Move Oracle bootstrap and runtime defaults to `rm553134`.
+- Move Oracle bootstrap and runtime credentials to environment-provided configuration.
 - Keep service code readable, English-only, and organized with clean MVC and clean architecture boundaries.
 - Reduce unnecessary coupling between business domains and persistence adapters.
 
@@ -45,7 +45,7 @@ Alternatives considered:
 - Pure hexagonal architecture with more abstraction layers. Rejected for now because it would add ceremony without enough benefit for the current codebase size.
 
 ### 4. Keep Oracle as a single shared platform, but isolate ownership by service
-All services SHALL run against the Oracle platform configured through `rm553134`, while each service owns its tables, queries, and adapters.
+All services SHALL run against the Oracle platform configured through environment variables, while each service owns its tables, queries, and adapters.
 
 Rationale: the repo already assumes Oracle as the shared backend platform, and the new empty schema allows a clean rebuild without old data or legacy ownership constraints.
 
@@ -53,7 +53,7 @@ Alternatives considered:
 - Separate Oracle users per service. Rejected because the current request only changes to one new user and the repo is not yet set up for multiple Oracle accounts.
 
 ### 5. Align the Oracle bootstrap scripts with the new user
-The Oracle init flow SHALL create `rm553134`, quote the numeric password, and execute schema/seed scripts in that schema.
+The Oracle init flow SHALL create the local application schema and execute schema/seed scripts in that schema.
 
 Rationale: the new user is part of the migration goal, and the empty database makes it safe to regenerate the schema cleanly.
 

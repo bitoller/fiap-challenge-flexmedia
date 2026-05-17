@@ -1,138 +1,137 @@
-# Setup do Oracle FIAP
+# Oracle FIAP Setup
 
-## 1. Data da conexao
+## 1. Connection Data
 
-Pelo print da IDE, a conexao Oracle da FIAP usa:
+The FIAP Oracle connection uses:
 
 ```text
 Host: oracle.fiap.com.br
-Porta: 1521
+Port: 1521
 SID: ORCL
-User: rm553134
-URL JDBC: jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
+User: your Oracle user
+JDBC URL: jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
 ```
 
-A senha deve ficar somente no ambiente local de cada integrante.
+The password must remain only in each developer's local environment.
 
-## 2. Onde colocar a senha
+## 2. Where To Put The Password
 
-Nao coloque a senha no code, no README, no Git ou no grupo da equipe se o repositorio for compartilhado.
+Do not place the password in source code, README files, Git history, or shared team channels when the repository is shared.
 
-Crie um arquivo local `.env` na raiz do Project a partir do exemplo:
+Create a local `.env` file in the project root from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-Depois edite:
+Then edit:
 
 ```text
-ORACLE_PASSWORD=sua-senha-real
+ORACLE_PASSWORD=your-real-password
 ```
 
-O arquivo `.env` ja esta no `.gitignore`, entao nao deve ser versionado.
+The `.env` file is already listed in `.gitignore` and must not be versioned.
 
-## 2.1. Como criar as tables no Oracle FIAP com JPA
+## 2.1. Create Tables In Oracle FIAP With JPA
 
-O backend agora cria as tables pelas entidades JPA.
+The backend can create tables from the JPA entities.
 
-No `.env`, mantenha:
+In `.env`, keep:
 
 ```env
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-ORACLE_USER=rm553134
+ORACLE_USER=your_oracle_user
 JPA_DDL_AUTO=update
 ```
 
-Depois rode o Service:
+Then start the service:
 
 ```bash
 cd backend/services/checkin-service
 mvn spring-boot:run
 ```
 
-O `application.yml` importa o `.env` da raiz automaticamente. Ao iniciar, o Hibernate cria/atualiza as tables `FC_*` no schema do User conectado.
+`application.yml` imports the root `.env` automatically. On startup, Hibernate creates or updates the `FC_*` tables in the connected user's schema.
 
-Depois carregue os Data de Demo pela IDE:
+Then load demo data from the IDE:
 
 ```text
 database/oracle/seed.sql
 ```
 
-## 2.2. Como criar as tables por script, se precisar resetar tudo
+## 2.2. Create Tables By Script When A Full Reset Is Needed
 
-Abra a conexao da FIAP na IDE e execute:
+Open the FIAP connection in the IDE and run:
 
 ```text
 database/oracle/setup_fiap.sql
 ```
 
-Esse script executa:
+This script runs:
 
 1. `reset.sql`
 2. `schema.sql`
 3. `seed.sql`
 4. `verify.sql`
 
-Ao final, devem aparecer as reservation:
+At the end, these reservations should appear:
 
 - `RSV-2026-0001`
 - `RSV-2026-0002`
 
-## 3. Como rodar com as variaveis do .env
+## 3. Running With `.env` Variables
 
-No macOS/Linux, dentro da pasta do Service:
+Inside a service folder:
 
 ```bash
 cd backend/services/checkin-service
 mvn spring-boot:run
 ```
 
-Se preferir passar direto no terminal:
+If you prefer to pass variables directly:
 
 ```bash
 ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL \
-ORACLE_USER=rm553134 \
-ORACLE_PASSWORD=sua-senha-real \
+ORACLE_USER=your_oracle_user \
+ORACLE_PASSWORD=your-real-password \
 mvn spring-boot:run
 ```
 
-## 4. Como a equipe acessa o banco
+## 4. Team Database Access
 
-Existem dois caminhos:
+There are two safe paths:
 
-### Cada integrante usa seu proprio RM
+### Each Developer Uses Their Own RM
 
-Essa e a opcao mais segura. Cada pessoa cria seu proprio `.env` com User e senha da FIAP.
+This is the safest option. Each person creates a local `.env` with their FIAP user and password.
 
-### Um User compartilhado do grupo
+### Shared Group User
 
-Se a FIAP forneceu ou permitiu um User compartilhado, todos podem usar o mesmo `ORACLE_USER` e `ORACLE_PASSWORD`, mas a senha deve ser enviada por canal private, como gerenciador de senhas, Teams private ou combinacao presencial. Nao versionar.
+If FIAP provides or allows a shared user, everyone can use the same `ORACLE_USER` and `ORACLE_PASSWORD`, but the password must be shared through a private channel such as a password manager, private Teams message, or in-person exchange. Do not version it.
 
-## 5. O que vai para o Git
+## 5. What Goes To Git
 
-Vai para o Git:
+Versioned:
 
 - `.env.example`
-- `backend/services/checkin-service/.env.example`
-- entidades JPA
+- JPA entities
 - `schema.sql`
 - `seed.sql`
-- Documentation
+- documentation
 
-Nao vai para o Git:
+Not versioned:
 
 - `.env`
-- senha real
+- real passwords
 - tokens
-- credenciais personal
+- personal credentials
 
-## 6. Observacao importante
+## 6. Important Note
 
-Se todos usarem o mesmo schema Oracle, as alteracoes de uma pessoa afetam as outras. Para development em grupo, combinem uma das opcoes:
+If everyone uses the same Oracle schema, one person's changes affect the others. For group development, agree on one of these options:
 
-- Usar o Oracle FIAP compartilhado apenas para Integration.
-- Usar H2 local para development rapido.
-- Usar Oracle Docker local quando possivel.
-- Usar JPA para criar/atualizar tables.
-- Usar scripts `reset.sql`, `schema.sql` e `seed.sql` apenas quando for necessario resetar o ambiente.
+- Use the shared Oracle FIAP schema only for integration.
+- Use local H2 for fast development.
+- Use local Oracle Docker when possible.
+- Use JPA to create or update tables.
+- Use `reset.sql`, `schema.sql`, and `seed.sql` only when the environment must be reset.

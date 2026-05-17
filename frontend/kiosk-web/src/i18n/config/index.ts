@@ -2,7 +2,6 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import namespaces
 import enCommon from "../namespaces/en/common.json";
 import enHome from "../namespaces/en/home.json";
 import enErrors from "../namespaces/en/errors.json";
@@ -55,9 +54,9 @@ i18n
     lng: defaultLanguage,
     fallbackLng: 'en',
     supportedLngs: ['en', 'pt-BR', 'es'],
-    interpolation: {
-      escapeValue: false, // React already protects from XSS
-    },
+  interpolation: {
+    escapeValue: false,
+  },
     ns: ['common', 'home', 'errors', 'checkin', 'checkout'],
     defaultNS: 'common',
     detection: {

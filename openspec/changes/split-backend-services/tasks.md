@@ -1,7 +1,7 @@
 ## 1. Oracle and Configuration
 
-- [x] 1.1 Update all Oracle environment examples and defaults to use `rm553134`.
-- [x] 1.2 Update the Oracle bootstrap scripts so the empty database creates `rm553134` with password `060892`.
+- [x] 1.1 Update all Oracle environment examples and defaults to use explicit environment-provided credentials.
+- [x] 1.2 Update the Oracle bootstrap scripts so the empty database creates an application schema without versioned personal credentials.
 - [x] 1.3 Update the schema and seed execution scripts to run inside the new user schema.
 - [x] 1.4 Update backend and database documentation to reflect the new Oracle user and setup flow.
 

@@ -10,9 +10,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8080
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
       RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL:-http://reservation-service:8082}
       PAYMENT_SERVICE_URL: ${PAYMENT_SERVICE_URL:-http://payment-service:8083}
       KEY_SERVICE_URL: ${KEY_SERVICE_URL:-http://key-service:8084}
@@ -120,9 +120,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8082
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
     ports:
       - "${RESERVATION_PORT:-8082}:8082"
@@ -140,9 +140,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8083
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
     ports:
       - "${PAYMENT_PORT:-8083}:8083"
@@ -160,9 +160,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8084
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
     ports:
       - "${KEY_PORT:-8084}:8084"
@@ -180,9 +180,12 @@ services:
       - .env
     environment:
       SERVER_PORT: 8085
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?set ADMIN_USERNAME in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      ADMIN_NAME: ${ADMIN_NAME:-FlexCheck Administrator}
       DEVICE_SERVICE_URL: http://device-service:8089
       JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
     ports:
@@ -229,9 +232,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8086
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
     ports:
       - "${BIOMETRY_PORT:-8086}:8086"
     networks:
@@ -248,9 +251,9 @@ services:
       - .env
     environment:
       SERVER_PORT: 8087
-      ORACLE_URL: ${ORACLE_URL:?defina ORACLE_URL no .env}
-      ORACLE_USER: ${ORACLE_USER:?defina ORACLE_USER no .env}
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina ORACLE_PASSWORD no .env}
+      ORACLE_URL: ${ORACLE_URL:?set ORACLE_URL in .env}
+      ORACLE_USER: ${ORACLE_USER:?set ORACLE_USER in .env}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?set ORACLE_PASSWORD in .env}
     ports:
       - "${PMS_PORT:-8087}:8087"
     networks:
@@ -277,7 +280,7 @@ services:
     container_name: flexcheck-oracle
     restart: unless-stopped
     environment:
-      ORACLE_PWD: ${ORACLE_SYS_PASSWORD:-Oracle_12345}
+      ORACLE_PWD: ${ORACLE_SYS_PASSWORD}
       ORACLE_PDB: ${ORACLE_PDB:-FREEPDB1}
     ports:
       - "${ORACLE_PORT:-1521}:1521"
@@ -287,7 +290,7 @@ services:
       - ./database/oracle:/workspace/oracle:ro
       - ./database/oracle/init:/opt/oracle/scripts/setup:ro
     healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1 FROM dual;' | sqlplus -s system/${ORACLE_SYS_PASSWORD:-Oracle_12345}@localhost:1521/${ORACLE_PDB:-FREEPDB1} || exit 1"]
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM dual;' | sqlplus -s system/${ORACLE_SYS_PASSWORD}@localhost:1521/${ORACLE_PDB:-FREEPDB1} || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 20

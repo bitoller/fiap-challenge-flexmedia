@@ -1,19 +1,19 @@
-# Clean Architecture e SOLID
+# Clean Architecture And SOLID
 
-## 1. Decisao
+## 1. Decision
 
-O `checkin-service` foi reorganized para seguir Clean Architecture.
+`checkin-service` was organized around Clean Architecture.
 
-A regra principal adotada:
+The adopted rule is:
 
 ```text
 Controller -> Service -> Domain
 Infrastructure/Repository -> Repository interfaces
 ```
 
-O dominio nao depende de Spring, JDBC, Oracle, DTO HTTP ou React.
+The domain does not depend on Spring, JDBC, Oracle, HTTP DTOs, or React.
 
-## 2. Estrutura Atual
+## 2. Current Structure
 
 ```text
 br.com.fiap.flexcheck.checkin
@@ -42,165 +42,158 @@ br.com.fiap.flexcheck.checkin
 └── config
 ```
 
-## 3. Responsabilidade de Cada Camada
+## 3. Layer Responsibilities
 
 ### controller
 
-Camada de entrada HTTP.
+HTTP entry layer.
 
-Responsabilidades:
+Responsibilities:
 
-- Receber requests REST.
-- Validar DTOs com Bean Validation.
-- Tratar erros.
+- Receive REST requests.
+- Validate DTOs with Bean Validation.
+- Handle errors.
 
-Nao deve conter regra de Business.
+It must not contain business rules.
 
 ### dto
 
-Contratos de entrada e saida da API.
+API input and output contracts.
 
-Responsabilidades:
+Responsibilities:
 
-- Representar requests e responses HTTP.
-- Declarar validacoes simples de formato e obrigatoriedade.
-- Evitar expor diretamente entidades de dominio.
+- Represent HTTP requests and responses.
+- Declare simple format and required-field validations.
+- Avoid exposing domain entities directly.
 
 ### mapper
 
-Camada de conversao.
+Conversion layer.
 
-Responsabilidades:
+Responsibilities:
 
-- Converter DTOs para comandos de service.
-- Converter resultados de service para DTOs de resposta.
-- Isolar mudancas de contrato HTTP das Business Rules.
+- Convert DTOs into service commands.
+- Convert service results into response DTOs.
+- Isolate HTTP contract changes from business rules.
 
 ### service
 
-Camada de use cases.
+Use-case layer.
 
-Responsabilidades:
+Responsibilities:
 
-- Orquestrar Flows de Business.
-- Usar interfaces de repository.
-- Controlar transacoes.
-- Decidir mensagens de erro de caso de uso.
+- Orchestrate business flows.
+- Use repository interfaces.
+- Control transactions.
+- Decide use-case error messages.
 
-use cases atuais:
+Current use cases:
 
 - `CreateSessionUseCase`
-- `AttachreservationUseCase`
-- `SearchreservationUseCase`
+- `AttachReservationUseCase`
 - `ConfirmGuestUseCase`
 - `RegisterConsentsUseCase`
 - `CompleteCheckinUseCase`
 - `CheckoutUseCase`
-- `DashboardUseCase`
+- `CheckoutLookupUseCase`
 
 ### domain
 
-Centro da regra de Business.
+Center of business rules.
 
-Responsabilidades:
+Responsibilities:
 
-- Modelos de Business.
-- Politicas de dominio.
-- Excecoes de Business sem dependency de framework.
+- Business models.
+- Domain policies.
+- Business exceptions without framework dependencies.
 
-Exemplo:
+Examples:
 
-- `reservation`
+- `Reservation`
 - `Guest`
 - `Room`
 - `Stay`
-- `reservationEligibilityPolicy`
+- `ReservationEligibilityPolicy`
 
 ### infrastructure
 
-Camada de detalhes tecnicos.
+Technical detail layer.
 
-Responsabilidades:
+Responsibilities:
 
-- Entidades JPA para criacao das tables pelo Hibernate.
+- JPA entities for Hibernate table creation.
 - JDBC.
 - Oracle/H2.
-- Queries SQL.
-- Implementation concreta das interfaces de repository.
+- SQL queries.
+- Concrete repository interface implementations.
 
-Implementation atual:
+Current implementation:
 
-- `JdbcFlexcheckRepository`
-- `*JpaEntity` em `infrastructure/persistence/entity`
+- JDBC repositories under `infrastructure/repository`.
+- `*JpaEntity` classes under `infrastructure/persistence/entity`.
 
-As entidades JPA ficam na infraestrutura para preservationr o dominio limpo. Assim, o banco nasce pelas entidades sem acoplar as Business Rules ao Hibernate.
+JPA entities remain in infrastructure to preserve a clean domain. This allows the database model to be generated without coupling business rules to Hibernate.
 
-## 4. Interfaces de Repository
+## 4. Repository Interfaces
 
-Os services dependem de interfaces, nao do banco diretamente:
+Services depend on interfaces, not directly on the database:
 
-- `reservationRepository`
 - `SessionRepository`
-- `GuestRepository`
 - `ConsentRepository`
 - `VerificationRepository`
-- `PaymentRepository`
 - `StayRepository`
-- `KeyRepository`
-- `AuditRepository`
-- `DashboardRepository`
+- service-specific HTTP clients for external service boundaries
 
-Isso permite trocar Oracle por mock, outro banco ou API externa sem mudar os use cases.
+This allows Oracle to be replaced by a mock, another database, or an external API without changing the use cases.
 
-## 5. Aplicacao dos Principios SOLID
+## 5. SOLID Principles
 
 ### S - Single Responsibility
 
-Cada caso de uso tem uma responsabilidade clara. Exemplo: `CheckoutUseCase` cuida apenas do stay checkout.
+Each use case has one clear responsibility. Example: `CheckoutUseCase` only handles stay checkout.
 
 ### O - Open/Closed
 
-Novas integracoes podem ser adicionadas criando novas implementacoes das interfaces, sem alterar os use cases.
+New integrations can be added through new interface implementations without changing use cases.
 
 ### L - Liskov Substitution
 
-Qualquer Implementation de repository pode substituir outra, desde que respeite o contrato.
+Any repository implementation can replace another as long as it respects the contract.
 
 ### I - Interface Segregation
 
-As interfaces foram separadas por capacidade, evitando uma interface gigante para todo o sistema.
+Interfaces are separated by capability, avoiding one oversized system interface.
 
 ### D - Dependency Inversion
 
-Os use cases dependem de abstracoes. O JDBC implementa os repositories, mas nao e conhecido pelo dominio.
+Use cases depend on abstractions. JDBC implements repositories, but the domain does not know JDBC.
 
-## 6. test Criado
+## 6. Created Test
 
-Foi criado um test de Flow direto nos use cases:
+The project includes a flow test directly against use cases:
 
 ```text
 CheckinFlowUseCaseTest
 ```
 
-Ele valida:
+It validates:
 
-1. Criacao de Session.
-2. Busca/anexo de reservation.
-3. Confirmation de Data.
-4. Registro de consentimentos.
-5. check-in.
-6. key issuance.
-7. check-out.
+1. Session creation.
+2. Reservation search and attachment.
+3. Guest data confirmation.
+4. Consent registration.
+5. Check-in.
+6. Key issuance.
+7. Checkout.
 
-Esse test roda sem servidor web, usando H2 em memoria.
-No perfil de test, o H2 tambem cria as tables pelas entidades JPA e usa `data.sql` apenas para popular Data.
+This test runs without a web server, using in-memory H2.
+In the test profile, H2 also creates tables from JPA entities and uses `data.sql` only to load data.
 
-## 7. Como Evoluir
+## 7. Evolution
 
-Next steps mantendo a Architecture:
+Next steps while preserving the architecture:
 
-- Separar `reservation-service` real implementando os mesmos conceitos.
-- Criar `payment-service` e trocar a Implementation de `PaymentRepository` por client REST.
-- Criar `key-service` e trocar a Implementation de `KeyRepository` por client REST.
-- Adicionar tests unitarios para `reservationEligibilityPolicy`.
-- Adicionar tests de casos de erro, como Payment recusado e document rejeitado.
+- Expand `reservation-service` coverage while keeping the same concepts.
+- Keep `payment-service` and `key-service` behind service clients.
+- Add unit tests for reservation eligibility.
+- Add tests for error cases such as declined payment and rejected document.

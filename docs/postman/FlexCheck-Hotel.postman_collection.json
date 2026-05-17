@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "7f5c0b56-4e4c-4f90-a1ef-2b2e3a9c8a21",
     "name": "FlexCheck Hotel MVP",
-    "description": "Collection para validar o MVP do FlexCheck Hotel. O fluxo principal cria uma sessao, associa uma reserva, confirma dados, registra consentimentos, conclui check-in e executa checkout.",
+    "description": "Collection for validating the FlexCheck Hotel MVP. The main flow creates a session, attaches a reservation, confirms guest data, records consents, completes check-in, and executes checkout.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -72,8 +72,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('health retorna 200', () => pm.response.to.have.status(200));",
-                  "pm.test('servico esta UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                  "pm.test('health returns 200', () => pm.response.to.have.status(200));",
+                  "pm.test('service is UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
                 ]
               }
             }
@@ -106,8 +106,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('gateway retorna 200', () => pm.response.to.have.status(200));",
-                  "pm.test('gateway esta UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                  "pm.test('gateway returns 200', () => pm.response.to.have.status(200));",
+                  "pm.test('gateway is UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
                 ]
               }
             }
@@ -141,7 +141,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('proxy retorna 200', () => pm.response.to.have.status(200));"
+                  "pm.test('proxy returns 200', () => pm.response.to.have.status(200));"
                 ]
               }
             }
@@ -189,10 +189,10 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('reserva encontrada', () => pm.response.to.have.status(200));",
+                  "pm.test('reservation found', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
                   "pm.collectionVariables.set('guestId', json.guest.id);",
-                  "pm.test('reserva elegivel', () => pm.expect(json.eligible).to.eql(true));"
+                  "pm.test('reservation eligible', () => pm.expect(json.eligible).to.eql(true));"
                 ]
               }
             }
@@ -237,7 +237,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('sessao criada', () => pm.response.to.have.status(200));",
+                  "pm.test('session created', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
                   "pm.collectionVariables.set('sessionId', json.sessionId);",
                   "pm.test('status STARTED', () => pm.expect(json.status).to.eql('STARTED'));"
@@ -282,7 +282,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('reserva associada', () => pm.response.to.have.status(200));",
+                  "pm.test('reservation attached', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
                   "pm.collectionVariables.set('guestId', json.reservation.guest.id);",
                   "pm.test('status RESERVATION_FOUND', () => pm.expect(json.status).to.eql('RESERVATION_FOUND'));"
@@ -307,7 +307,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"guestId\": {{guestId}},\n  \"fullName\": \"Lucas Henrique Rodrigues\",\n  \"documentType\": \"CPF\",\n  \"documentNumber\": \"{{documentNumber}}\",\n  \"birthDate\": \"1995-08-15\",\n  \"email\": \"lucas@example.com\",\n  \"phone\": \"+5511999999999\"\n}"
+              "raw": "{\n  \"guestId\": {{guestId}},\n  \"fullName\": \"Marcos Alberto\",\n  \"documentType\": \"CPF\",\n  \"documentNumber\": \"{{documentNumber}}\",\n  \"birthDate\": \"1995-08-15\",\n  \"email\": \"marcos@example.com\",\n  \"phone\": \"+5511999999999\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/checkin-sessions/{{sessionId}}/guest-confirmation",
@@ -327,7 +327,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('dados confirmados', () => pm.response.to.have.status(200));",
+                  "pm.test('guest data confirmed', () => pm.response.to.have.status(200));",
                   "pm.test('status DATA_CONFIRMED', () => pm.expect(pm.response.json().status).to.eql('DATA_CONFIRMED'));"
                 ]
               }

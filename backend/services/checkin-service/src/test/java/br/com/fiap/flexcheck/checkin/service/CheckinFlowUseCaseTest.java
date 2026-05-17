@@ -87,7 +87,7 @@ public class CheckinFlowUseCaseTest {
                 "BRL",
                 true,
                 List.of(),
-                new GuestResult(1L, "Lucas Henrique Rodrigues", "CPF", "****8909", java.time.LocalDate.of(1995, 8, 15), "lucas@example.com", "+5511999999999"),
+                new GuestResult(1L, "Marcos Alberto", "CPF", "****8909", java.time.LocalDate.of(1995, 8, 15), "marcos@example.com", "+5511999999999"),
                 new RoomResult(1L, "1204", "STANDARD", "AVAILABLE")
         );
 

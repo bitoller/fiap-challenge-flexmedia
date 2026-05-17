@@ -171,7 +171,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         const apiError =
           cause instanceof ApiError
             ? cause
-            : new ApiError("UNEXPECTED_ERROR", "Nao foi possivel concluir a operacao agora.");
+            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
 
         setError(apiError);
         setRecoveryState({
@@ -189,7 +189,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
 
   const confirmGuestContact = useCallback(async () => {
     if (!session || !reservation || !guestContact) {
-      throw new ApiError("SESSION_NOT_READY", "Nao foi possivel confirmar os dados agora.");
+      throw new ApiError("SESSION_NOT_READY", "The data could not be confirmed right now.");
     }
 
     setIsLoading(true);
@@ -205,7 +205,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       const apiError =
         cause instanceof ApiError
           ? cause
-          : new ApiError("UNEXPECTED_ERROR", "Nao foi possivel concluir a operacao agora.");
+          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
 
       setError(apiError);
       setRecoveryState({
@@ -222,7 +222,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
   const acceptTerms = useCallback(
     async (nextBiometricsAccepted: boolean) => {
       if (!session) {
-        throw new ApiError("SESSION_NOT_READY", "Nao foi possivel registrar os termos agora.");
+        throw new ApiError("SESSION_NOT_READY", "The terms could not be recorded right now.");
       }
 
       setIsLoading(true);
@@ -236,7 +236,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         const apiError =
           cause instanceof ApiError
             ? cause
-            : new ApiError("UNEXPECTED_ERROR", "Nao foi possivel concluir a operacao agora.");
+            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
 
         setError(apiError);
         setRecoveryState({
@@ -255,7 +255,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
   const completeCheckin = useCallback(
     async (nextPaymentMethod: CheckinPaymentMethod) => {
       if (!session) {
-        throw new ApiError("SESSION_NOT_READY", "Nao foi possivel concluir o check-in agora.");
+        throw new ApiError("SESSION_NOT_READY", "Check-in could not be completed right now.");
       }
 
       setIsLoading(true);
@@ -276,7 +276,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         const apiError =
           cause instanceof ApiError
             ? cause
-            : new ApiError("UNEXPECTED_ERROR", "Nao foi possivel concluir a operacao agora.");
+            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
 
         setError(apiError);
         setRecoveryState({

@@ -1,5 +1,9 @@
 package br.com.fiap.flexcheck.reservation.application.impl;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import br.com.fiap.flexcheck.reservation.application.SearchReservationUseCase;
 import br.com.fiap.flexcheck.reservation.domain.entity.Reservation;
 import br.com.fiap.flexcheck.reservation.domain.entity.ReservationEligibility;
@@ -7,10 +11,6 @@ import br.com.fiap.flexcheck.reservation.domain.service.ReservationEligibilityPo
 import br.com.fiap.flexcheck.reservation.mapper.ReservationMapper;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
 import br.com.fiap.flexcheck.reservation.service.result.ReservationResult;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class DefaultSearchReservationUseCase implements SearchReservationUseCase {
@@ -19,8 +19,7 @@ public class DefaultSearchReservationUseCase implements SearchReservationUseCase
 
     public DefaultSearchReservationUseCase(
             ReservationRepository reservationRepository,
-            ReservationEligibilityPolicy eligibilityPolicy
-    ) {
+            ReservationEligibilityPolicy eligibilityPolicy) {
         this.reservationRepository = reservationRepository;
         this.eligibilityPolicy = eligibilityPolicy;
     }
@@ -28,7 +27,8 @@ public class DefaultSearchReservationUseCase implements SearchReservationUseCase
     @Override
     public ReservationResult execute(Long kioskId, Long hotelId, String type, String value) {
         Reservation reservation = reservationRepository.searchReservation(kioskId, hotelId, type, value)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Reservation not found for search type " + type));
+                .orElseThrow(
+                        () -> new ResponseStatusException(NOT_FOUND, "Reservation not found for search type " + type));
         ReservationEligibility eligibility = eligibilityPolicy.evaluate(reservation);
         return ReservationMapper.toResult(reservation, eligibility);
     }

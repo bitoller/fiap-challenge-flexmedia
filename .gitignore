@@ -1,11 +1,9 @@
 .DS_Store
 .env
 
-# Java
 target/
 *.class
 
-# Node
 node_modules/
 dist/
 .vite/
@@ -14,6 +12,5 @@ npm-debug.log*
 .npm-cache/
 frontend/admin-web/.npm-cache/
 
-# IDE
 .idea/
 .vscode/
