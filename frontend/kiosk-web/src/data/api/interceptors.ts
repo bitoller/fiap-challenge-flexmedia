@@ -1,4 +1,4 @@
-import { CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, Reservation, Room, Session, SessionReservation } from "../../domain/models";
+import { CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, IdentityVerificationResponse, Reservation, Room, Session, SessionReservation } from "../../domain/models";
 
 export const checkoutResponseInterceptor = (data: any): CheckoutResponse => {
   return {
@@ -51,6 +51,20 @@ export const sessionReservationResponseInterceptor = (data: any): SessionReserva
   return {
     ...sessionResponseInterceptor(data),
     reservation: data.reservation,
+  };
+};
+
+export const identityVerificationResponseInterceptor = (data: any): IdentityVerificationResponse => {
+  return {
+    sessionId: data.sessionId,
+    status: data.status,
+    documentStatus: data.documentStatus ?? null,
+    biometryStatus: data.biometryStatus ?? null,
+    provider: data.provider ?? null,
+    score: data.score ?? null,
+    canContinue: Boolean(data.canContinue),
+    fallbackUsed: Boolean(data.fallbackUsed),
+    message: data.message ?? null,
   };
 };
 
@@ -119,46 +133,36 @@ export const attachReservationRequestInterceptor = (
   };
 };
 
-export const guestConfirmationRequestInterceptor = (
-  guestId: number,
-  fullName: string,
-  documentType: string,
-  documentNumber: string,
-  birthDate: string,
-  email: string,
-  phone: string
+export const identityImageRequestInterceptor = (
+  imageBase64: string,
+  mimeType: string
 ) => {
   return {
-    guestId,
-    fullName,
-    documentType,
-    documentNumber,
-    birthDate,
-    email,
-    phone,
+    imageBase64,
+    mimeType,
   };
 };
 
-export const registrationConsentRequestInterceptor = (
-  biometricsAccepted: boolean
+export const identityConfirmationRequestInterceptor = (
+  termsAccepted: boolean,
+  biometricConsentAccepted: boolean
 ) => {
   return {
-    items: [
-      { type: 'PRIVACY_POLICY', accepted: true, version: '2026.05' },
-      { type: 'HOSTING_TERMS', accepted: true, version: '2026.05' },
-      { type: 'BIOMETRY', accepted: biometricsAccepted, version: '2026.05' },
-    ],
+    termsAccepted,
+    biometricConsentAccepted,
   };
 };
 
 export const completeCheckinRequestInterceptor = (
   paymentMethod: string,
-  biometricsAccepted: boolean
+  biometricsAccepted: boolean,
+  documentStatus: string = 'APPROVED',
+  biometryStatus?: string | null
 ) => {
   return {
     paymentMethod,
     keyType: 'DIGITAL',
-    documentStatus: 'APPROVED',
-    biometryStatus: biometricsAccepted ? 'APPROVED' : 'SKIPPED',
+    documentStatus,
+    biometryStatus: biometryStatus ?? (biometricsAccepted ? 'APPROVED' : 'SKIPPED'),
   };
 };

@@ -19,7 +19,7 @@ export function RecoveryPage() {
   const { t } = useTranslation("checkin");
   const navigate = useNavigate();
   const location = useLocation();
-  const { recovery, clearFlow } = useCheckinFlow();
+  const { recovery, clearFlow, setFlowStep } = useCheckinFlow();
   const state = (location.state ?? {}) as RecoveryLocationState;
   const currentRecovery = recovery ?? (state.code ? { code: state.code, message: state.message ?? "" } : null);
 
@@ -42,8 +42,16 @@ export function RecoveryPage() {
       code === "PAYMENT_DECLINED"
         ? "/checkin/payment"
         : code === "BIOMETRY_REJECTED" || code === "DOCUMENT_REJECTED"
-          ? "/checkin/contact"
+          ? "/checkin/identity"
           : "/checkin";
+
+    if (code === "PAYMENT_DECLINED") {
+      setFlowStep("payment");
+    }
+
+    if (code === "BIOMETRY_REJECTED" || code === "DOCUMENT_REJECTED") {
+      setFlowStep("identity-verification");
+    }
 
     navigate(retryPath, { replace: true });
   };

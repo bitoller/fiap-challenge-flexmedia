@@ -7,8 +7,7 @@ export type CheckinBottomNavKey = "home" | "assistant" | "emergency";
 export type CheckinFlowStep =
   | "identification"
   | "confirmation"
-  | "contact"
-  | "terms"
+  | "identity-verification"
   | "payment"
   | "success"
   | "recovery";
@@ -21,15 +20,6 @@ export type CheckinRecoveryCode =
   | "PAYMENT_DECLINED";
 
 export type CheckinPaymentMethod = "CARD" | "PIX";
-
-export interface GuestContactDraft {
-  fullName: string;
-  documentType: string;
-  documentNumber: string;
-  birthDate: string;
-  email: string;
-  phone: string;
-}
 
 export interface CheckinFlowError {
   code: string;

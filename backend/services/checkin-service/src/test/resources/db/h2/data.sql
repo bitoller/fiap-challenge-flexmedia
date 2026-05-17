@@ -8,6 +8,9 @@ INSERT INTO fc_room (id, hotel_id, room_number, room_type, status, floor_number)
 VALUES (2, 1, '1501', 'DELUXE', 'AVAILABLE', 15);
 
 INSERT INTO fc_guest (id, full_name, document_type, document_number, birth_date, nationality, email, phone, created_at)
+VALUES (1, 'Marcos Alberto', 'CPF', '12345678909', DATE '1995-08-15', 'Brasileira', 'marcos@example.com', '+5511999999999', CURRENT_TIMESTAMP);
+
+INSERT INTO fc_guest (id, full_name, document_type, document_number, birth_date, nationality, email, phone, created_at)
 VALUES (2, 'Marcos Alberto', 'CPF', '98765432100', DATE '1998-03-22', 'Brasileira', 'marina@example.com', '+5511988888888', CURRENT_TIMESTAMP);
 
 INSERT INTO fc_reservation (id, hotel_id, room_id, reservation_code, pms_external_id, status, arrival_date, departure_date, adults, children, total_amount, currency, created_at)

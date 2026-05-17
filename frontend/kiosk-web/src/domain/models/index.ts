@@ -64,6 +64,27 @@ export interface CheckoutResponse {
   receiptCode: string;
 }
 
+export type IdentityVerificationStatus =
+  | "DOCUMENT_APPROVED"
+  | "DOCUMENT_REJECTED"
+  | "FACE_APPROVED"
+  | "FACE_REJECTED"
+  | "DOCUMENT_ONLY_APPROVED"
+  | "PROVIDER_UNAVAILABLE"
+  | "IDENTITY_CONFIRMED";
+
+export interface IdentityVerificationResponse {
+  sessionId: number;
+  status: IdentityVerificationStatus;
+  documentStatus: string | null;
+  biometryStatus: string | null;
+  provider: string | null;
+  score: number | null;
+  canContinue: boolean;
+  fallbackUsed: boolean;
+  message: string | null;
+}
+
 export interface CheckoutCharge {
   code: string;
   description: string;

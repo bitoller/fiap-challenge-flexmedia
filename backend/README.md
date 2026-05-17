@@ -33,6 +33,19 @@ ADMIN_NAME=FlexCheck Administrator
 
 Do not place real credentials in service source files, READMEs, SQL examples, or OpenSpec documents.
 
+Identity verification is configured from the same root `.env`:
+
+```env
+IDENTITY_DEMO_AUTO_APPROVE=false
+IDENTITY_DOCUMENT_ONLY_FALLBACK_ENABLED=true
+OCR_SPACE_API_KEY=your_ocr_space_key
+COMPREFACE_URL=http://host.docker.internal:8000
+COMPREFACE_API_KEY=your_compreface_face_verification_key
+COMPREFACE_THRESHOLD=85
+```
+
+Use `host.docker.internal` for CompreFace when the check-in service runs in Docker. Use `http://localhost:8000` only when running the check-in service directly on the host machine. No Oracle migration is required to enable OCR.space or CompreFace.
+
 ## Build
 
 Build all services:
@@ -102,3 +115,18 @@ curl http://127.0.0.1:8088/api/v1/reservations/hotels/1
 ```
 
 Admin login credentials are whatever was configured in `.env`.
+
+## Check-In Identity Verification
+
+The active check-in path is:
+
+1. Locate an open reservation by CPF, reservation number, or QR token.
+2. Review the compact reservation summary.
+3. Capture a physical document with photo.
+4. OCR extracts name and CPF and compares them with the reservation holder.
+5. Capture a selfie.
+6. CompreFace compares the selfie with the document face.
+7. If document and face match, the guest accepts inline stay terms and biometric consent.
+8. The flow continues to the existing next check-in step.
+
+The previous long contact review and standalone terms pages are no longer active in the kiosk. The legacy backend endpoints for guest confirmation and consent registration remain available as compatibility contracts, but the kiosk now uses the identity verification endpoints.

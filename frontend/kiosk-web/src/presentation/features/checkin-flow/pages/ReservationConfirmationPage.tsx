@@ -92,8 +92,8 @@ export function ReservationConfirmationPage() {
       return;
     }
 
-    setFlowStep("contact");
-    navigate("/checkin/contact");
+    setFlowStep("identity-verification");
+    navigate("/checkin/identity");
   };
 
   return (

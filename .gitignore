@@ -14,3 +14,24 @@ frontend/admin-web/.npm-cache/
 
 .idea/
 .vscode/
+
+captures/
+identity-captures/
+verification-captures/
+biometric-captures/
+*.local.jpg
+*.local.jpeg
+*.local.png
+*.local.webp
+*.identity.jpg
+*.identity.jpeg
+*.identity.png
+*.identity.webp
+*.selfie.jpg
+*.selfie.jpeg
+*.selfie.png
+*.selfie.webp
+*.document.jpg
+*.document.jpeg
+*.document.png
+*.document.webp

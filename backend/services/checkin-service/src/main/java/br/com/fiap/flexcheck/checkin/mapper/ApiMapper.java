@@ -13,6 +13,10 @@ import br.com.fiap.flexcheck.checkin.dto.CreateSessionRequest;
 import br.com.fiap.flexcheck.checkin.dto.DashboardResponse;
 import br.com.fiap.flexcheck.checkin.dto.GuestConfirmationRequest;
 import br.com.fiap.flexcheck.checkin.dto.GuestResponse;
+import br.com.fiap.flexcheck.checkin.dto.IdentityDocumentVerificationRequest;
+import br.com.fiap.flexcheck.checkin.dto.IdentitySelfieVerificationRequest;
+import br.com.fiap.flexcheck.checkin.dto.IdentityVerificationConfirmRequest;
+import br.com.fiap.flexcheck.checkin.dto.IdentityVerificationResponse;
 import br.com.fiap.flexcheck.checkin.dto.KeyResponse;
 import br.com.fiap.flexcheck.checkin.dto.ReservationResponse;
 import br.com.fiap.flexcheck.checkin.dto.RoomResponse;
@@ -25,11 +29,15 @@ import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.command.ConsentCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentityDocumentVerificationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentitySelfieVerificationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentityVerificationConfirmCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutChargeResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import br.com.fiap.flexcheck.checkin.service.result.DashboardResult;
+import br.com.fiap.flexcheck.checkin.service.result.IdentityVerificationResult;
 import br.com.fiap.flexcheck.checkin.service.result.KeyResult;
 import br.com.fiap.flexcheck.checkin.service.result.ReservationResult;
 import br.com.fiap.flexcheck.checkin.service.result.RoomResult;
@@ -73,6 +81,18 @@ public final class ApiMapper {
                 request.documentStatus(),
                 request.biometryStatus()
         );
+    }
+
+    public static IdentityDocumentVerificationCommand toCommand(IdentityDocumentVerificationRequest request) {
+        return new IdentityDocumentVerificationCommand(request.imageBase64(), request.mimeType());
+    }
+
+    public static IdentitySelfieVerificationCommand toCommand(IdentitySelfieVerificationRequest request) {
+        return new IdentitySelfieVerificationCommand(request.imageBase64(), request.mimeType());
+    }
+
+    public static IdentityVerificationConfirmCommand toCommand(IdentityVerificationConfirmRequest request) {
+        return new IdentityVerificationConfirmCommand(request.termsAccepted(), request.biometricConsentAccepted());
     }
 
     public static CheckoutCommand toCommand(CheckoutRequest request) {
@@ -129,6 +149,20 @@ public final class ApiMapper {
                 result.roomNumber(),
                 result.totalPaid(),
                 toResponse(result.key())
+        );
+    }
+
+    public static IdentityVerificationResponse toResponse(IdentityVerificationResult result) {
+        return new IdentityVerificationResponse(
+                result.sessionId(),
+                result.status(),
+                result.documentStatus(),
+                result.biometryStatus(),
+                result.provider(),
+                result.score(),
+                result.canContinue(),
+                result.fallbackUsed(),
+                result.message()
         );
     }
 

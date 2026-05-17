@@ -7,8 +7,7 @@ import { CheckinFlowProvider } from "./presentation/features/checkin-flow/contex
 import { IdentificationPage } from "./presentation/features/checkin-flow/pages/IdentificationPage";
 import { ReservationConfirmationPage } from "./presentation/features/checkin-flow/pages/ReservationConfirmationPage";
 import { ReservationNotFoundPage } from "./presentation/features/checkin-flow/pages/ReservationNotFoundPage";
-import { ContactReviewPage } from "./presentation/features/checkin-flow/pages/ContactReviewPage";
-import { TermsPage } from "./presentation/features/checkin-flow/pages/TermsPage";
+import { IdentityVerificationPage } from "./presentation/features/checkin-flow/pages/IdentityVerificationPage";
 import { PaymentPage } from "./presentation/features/checkin-flow/pages/PaymentPage";
 import { SuccessPage } from "./presentation/features/checkin-flow/pages/SuccessPage";
 import { RecoveryPage } from "./presentation/features/checkin-flow/pages/RecoveryPage";
@@ -73,8 +72,7 @@ export default function App() {
           <Route path="/checkin" element={<IdentificationPage />} />
           <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
           <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />
-          <Route path="/checkin/contact" element={<ContactReviewPage />} />
-          <Route path="/checkin/terms" element={<TermsPage />} />
+          <Route path="/checkin/identity" element={<IdentityVerificationPage />} />
           <Route path="/checkin/payment" element={<PaymentPage />} />
           <Route path="/checkin/success" element={<SuccessPage />} />
           <Route path="/checkin/recovery" element={<RecoveryPage />} />

@@ -7,6 +7,10 @@ import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.command.ConsentCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.command.GuestConfirmationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentityDocumentVerificationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentitySelfieVerificationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.IdentityVerificationConfirmCommand;
+import br.com.fiap.flexcheck.checkin.domain.exception.BusinessException;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
@@ -18,6 +22,10 @@ import br.com.fiap.flexcheck.checkin.service.result.RoomResult;
 import br.com.fiap.flexcheck.checkin.service.result.SessionReservationResult;
 import br.com.fiap.flexcheck.checkin.service.result.SessionResult;
 import br.com.fiap.flexcheck.checkin.service.result.BiometryVerificationResult;
+import br.com.fiap.flexcheck.checkin.service.identity.FaceMatchProviderClient;
+import br.com.fiap.flexcheck.checkin.service.identity.FaceMatchProviderResult;
+import br.com.fiap.flexcheck.checkin.service.identity.OcrProviderClient;
+import br.com.fiap.flexcheck.checkin.service.identity.OcrProviderResult;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.BiometryServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.AuditServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.KeyServiceClient;
@@ -35,6 +43,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,6 +67,12 @@ public class CheckinFlowUseCaseTest {
     private CheckoutLookupUseCase checkoutLookupUseCase;
     @Autowired
     private CheckoutUseCase checkoutUseCase;
+    @Autowired
+    private VerifyIdentityDocumentUseCase verifyIdentityDocumentUseCase;
+    @Autowired
+    private VerifyIdentitySelfieUseCase verifyIdentitySelfieUseCase;
+    @Autowired
+    private ConfirmIdentityVerificationUseCase confirmIdentityVerificationUseCase;
     @MockBean
     private ReservationServiceClient reservationServiceClient;
     @MockBean
@@ -72,6 +87,10 @@ public class CheckinFlowUseCaseTest {
     private PmsAdapterServiceClient pmsAdapterServiceClient;
     @MockBean
     private NotificationServiceClient notificationServiceClient;
+    @MockBean
+    private OcrProviderClient ocrProviderClient;
+    @MockBean
+    private FaceMatchProviderClient faceMatchProviderClient;
 
     @Test
     public void shouldCompleteCheckinAndCheckoutThroughUseCases() {
@@ -162,5 +181,108 @@ public class CheckinFlowUseCaseTest {
 
         assertThat(checkout.status()).isEqualTo("CHECKED_OUT");
         assertThat(checkout.receiptCode()).isEqualTo("RCP-" + checkin.stayId());
+    }
+
+    @Test
+    public void shouldApproveIdentityVerificationWhenDocumentAndFaceMatch() {
+        SessionResult session = createAttachedSession();
+        when(ocrProviderClient.extract(anyString(), anyString()))
+                .thenReturn(new OcrProviderResult("APPROVED", "OCR_TEST", "Marcos Alberto", "12345678909", "OCR-1", "ok"));
+        when(faceMatchProviderClient.compare(anyString(), anyString(), anyString()))
+                .thenReturn(new FaceMatchProviderResult("APPROVED", "FACE_TEST", BigDecimal.valueOf(97.4), "FACE-1", "ok"));
+        doNothing().when(auditServiceClient).record(any());
+
+        var document = verifyIdentityDocumentUseCase.execute(session.sessionId(), new IdentityDocumentVerificationCommand("document-image", "image/jpeg"));
+        var selfie = verifyIdentitySelfieUseCase.execute(session.sessionId(), new IdentitySelfieVerificationCommand("selfie-image", "image/jpeg"));
+        var confirmation = confirmIdentityVerificationUseCase.execute(session.sessionId(), new IdentityVerificationConfirmCommand(true, true));
+
+        assertThat(document.documentStatus()).isEqualTo("APPROVED");
+        assertThat(selfie.status()).isEqualTo("FACE_APPROVED");
+        assertThat(confirmation.status()).isEqualTo("IDENTITY_CONFIRMED");
+        assertThat(confirmation.canContinue()).isTrue();
+    }
+
+    @Test
+    public void shouldRejectIdentityVerificationWhenDocumentDoesNotMatchReservation() {
+        SessionResult session = createAttachedSession();
+        when(ocrProviderClient.extract(anyString(), anyString()))
+                .thenReturn(new OcrProviderResult("APPROVED", "OCR_TEST", "Different Guest", "00000000000", "OCR-2", "mismatch"));
+
+        var document = verifyIdentityDocumentUseCase.execute(session.sessionId(), new IdentityDocumentVerificationCommand("document-image", "image/jpeg"));
+
+        assertThat(document.documentStatus()).isEqualTo("REJECTED");
+        assertThatThrownBy(() -> verifyIdentitySelfieUseCase.execute(session.sessionId(), new IdentitySelfieVerificationCommand("selfie-image", "image/jpeg")))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("Document verification must be approved");
+    }
+
+    @Test
+    public void shouldRejectIdentityVerificationWhenDocumentNameIsMissing() {
+        SessionResult session = createAttachedSession();
+        when(ocrProviderClient.extract(anyString(), anyString()))
+                .thenReturn(new OcrProviderResult("APPROVED", "OCR_TEST", null, "12345678909", "OCR-4", "missing name"));
+
+        var document = verifyIdentityDocumentUseCase.execute(session.sessionId(), new IdentityDocumentVerificationCommand("document-image", "image/jpeg"));
+
+        assertThat(document.documentStatus()).isEqualTo("REJECTED");
+        assertThat(document.canContinue()).isFalse();
+    }
+
+    @Test
+    public void shouldRejectIdentityVerificationWhenFaceMatchIsRejected() {
+        SessionResult session = createAttachedSession();
+        when(ocrProviderClient.extract(anyString(), anyString()))
+                .thenReturn(new OcrProviderResult("APPROVED", "OCR_TEST", "Marcos Alberto", "12345678909", "OCR-3", "ok"));
+        when(faceMatchProviderClient.compare(anyString(), anyString(), anyString()))
+                .thenReturn(new FaceMatchProviderResult("REJECTED", "FACE_TEST", BigDecimal.valueOf(42.1), "FACE-2", "low score"));
+
+        verifyIdentityDocumentUseCase.execute(session.sessionId(), new IdentityDocumentVerificationCommand("document-image", "image/jpeg"));
+        var selfie = verifyIdentitySelfieUseCase.execute(session.sessionId(), new IdentitySelfieVerificationCommand("selfie-image", "image/jpeg"));
+
+        assertThat(selfie.status()).isEqualTo("FACE_REJECTED");
+        assertThat(selfie.biometryStatus()).isEqualTo("REJECTED");
+        assertThat(selfie.fallbackUsed()).isFalse();
+        assertThat(selfie.canContinue()).isFalse();
+    }
+
+    @Test
+    public void shouldUseDocumentOnlyFallbackWhenFaceMatchProviderIsUnavailable() {
+        SessionResult session = createAttachedSession();
+        when(ocrProviderClient.extract(anyString(), anyString()))
+                .thenReturn(new OcrProviderResult("APPROVED", "OCR_TEST", "Marcos Alberto", "12345678909", "OCR-5", "ok"));
+        when(faceMatchProviderClient.compare(anyString(), anyString(), anyString()))
+                .thenReturn(new FaceMatchProviderResult("UNAVAILABLE", "FACE_TEST", null, "FACE-3", "unavailable"));
+
+        verifyIdentityDocumentUseCase.execute(session.sessionId(), new IdentityDocumentVerificationCommand("document-image", "image/jpeg"));
+        var selfie = verifyIdentitySelfieUseCase.execute(session.sessionId(), new IdentitySelfieVerificationCommand("selfie-image", "image/jpeg"));
+
+        assertThat(selfie.status()).isEqualTo("DOCUMENT_ONLY_APPROVED");
+        assertThat(selfie.biometryStatus()).isEqualTo("SKIPPED");
+        assertThat(selfie.fallbackUsed()).isTrue();
+        assertThat(selfie.canContinue()).isTrue();
+    }
+
+    private SessionResult createAttachedSession() {
+        ReservationResult reservationResult = new ReservationResult(
+                1L,
+                1L,
+                "RSV-2026-0001",
+                "CONFIRMED",
+                "Flex Hotel Paulista",
+                java.time.LocalDate.now(),
+                java.time.LocalDate.now().plusDays(2),
+                BigDecimal.valueOf(780.00),
+                "BRL",
+                true,
+                List.of(),
+                new GuestResult(1L, "Marcos Alberto", "CPF", "****8909", java.time.LocalDate.of(1995, 8, 15), "marcos@example.com", "+5511999999999"),
+                new RoomResult(1L, "1204", "STANDARD", "AVAILABLE")
+        );
+        when(reservationServiceClient.search(anyLong(), anyString(), anyString())).thenReturn(reservationResult);
+        when(reservationServiceClient.findById(1L)).thenReturn(reservationResult);
+
+        SessionResult session = createSessionUseCase.execute(new CreateSessionCommand(1L, "CHECKIN", "pt-BR"));
+        attachReservationUseCase.execute(session.sessionId(), new AttachReservationCommand("RESERVATION_CODE", "RSV-2026-0001"));
+        return session;
     }
 }

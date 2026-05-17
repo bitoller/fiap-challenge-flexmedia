@@ -6,10 +6,12 @@ export const API_ENDPOINTS = {
   CHECKIN_SESSIONS: '/checkin-sessions',
   CHECKIN_SESSION_RESERVATION: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/reservation`,
-  CHECKIN_SESSION_GUEST_CONFIRMATION: (sessionId: number | string) =>
-    `/checkin-sessions/${sessionId}/guest-confirmation`,
-  CHECKIN_SESSION_CONSENTS: (sessionId: number | string) =>
-    `/checkin-sessions/${sessionId}/consents`,
+  CHECKIN_SESSION_IDENTITY_DOCUMENT: (sessionId: number | string) =>
+    `/checkin-sessions/${sessionId}/identity/document`,
+  CHECKIN_SESSION_IDENTITY_SELFIE: (sessionId: number | string) =>
+    `/checkin-sessions/${sessionId}/identity/selfie`,
+  CHECKIN_SESSION_IDENTITY_CONFIRM: (sessionId: number | string) =>
+    `/checkin-sessions/${sessionId}/identity/confirm`,
   COMPLETE_CHECKIN: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/complete-checkin`,
 

@@ -1451,4 +1451,285 @@
   }
 }
 
+.checkin-identity {
+  width: min(100%, 1060px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.75rem);
+}
+
+.checkin-identity__layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(520px, 1fr);
+  gap: 1.35rem;
+  align-items: stretch;
+}
+
+.checkin-identity__steps {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
+.checkin-identity__step {
+  min-height: 126px;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(220, 204, 176, 0.72);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 42px rgba(60, 45, 25, 0.08);
+  color: var(--color-text-primary);
+}
+
+.checkin-identity__step.is-active {
+  border-color: rgba(170, 124, 31, 0.82);
+  background: rgba(250, 244, 232, 0.92);
+  box-shadow: 0 22px 48px rgba(116, 82, 16, 0.13);
+}
+
+.checkin-identity__step.is-complete {
+  border-color: rgba(157, 126, 60, 0.46);
+}
+
+.checkin-identity__step svg {
+  width: 42px;
+  height: 42px;
+  color: var(--color-accent);
+}
+
+.checkin-identity__step span,
+.checkin-identity__eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.checkin-identity__step p {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(71, 58, 39, 0.76);
+}
+
+.checkin-identity__panel {
+  position: relative;
+  min-height: 620px;
+  border: 1px solid rgba(220, 204, 176, 0.72);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 26px 58px rgba(58, 45, 24, 0.11);
+  padding: clamp(1rem, 2vh, 1.35rem);
+}
+
+.checkin-identity__verification-status {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 2;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  border: 1px solid rgba(205, 187, 149, 0.46);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.94);
+  box-shadow: 0 12px 28px rgba(58, 45, 24, 0.12);
+  color: #7f6320;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.checkin-identity__camera-card,
+.checkin-identity__consent-card {
+  height: 100%;
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(220, 204, 176, 0.72);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(250, 245, 235, 0.76));
+  padding: clamp(1rem, 2vh, 1.5rem);
+}
+
+.checkin-identity__camera-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.checkin-identity__camera-heading svg,
+.checkin-identity__approved-icon svg {
+  color: var(--color-accent);
+}
+
+.checkin-identity__camera-heading span {
+  display: block;
+  font-size: 0.82rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.checkin-identity__camera-heading p,
+.checkin-identity__consent-card p {
+  margin: 0.35rem auto 0;
+  max-width: 560px;
+  line-height: 1.45;
+  color: rgba(52, 42, 29, 0.76);
+}
+
+.checkin-identity__camera-frame {
+  position: relative;
+  width: min(100%, 560px);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(245, 238, 225, 0.88);
+  border: 1px solid rgba(220, 204, 176, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 24px 48px rgba(58, 45, 24, 0.12);
+}
+
+.checkin-identity__camera-frame video,
+.checkin-identity__camera-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.checkin-identity__camera-reticle {
+  position: absolute;
+  inset: 18%;
+  border: 4px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.checkin-identity__camera-status,
+.checkin-identity__camera-error {
+  min-height: 1.4rem;
+  margin: 0.85rem 0 0;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.checkin-identity__camera-error {
+  color: #8a4b32;
+}
+
+.checkin-identity__camera-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.checkin-identity__camera-actions .checkin-action-button {
+  min-width: 220px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.checkin-identity__approved-icon {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(220, 204, 176, 0.72);
+  box-shadow: 0 16px 34px rgba(58, 45, 24, 0.12);
+  margin-bottom: 1.2rem;
+}
+
+.checkin-identity__consent-card h2 {
+  margin: 0.6rem 0;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 0.96;
+}
+
+.checkin-identity__checkbox {
+  width: min(100%, 560px);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(220, 204, 176, 0.72);
+  background: rgba(255, 255, 255, 0.74);
+  text-align: left;
+}
+
+.checkin-identity__checkbox input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent);
+}
+
+.checkin-identity__checkbox span {
+  line-height: 1.35;
+}
+
+.checkin-identity__actions {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(220, 204, 176, 0.72);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.checkin-identity__actions .checkin-action-button {
+  min-width: 260px;
+}
+
+@media (max-width: 900px) {
+  .checkin-identity__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-identity__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-identity__panel,
+  .checkin-identity__camera-card,
+  .checkin-identity__consent-card {
+    min-height: auto;
+  }
+
+  .checkin-identity__actions {
+    flex-direction: column;
+  }
+
+  .checkin-identity__actions .checkin-action-button {
+    width: 100%;
+  }
+}
+
 

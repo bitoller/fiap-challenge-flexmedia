@@ -39,7 +39,16 @@ VITE_MOCK_SCENARIO=SUCCESS
 VITE_DEFAULT_LANGUAGE=en
 ```
 
-The kiosk supports the home screen, check-in, checkout, shared error recovery, and language switching. QR check-in uses the browser camera and requires camera permission in the browser.
+The kiosk supports the home screen, check-in, checkout, shared error recovery, and language switching. QR check-in and identity verification use the browser camera and require camera permission in the browser.
+
+Current check-in path:
+
+1. Reservation lookup by CPF, reservation number, or QR token.
+2. Compact reservation summary.
+3. Identity verification with document capture, selfie capture, inline terms, and biometric consent.
+4. Existing next step of the check-in flow.
+
+The old contact review page and standalone terms page are no longer routed by the kiosk. Terms and biometric consent are handled inside the identity verification screen.
 
 ## Admin Web
 

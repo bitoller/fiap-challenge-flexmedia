@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { ApiError } from "../../../../domain/errors";
 import {
   CompleteCheckinResponse,
+  IdentityVerificationResponse,
   Reservation,
   Session,
   SessionReservation,
@@ -11,7 +12,6 @@ import {
   CheckinPaymentMethod,
   CheckinRecoveryCode,
   CheckinSearchType,
-  GuestContactDraft,
 } from "../../../../domain/types";
 import { checkinRepository } from "../../../../data/repositories/checkinRepository";
 import { sessionRepository } from "../../../../data/repositories/sessionRepository";
@@ -24,9 +24,9 @@ interface RecoveryState {
 interface CheckinFlowContextValue {
   session: Session | null;
   reservation: Reservation | null;
-  guestContact: GuestContactDraft | null;
   checkinResult: CompleteCheckinResponse | null;
   paymentMethod: CheckinPaymentMethod | null;
+  identityVerification: IdentityVerificationResponse | null;
   flowStep: CheckinFlowStep;
   recovery: RecoveryState | null;
   biometricsAccepted: boolean;
@@ -37,9 +37,9 @@ interface CheckinFlowContextValue {
     value: string,
     language: string
   ) => Promise<SessionReservation>;
-  updateGuestContact: (contact: Partial<GuestContactDraft>) => void;
-  confirmGuestContact: () => Promise<void>;
-  acceptTerms: (biometricsAccepted: boolean) => Promise<void>;
+  verifyIdentityDocument: (imageBase64: string, mimeType: string) => Promise<IdentityVerificationResponse>;
+  verifyIdentitySelfie: (imageBase64: string, mimeType: string) => Promise<IdentityVerificationResponse>;
+  confirmIdentityVerification: (termsAccepted: boolean, biometricConsentAccepted: boolean) => Promise<IdentityVerificationResponse>;
   completeCheckin: (paymentMethod: CheckinPaymentMethod) => Promise<CompleteCheckinResponse>;
   setPaymentMethod: (paymentMethod: CheckinPaymentMethod) => void;
   setFlowStep: (step: CheckinFlowStep) => void;
@@ -49,21 +49,6 @@ interface CheckinFlowContextValue {
 }
 
 const CheckinFlowContext = createContext<CheckinFlowContextValue | undefined>(undefined);
-
-function buildInitialGuestContact(
-  reservation: Reservation,
-  searchType: CheckinSearchType,
-  searchValue: string
-): GuestContactDraft {
-  return {
-    fullName: reservation.guest.fullName,
-    documentType: reservation.guest.documentType,
-    documentNumber: searchType === "CPF" ? searchValue : reservation.guest.maskedDocument,
-    birthDate: reservation.guest.birthDate,
-    email: reservation.guest.email,
-    phone: reservation.guest.phone,
-  };
-}
 
 function mapApiErrorToRecoveryCode(error: ApiError): CheckinRecoveryCode {
   if (error.code === "RESERVATION_NOT_ELIGIBLE") {
@@ -93,9 +78,9 @@ function mapApiErrorToRecoveryCode(error: ApiError): CheckinRecoveryCode {
 export function CheckinFlowProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [reservation, setReservation] = useState<Reservation | null>(null);
-  const [guestContact, setGuestContact] = useState<GuestContactDraft | null>(null);
   const [checkinResult, setCheckinResult] = useState<CompleteCheckinResponse | null>(null);
   const [paymentMethod, setPaymentMethodState] = useState<CheckinPaymentMethod | null>(null);
+  const [identityVerification, setIdentityVerification] = useState<IdentityVerificationResponse | null>(null);
   const [flowStep, setFlowStepState] = useState<CheckinFlowStep>("identification");
   const [recovery, setRecoveryState] = useState<RecoveryState | null>(null);
   const [biometricsAccepted, setBiometricsAccepted] = useState(false);
@@ -106,9 +91,9 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     sessionRepository.clearSession();
     setSession(null);
     setReservation(null);
-    setGuestContact(null);
     setCheckinResult(null);
     setPaymentMethodState(null);
+    setIdentityVerification(null);
     setFlowStepState("identification");
     setRecoveryState(null);
     setBiometricsAccepted(false);
@@ -131,18 +116,6 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     setError(apiError);
   }, []);
 
-  const updateGuestContact = useCallback((contact: Partial<GuestContactDraft>) => {
-    setGuestContact((current) => ({
-      fullName: current?.fullName ?? "",
-      documentType: current?.documentType ?? "CPF",
-      documentNumber: current?.documentNumber ?? "",
-      birthDate: current?.birthDate ?? "",
-      email: current?.email ?? "",
-      phone: current?.phone ?? "",
-      ...contact,
-    }));
-  }, []);
-
   const startIdentification = useCallback(
     async (searchType: CheckinSearchType, value: string, language: string) => {
       setIsLoading(true);
@@ -163,7 +136,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         sessionRepository.setCurrentSession(attachedSession);
         setSession(attachedSession);
         setReservation(attachedSession.reservation);
-        setGuestContact(buildInitialGuestContact(attachedSession.reservation, searchType, value));
+        setIdentityVerification(null);
         setFlowStepState("confirmation");
 
         return attachedSession;
@@ -187,51 +160,91 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     []
   );
 
-  const confirmGuestContact = useCallback(async () => {
-    if (!session || !reservation || !guestContact) {
-      throw new ApiError("SESSION_NOT_READY", "The data could not be confirmed right now.");
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await checkinRepository.confirmGuest(session.sessionId, {
-        id: reservation.guest.id,
-        ...guestContact,
-      });
-      setFlowStepState("terms");
-    } catch (cause) {
-      const apiError =
-        cause instanceof ApiError
-          ? cause
-          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-      setError(apiError);
-      setRecoveryState({
-        code: mapApiErrorToRecoveryCode(apiError),
-        message: apiError.message,
-      });
-      setFlowStepState("recovery");
-      throw apiError;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [guestContact, reservation, session]);
-
-  const acceptTerms = useCallback(
-    async (nextBiometricsAccepted: boolean) => {
+  const verifyIdentityDocument = useCallback(
+    async (imageBase64: string, mimeType: string) => {
       if (!session) {
-        throw new ApiError("SESSION_NOT_READY", "The terms could not be recorded right now.");
+        throw new ApiError("SESSION_NOT_READY", "Identity verification could not start right now.");
       }
 
       setIsLoading(true);
       setError(null);
 
       try {
-        await checkinRepository.registerConsents(session.sessionId, nextBiometricsAccepted);
-        setBiometricsAccepted(nextBiometricsAccepted);
+        const result = await checkinRepository.verifyIdentityDocument(session.sessionId, imageBase64, mimeType);
+        setIdentityVerification(result);
+        return result;
+      } catch (cause) {
+        const apiError =
+          cause instanceof ApiError
+            ? cause
+            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
+
+        setError(apiError);
+        setRecoveryState({
+          code: mapApiErrorToRecoveryCode(apiError),
+          message: apiError.message,
+        });
+        setFlowStepState("recovery");
+        throw apiError;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [session]
+  );
+
+  const verifyIdentitySelfie = useCallback(
+    async (imageBase64: string, mimeType: string) => {
+      if (!session) {
+        throw new ApiError("SESSION_NOT_READY", "Identity verification could not continue right now.");
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await checkinRepository.verifyIdentitySelfie(session.sessionId, imageBase64, mimeType);
+        setIdentityVerification(result);
+        return result;
+      } catch (cause) {
+        const apiError =
+          cause instanceof ApiError
+            ? cause
+            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
+
+        setError(apiError);
+        setRecoveryState({
+          code: mapApiErrorToRecoveryCode(apiError),
+          message: apiError.message,
+        });
+        setFlowStepState("recovery");
+        throw apiError;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [session]
+  );
+
+  const confirmIdentityVerification = useCallback(
+    async (termsAccepted: boolean, biometricConsentAccepted: boolean) => {
+      if (!session) {
+        throw new ApiError("SESSION_NOT_READY", "Identity verification could not be confirmed right now.");
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await checkinRepository.confirmIdentityVerification(
+          session.sessionId,
+          termsAccepted,
+          biometricConsentAccepted
+        );
+        setIdentityVerification(result);
+        setBiometricsAccepted(biometricConsentAccepted);
         setFlowStepState("payment");
+        return result;
       } catch (cause) {
         const apiError =
           cause instanceof ApiError
@@ -265,7 +278,9 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         const result = await checkinRepository.completeCheckin(
           session.sessionId,
           nextPaymentMethod,
-          biometricsAccepted
+          biometricsAccepted,
+          identityVerification?.documentStatus ?? "APPROVED",
+          identityVerification?.biometryStatus
         );
 
         setPaymentMethodState(nextPaymentMethod);
@@ -289,25 +304,25 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setIsLoading(false);
       }
     },
-    [biometricsAccepted, session]
+    [biometricsAccepted, identityVerification, session]
   );
 
   const value = useMemo<CheckinFlowContextValue>(
     () => ({
       session,
       reservation,
-      guestContact,
       checkinResult,
       paymentMethod,
+      identityVerification,
       flowStep,
       recovery,
       biometricsAccepted,
       isLoading,
       error,
       startIdentification,
-      updateGuestContact,
-      confirmGuestContact,
-      acceptTerms,
+      verifyIdentityDocument,
+      verifyIdentitySelfie,
+      confirmIdentityVerification,
       completeCheckin,
       setPaymentMethod: setPaymentMethodState,
       setFlowStep,
@@ -316,15 +331,12 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       resetError,
     }),
     [
-      acceptTerms,
       biometricsAccepted,
       checkinResult,
       clearFlow,
       completeCheckin,
-      confirmGuestContact,
       error,
       flowStep,
-      guestContact,
       isLoading,
       paymentMethod,
       recovery,
@@ -334,7 +346,9 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       setFlowStep,
       setRecovery,
       startIdentification,
-      updateGuestContact,
+      verifyIdentityDocument,
+      verifyIdentitySelfie,
+      confirmIdentityVerification,
     ]
   );
 

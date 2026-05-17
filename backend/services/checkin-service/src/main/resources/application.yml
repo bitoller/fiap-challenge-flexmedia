@@ -42,6 +42,19 @@ services:
   notification:
     url: ${NOTIFICATION_SERVICE_URL:http://localhost:8091}
 
+identity:
+  verification:
+    demo-auto-approve: ${IDENTITY_DEMO_AUTO_APPROVE:false}
+    document-only-fallback-enabled: ${IDENTITY_DOCUMENT_ONLY_FALLBACK_ENABLED:true}
+    ocr:
+      api-key: ${OCR_SPACE_API_KEY:}
+      timeout-seconds: ${OCR_SPACE_TIMEOUT_SECONDS:10}
+    face-match:
+      base-url: ${COMPREFACE_URL:}
+      api-key: ${COMPREFACE_API_KEY:}
+      threshold: ${COMPREFACE_THRESHOLD:85}
+      timeout-seconds: ${COMPREFACE_TIMEOUT_SECONDS:10}
+
 logging:
   level:
     br.com.fiap.flexcheck: INFO

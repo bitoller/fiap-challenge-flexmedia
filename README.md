@@ -87,6 +87,34 @@ ORACLE_PASSWORD=change_me_local_password
 
 The local bootstrap scripts in `database/oracle/init` create the local application schema and load the versioned schema and seed data. For shared FIAP Oracle usage, use your own schema credentials and run only the scripts that are safe for that environment.
 
+## Optional Local CompreFace
+
+CompreFace runs as a separate local Docker bundle because the official release ships with its own compose files and supporting services.
+
+Install the bundle:
+
+```powershell
+.\infra\compreface\download-compreface.ps1
+```
+
+Start CompreFace:
+
+```powershell
+.\infra\compreface\start-compreface.ps1
+```
+
+Open `http://localhost:8000`, create a Face Verification service, and add the generated service API key to `.env`. When FlexCheck runs through Docker, use `host.docker.internal` so the check-in container can reach CompreFace:
+
+```env
+COMPREFACE_URL=http://host.docker.internal:8000
+COMPREFACE_API_KEY=your_face_verification_service_key
+COMPREFACE_THRESHOLD=85
+```
+
+No Oracle schema change is required for CompreFace.
+
+Identity verification uses CompreFace only after OCR has already matched the document data against the reservation. A rejected face match blocks the check-in flow. The document-only fallback is used only when the face provider is unavailable and `IDENTITY_DOCUMENT_ONLY_FALLBACK_ENABLED=true`.
+
 ## Build Locally
 
 Backend:
@@ -117,6 +145,7 @@ npm run build
 - Kiosk home with hotel branding and language switching.
 - Check-in reservation lookup by CPF, reservation number, and QR token.
 - Check-in reservation summary before facial verification.
+- Check-in identity verification with document capture, OCR reservation matching, selfie capture, CompreFace face matching, and inline terms/biometric consent.
 - Checkout lookup, account review, payment path, key return, receipt, and completion screens.
 - Shared kiosk error screen for check-in and checkout failures.
 - Admin login, dashboard, hotel context selection, device/audit/branding views, and persistent reservation test area.
