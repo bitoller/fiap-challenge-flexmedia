@@ -104,6 +104,10 @@
   padding: clamp(0.55rem, 1vh, 0.95rem) clamp(1rem, 2.1vw, 1.8rem) clamp(0.6rem, 1.1vh, 1rem);
 }
 
+.checkin-layout__main.checkin-layout--recovery {
+  width: 100%;
+}
+
 .checkin-bottom-nav {
   min-height: 92px;
   padding: 0.7rem clamp(1.1rem, 2vw, 2rem) 0.85rem;
@@ -193,31 +197,6 @@
   color: rgba(92, 78, 61, 0.82);
   font-size: clamp(0.84rem, 0.95vw, 1rem);
   line-height: 1.6;
-}
-
-.checkin-layout__main .kiosk-recovery-screen {
-  width: min(100%, 40rem);
-}
-
-.checkin-layout__main .kiosk-recovery-screen__card {
-  min-height: clamp(21rem, 49vh, 28rem);
-  padding: clamp(1.55rem, 2.2vw, 2.1rem);
-}
-
-.checkin-layout__main .kiosk-recovery-screen__eyebrow {
-  min-height: 1.4em;
-}
-
-.checkin-layout__main .kiosk-recovery-screen__title {
-  max-width: 13ch;
-}
-
-.checkin-layout__main .kiosk-recovery-screen__body {
-  width: min(100%, 32rem);
-}
-
-.checkin-layout__main .kiosk-recovery-screen__actions {
-  width: min(100%, 34rem);
 }
 
 .checkin-identification,

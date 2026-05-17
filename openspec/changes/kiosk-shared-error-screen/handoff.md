@@ -12,7 +12,7 @@ The kiosk recovery experience now uses a shared screen for both check-in and che
 - Stabilized the recovery layout so button sizing stays consistent across languages.
 - Centered the checkout recovery state within the available kiosk viewport.
 - Refined the visual treatment to stay aligned with the existing luxury palette instead of the earlier brown/mustard emphasis.
-- Narrowed the check-in recovery width so it now follows the same tighter card proportion as checkout.
+- Removed check-in-only recovery sizing overrides and added a check-in recovery layout mode that mirrors checkout recovery, so both flows use the same stable card dimensions across EN, PT-BR, and ES.
 
 ## Validation
 

@@ -35,7 +35,7 @@ export function ReservationNotFoundPage() {
   };
 
   return (
-    <CheckinFlowLayout>
+    <CheckinFlowLayout className="checkin-layout--recovery">
       <RecoveryScreen
         eyebrow={t("stepRecovery")}
         title={title}

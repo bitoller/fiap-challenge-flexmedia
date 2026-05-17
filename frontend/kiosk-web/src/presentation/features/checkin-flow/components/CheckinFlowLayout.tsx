@@ -8,10 +8,10 @@ interface CheckinFlowLayoutProps {
   className?: string;
 }
 
-export function CheckinFlowLayout({ children }: CheckinFlowLayoutProps) {
+export function CheckinFlowLayout({ children, className = "" }: CheckinFlowLayoutProps) {
   return (
     <KioskLayout>
-      <section className="checkin-layout__main">{children}</section>
+      <section className={`checkin-layout__main ${className}`.trim()}>{children}</section>
     </KioskLayout>
   );
 }
