@@ -121,6 +121,8 @@ npm run build
 - Shared kiosk error screen for check-in and checkout failures.
 - Admin login, dashboard, hotel context selection, device/audit/branding views, and persistent reservation test area.
 
+Figma: https://www.figma.com/design/8bJCAQ0E9U1H7Em7COIZiw/Untitled?node-id=0-1&t=ivD9M1m0c6CyGyTZ-1
+
 ## Documentation
 
 Use the root README for Docker, database, and project-wide setup. Use `backend/README.md` for backend service details and `frontend/README.md` for kiosk/admin development details. OpenSpec remains the source of implementation history and change decisions.
