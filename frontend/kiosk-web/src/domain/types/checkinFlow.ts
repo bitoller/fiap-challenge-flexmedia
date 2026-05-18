@@ -8,6 +8,7 @@ export type CheckinFlowStep =
   | "identification"
   | "confirmation"
   | "identity-verification"
+  | "add-ons"
   | "payment"
   | "success"
   | "recovery";

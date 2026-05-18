@@ -99,4 +99,25 @@ export interface CheckoutStayPreview {
   charges: CheckoutCharge[];
 }
 
+export interface CheckinAddOnOffer {
+  code: string;
+  pricingType: string;
+  unitAmount: number;
+  quantity: number;
+  totalAmount: number;
+  currency: string;
+  selected: boolean;
+}
+
+export interface CheckinAddOnQuote {
+  sessionId: number;
+  reservation: Reservation;
+  offers: CheckinAddOnOffer[];
+  selectedCodes: string[];
+  baseAmount: number;
+  addOnsTotal: number;
+  totalAmount: number;
+  currency: string;
+}
+
 export * from "./hotel";

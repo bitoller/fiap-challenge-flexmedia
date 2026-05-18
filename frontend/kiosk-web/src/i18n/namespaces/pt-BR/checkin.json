@@ -6,6 +6,7 @@
   "sharedRecoveryBody": "Algo interrompeu esta etapa. Tente novamente ou volte ao início.",
   "stepConfirmation": "PASSO 2 DE 6 - RESUMO",
   "stepIdentity": "PASSO 3 DE 6 - VERIFICACAO DE IDENTIDADE",
+  "stepAddOns": "PASSO 4 DE 6 - SERVICOS ADICIONAIS",
   "stepPayment": "PASSO 5 DE 6 - PAGAMENTO",
   "stepSuccess": "PASSO 6 DE 6 - CONCLUSÃO",
   "confirmationTag": "RESUMO",
@@ -101,6 +102,40 @@
   "identityFallbackBody": "O documento combina com a reserva. A biometria seguira em modo de conferencia somente por documento.",
   "identityTermsConsent": "Aceito os termos da estadia, politica de privacidade e regras do hotel.",
   "identityBiometricConsent": "Autorizo a validacao biometrica para este check-in.",
+  "addOnsTitle": "Servicos adicionais",
+  "addOnsSubtitle": "Melhore sua estadia antes do pagamento. Voce pode pular esta etapa se preferir.",
+  "addOns": {
+    "items": {
+      "BREAKFAST": {
+        "eyebrow": "Ritual da manha",
+        "title": "Cafe da manha",
+        "description": "Experiencia gastronomica completa com paes frescos, frutas, sucos e selecoes locais."
+      },
+      "ROOM_UPGRADE": {
+        "eyebrow": "Conforto do quarto",
+        "title": "Upgrade de quarto",
+        "description": "Mude para uma categoria superior quando disponivel, com mais espaco e amenidades refinadas."
+      },
+      "LATE_CHECKOUT": {
+        "eyebrow": "Flexibilidade na saida",
+        "title": "Check-out tardio",
+        "description": "Estenda sua janela de saida e aproveite as areas do hotel com mais tranquilidade."
+      }
+    },
+    "pricing": {
+      "PER_PERSON": "Por pessoa",
+      "PER_NIGHT": "Por noite",
+      "ONE_TIME": "Taxa unica"
+    },
+    "quantity": "{{count}} noites",
+    "add": "Adicionar",
+    "selected": "Selecionado",
+    "baseTotal": "Reserva",
+    "selectedTotal": "Servicos",
+    "updatedTotal": "Total atualizado",
+    "skip": "Pular",
+    "continue": "Continuar"
+  },
   "paymentTitle": "Pagamento",
   "paymentSubtitle": "Escolha como deseja quitar o saldo da reserva.",
   "paymentTotalLabel": "Total a pagar",

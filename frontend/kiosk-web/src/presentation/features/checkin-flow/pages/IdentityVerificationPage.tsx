@@ -93,8 +93,8 @@ export function IdentityVerificationPage() {
 
     try {
       await confirmIdentityVerification(termsAccepted, biometricConsentAccepted);
-      setFlowStep("payment");
-      navigate("/checkin/payment");
+      setFlowStep("add-ons");
+      navigate("/checkin/add-ons");
     } catch {
       navigate("/checkin/recovery", { replace: true });
     } finally {

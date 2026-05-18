@@ -1,6 +1,8 @@
 package br.com.fiap.flexcheck.checkin.controller;
 
 import br.com.fiap.flexcheck.checkin.dto.AttachReservationRequest;
+import br.com.fiap.flexcheck.checkin.dto.ApplyCheckinAddOnsRequest;
+import br.com.fiap.flexcheck.checkin.dto.CheckinAddOnQuoteResponse;
 import br.com.fiap.flexcheck.checkin.dto.CompleteCheckinRequest;
 import br.com.fiap.flexcheck.checkin.dto.CompleteCheckinResponse;
 import br.com.fiap.flexcheck.checkin.dto.ConsentRequest;
@@ -14,14 +16,17 @@ import br.com.fiap.flexcheck.checkin.dto.SessionReservationResponse;
 import br.com.fiap.flexcheck.checkin.dto.SessionResponse;
 import br.com.fiap.flexcheck.checkin.mapper.ApiMapper;
 import br.com.fiap.flexcheck.checkin.service.AttachReservationUseCase;
+import br.com.fiap.flexcheck.checkin.service.ApplyCheckinAddOnsUseCase;
 import br.com.fiap.flexcheck.checkin.service.CompleteCheckinUseCase;
 import br.com.fiap.flexcheck.checkin.service.ConfirmIdentityVerificationUseCase;
 import br.com.fiap.flexcheck.checkin.service.ConfirmGuestUseCase;
 import br.com.fiap.flexcheck.checkin.service.CreateSessionUseCase;
+import br.com.fiap.flexcheck.checkin.service.ListCheckinAddOnsUseCase;
 import br.com.fiap.flexcheck.checkin.service.RegisterConsentsUseCase;
 import br.com.fiap.flexcheck.checkin.service.VerifyIdentityDocumentUseCase;
 import br.com.fiap.flexcheck.checkin.service.VerifyIdentitySelfieUseCase;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +45,8 @@ public class CheckinSessionController {
     private final VerifyIdentityDocumentUseCase verifyIdentityDocumentUseCase;
     private final VerifyIdentitySelfieUseCase verifyIdentitySelfieUseCase;
     private final ConfirmIdentityVerificationUseCase confirmIdentityVerificationUseCase;
+    private final ListCheckinAddOnsUseCase listCheckinAddOnsUseCase;
+    private final ApplyCheckinAddOnsUseCase applyCheckinAddOnsUseCase;
     private final CompleteCheckinUseCase completeCheckinUseCase;
 
     public CheckinSessionController(
@@ -50,6 +57,8 @@ public class CheckinSessionController {
             VerifyIdentityDocumentUseCase verifyIdentityDocumentUseCase,
             VerifyIdentitySelfieUseCase verifyIdentitySelfieUseCase,
             ConfirmIdentityVerificationUseCase confirmIdentityVerificationUseCase,
+            ListCheckinAddOnsUseCase listCheckinAddOnsUseCase,
+            ApplyCheckinAddOnsUseCase applyCheckinAddOnsUseCase,
             CompleteCheckinUseCase completeCheckinUseCase
     ) {
         this.createSessionUseCase = createSessionUseCase;
@@ -59,6 +68,8 @@ public class CheckinSessionController {
         this.verifyIdentityDocumentUseCase = verifyIdentityDocumentUseCase;
         this.verifyIdentitySelfieUseCase = verifyIdentitySelfieUseCase;
         this.confirmIdentityVerificationUseCase = confirmIdentityVerificationUseCase;
+        this.listCheckinAddOnsUseCase = listCheckinAddOnsUseCase;
+        this.applyCheckinAddOnsUseCase = applyCheckinAddOnsUseCase;
         this.completeCheckinUseCase = completeCheckinUseCase;
     }
 
@@ -115,6 +126,19 @@ public class CheckinSessionController {
             @Valid @RequestBody IdentityVerificationConfirmRequest request
     ) {
         return ApiMapper.toResponse(confirmIdentityVerificationUseCase.execute(sessionId, ApiMapper.toCommand(request)));
+    }
+
+    @GetMapping("/{sessionId}/add-ons")
+    public CheckinAddOnQuoteResponse listAddOns(@PathVariable Long sessionId) {
+        return ApiMapper.toResponse(listCheckinAddOnsUseCase.execute(sessionId));
+    }
+
+    @PostMapping("/{sessionId}/add-ons")
+    public CheckinAddOnQuoteResponse applyAddOns(
+            @PathVariable Long sessionId,
+            @RequestBody ApplyCheckinAddOnsRequest request
+    ) {
+        return ApiMapper.toResponse(applyCheckinAddOnsUseCase.execute(sessionId, ApiMapper.toCommand(request)));
     }
 
     @PostMapping("/{sessionId}/complete-checkin")

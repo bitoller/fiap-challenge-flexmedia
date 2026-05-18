@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
     `/checkin-sessions/${sessionId}/identity/selfie`,
   CHECKIN_SESSION_IDENTITY_CONFIRM: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/identity/confirm`,
+  CHECKIN_SESSION_ADD_ONS: (sessionId: number | string) =>
+    `/checkin-sessions/${sessionId}/add-ons`,
   COMPLETE_CHECKIN: (sessionId: number | string) =>
     `/checkin-sessions/${sessionId}/complete-checkin`,
 

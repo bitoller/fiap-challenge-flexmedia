@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { ApiError } from "../../../../domain/errors";
 import {
+  CheckinAddOnQuote,
   CompleteCheckinResponse,
   IdentityVerificationResponse,
   Reservation,
@@ -25,6 +26,7 @@ interface CheckinFlowContextValue {
   session: Session | null;
   reservation: Reservation | null;
   checkinResult: CompleteCheckinResponse | null;
+  addOnQuote: CheckinAddOnQuote | null;
   paymentMethod: CheckinPaymentMethod | null;
   identityVerification: IdentityVerificationResponse | null;
   flowStep: CheckinFlowStep;
@@ -40,6 +42,8 @@ interface CheckinFlowContextValue {
   verifyIdentityDocument: (imageBase64: string, mimeType: string) => Promise<IdentityVerificationResponse>;
   verifyIdentitySelfie: (imageBase64: string, mimeType: string) => Promise<IdentityVerificationResponse>;
   confirmIdentityVerification: (termsAccepted: boolean, biometricConsentAccepted: boolean) => Promise<IdentityVerificationResponse>;
+  loadAddOns: () => Promise<CheckinAddOnQuote>;
+  applyAddOns: (selectedCodes: string[]) => Promise<CheckinAddOnQuote>;
   completeCheckin: (paymentMethod: CheckinPaymentMethod) => Promise<CompleteCheckinResponse>;
   setPaymentMethod: (paymentMethod: CheckinPaymentMethod) => void;
   setFlowStep: (step: CheckinFlowStep) => void;
@@ -79,6 +83,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
   const [session, setSession] = useState<Session | null>(null);
   const [reservation, setReservation] = useState<Reservation | null>(null);
   const [checkinResult, setCheckinResult] = useState<CompleteCheckinResponse | null>(null);
+  const [addOnQuote, setAddOnQuote] = useState<CheckinAddOnQuote | null>(null);
   const [paymentMethod, setPaymentMethodState] = useState<CheckinPaymentMethod | null>(null);
   const [identityVerification, setIdentityVerification] = useState<IdentityVerificationResponse | null>(null);
   const [flowStep, setFlowStepState] = useState<CheckinFlowStep>("identification");
@@ -92,6 +97,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     setSession(null);
     setReservation(null);
     setCheckinResult(null);
+    setAddOnQuote(null);
     setPaymentMethodState(null);
     setIdentityVerification(null);
     setFlowStepState("identification");
@@ -137,6 +143,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setSession(attachedSession);
         setReservation(attachedSession.reservation);
         setIdentityVerification(null);
+        setAddOnQuote(null);
         setFlowStepState("confirmation");
 
         return attachedSession;
@@ -243,7 +250,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         );
         setIdentityVerification(result);
         setBiometricsAccepted(biometricConsentAccepted);
-        setFlowStepState("payment");
+        setFlowStepState("add-ons");
         return result;
       } catch (cause) {
         const apiError =
@@ -264,6 +271,70 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     },
     [session]
   );
+
+  const loadAddOns = useCallback(async () => {
+    if (!session) {
+      throw new ApiError("SESSION_NOT_READY", "Add-on services could not be loaded right now.");
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await checkinRepository.listAddOns(session.sessionId);
+      setAddOnQuote(result);
+      setReservation(result.reservation);
+      setFlowStepState("add-ons");
+      return result;
+    } catch (cause) {
+      const apiError =
+        cause instanceof ApiError
+          ? cause
+          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
+
+      setError(apiError);
+      setRecoveryState({
+        code: mapApiErrorToRecoveryCode(apiError),
+        message: apiError.message,
+      });
+      setFlowStepState("recovery");
+      throw apiError;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session]);
+
+  const applyAddOns = useCallback(async (selectedCodes: string[]) => {
+    if (!session) {
+      throw new ApiError("SESSION_NOT_READY", "Add-on services could not be saved right now.");
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await checkinRepository.applyAddOns(session.sessionId, selectedCodes);
+      setAddOnQuote(result);
+      setReservation(result.reservation);
+      setFlowStepState("payment");
+      return result;
+    } catch (cause) {
+      const apiError =
+        cause instanceof ApiError
+          ? cause
+          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
+
+      setError(apiError);
+      setRecoveryState({
+        code: mapApiErrorToRecoveryCode(apiError),
+        message: apiError.message,
+      });
+      setFlowStepState("recovery");
+      throw apiError;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session]);
 
   const completeCheckin = useCallback(
     async (nextPaymentMethod: CheckinPaymentMethod) => {
@@ -312,6 +383,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       session,
       reservation,
       checkinResult,
+      addOnQuote,
       paymentMethod,
       identityVerification,
       flowStep,
@@ -323,6 +395,8 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       verifyIdentityDocument,
       verifyIdentitySelfie,
       confirmIdentityVerification,
+      loadAddOns,
+      applyAddOns,
       completeCheckin,
       setPaymentMethod: setPaymentMethodState,
       setFlowStep,
@@ -332,6 +406,8 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     }),
     [
       biometricsAccepted,
+      addOnQuote,
+      applyAddOns,
       checkinResult,
       clearFlow,
       completeCheckin,
@@ -346,6 +422,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       setFlowStep,
       setRecovery,
       startIdentification,
+      loadAddOns,
       verifyIdentityDocument,
       verifyIdentitySelfie,
       confirmIdentityVerification,

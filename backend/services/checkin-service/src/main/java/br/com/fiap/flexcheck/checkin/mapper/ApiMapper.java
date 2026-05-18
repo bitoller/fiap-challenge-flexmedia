@@ -1,6 +1,9 @@
 package br.com.fiap.flexcheck.checkin.mapper;
 
 import br.com.fiap.flexcheck.checkin.dto.AttachReservationRequest;
+import br.com.fiap.flexcheck.checkin.dto.ApplyCheckinAddOnsRequest;
+import br.com.fiap.flexcheck.checkin.dto.CheckinAddOnOfferResponse;
+import br.com.fiap.flexcheck.checkin.dto.CheckinAddOnQuoteResponse;
 import br.com.fiap.flexcheck.checkin.dto.CheckoutRequest;
 import br.com.fiap.flexcheck.checkin.dto.CheckoutChargeResponse;
 import br.com.fiap.flexcheck.checkin.dto.CheckoutLookupRequest;
@@ -23,6 +26,7 @@ import br.com.fiap.flexcheck.checkin.dto.RoomResponse;
 import br.com.fiap.flexcheck.checkin.dto.SessionReservationResponse;
 import br.com.fiap.flexcheck.checkin.dto.SessionResponse;
 import br.com.fiap.flexcheck.checkin.service.command.AttachReservationCommand;
+import br.com.fiap.flexcheck.checkin.service.command.ApplyCheckinAddOnsCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CheckoutLookupCommand;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
@@ -33,6 +37,8 @@ import br.com.fiap.flexcheck.checkin.service.command.IdentityDocumentVerificatio
 import br.com.fiap.flexcheck.checkin.service.command.IdentitySelfieVerificationCommand;
 import br.com.fiap.flexcheck.checkin.service.command.IdentityVerificationConfirmCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckinAddOnOfferResult;
+import br.com.fiap.flexcheck.checkin.service.result.CheckinAddOnQuoteResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutChargeResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
@@ -54,6 +60,10 @@ public final class ApiMapper {
 
     public static AttachReservationCommand toCommand(AttachReservationRequest request) {
         return new AttachReservationCommand(request.searchType(), request.searchValue());
+    }
+
+    public static ApplyCheckinAddOnsCommand toCommand(ApplyCheckinAddOnsRequest request) {
+        return new ApplyCheckinAddOnsCommand(request.selectedCodes());
     }
 
     public static GuestConfirmationCommand toCommand(GuestConfirmationRequest request) {
@@ -166,6 +176,19 @@ public final class ApiMapper {
         );
     }
 
+    public static CheckinAddOnQuoteResponse toResponse(CheckinAddOnQuoteResult result) {
+        return new CheckinAddOnQuoteResponse(
+                result.sessionId(),
+                toResponse(result.reservation()),
+                result.offers().stream().map(ApiMapper::toResponse).toList(),
+                result.selectedCodes(),
+                result.baseAmount(),
+                result.addOnsTotal(),
+                result.totalAmount(),
+                result.currency()
+        );
+    }
+
     public static CheckoutResponse toResponse(CheckoutResult result) {
         return new CheckoutResponse(result.stayId(), result.status(), result.totalPaid(), result.receiptCode());
     }
@@ -201,6 +224,18 @@ public final class ApiMapper {
 
     private static CheckoutChargeResponse toResponse(CheckoutChargeResult charge) {
         return new CheckoutChargeResponse(charge.code(), charge.description(), charge.amount());
+    }
+
+    private static CheckinAddOnOfferResponse toResponse(CheckinAddOnOfferResult offer) {
+        return new CheckinAddOnOfferResponse(
+                offer.code(),
+                offer.pricingType(),
+                offer.unitAmount(),
+                offer.quantity(),
+                offer.totalAmount(),
+                offer.currency(),
+                offer.selected()
+        );
     }
 
     private static String normalize(String value) {

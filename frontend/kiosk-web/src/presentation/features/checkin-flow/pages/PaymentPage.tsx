@@ -125,7 +125,7 @@ export function PaymentPage() {
         </div>
 
         <div className="checkin-payment__actions">
-          <Button variant="secondary" size="lg" onClick={() => navigate("/checkin/identity")}>
+          <Button variant="secondary" size="lg" onClick={() => navigate("/checkin/add-ons")}>
             {t("back")}
           </Button>
           <Button variant="primary" size="lg" onClick={finishCheckin} isLoading={isLoading}>

@@ -8,6 +8,7 @@ import { IdentificationPage } from "./presentation/features/checkin-flow/pages/I
 import { ReservationConfirmationPage } from "./presentation/features/checkin-flow/pages/ReservationConfirmationPage";
 import { ReservationNotFoundPage } from "./presentation/features/checkin-flow/pages/ReservationNotFoundPage";
 import { IdentityVerificationPage } from "./presentation/features/checkin-flow/pages/IdentityVerificationPage";
+import { AddOnsPage } from "./presentation/features/checkin-flow/pages/AddOnsPage";
 import { PaymentPage } from "./presentation/features/checkin-flow/pages/PaymentPage";
 import { SuccessPage } from "./presentation/features/checkin-flow/pages/SuccessPage";
 import { RecoveryPage } from "./presentation/features/checkin-flow/pages/RecoveryPage";
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
           <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />
           <Route path="/checkin/identity" element={<IdentityVerificationPage />} />
+          <Route path="/checkin/add-ons" element={<AddOnsPage />} />
           <Route path="/checkin/payment" element={<PaymentPage />} />
           <Route path="/checkin/success" element={<SuccessPage />} />
           <Route path="/checkin/recovery" element={<RecoveryPage />} />

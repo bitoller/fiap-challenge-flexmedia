@@ -6,6 +6,7 @@
   "sharedRecoveryBody": "Something interrupted this step. Please try again or return to the beginning.",
   "stepConfirmation": "STEP 2 OF 6 - SUMMARY",
   "stepIdentity": "STEP 3 OF 6 - IDENTITY VERIFICATION",
+  "stepAddOns": "STEP 4 OF 6 - ADDITIONAL SERVICES",
   "stepPayment": "STEP 5 OF 6 - PAYMENT",
   "stepSuccess": "STEP 6 OF 6 - COMPLETE",
   "confirmationTag": "SUMMARY",
@@ -101,6 +102,40 @@
   "identityFallbackBody": "The document matches the reservation. Biometric verification will continue in document-only review mode.",
   "identityTermsConsent": "I accept the stay terms, privacy policy, and hotel rules.",
   "identityBiometricConsent": "I authorize biometric validation for this check-in.",
+  "addOnsTitle": "Additional services",
+  "addOnsSubtitle": "Enhance your stay before payment. You can skip this step if you prefer.",
+  "addOns": {
+    "items": {
+      "BREAKFAST": {
+        "eyebrow": "Morning ritual",
+        "title": "Breakfast",
+        "description": "A complete gastronomic experience with fresh pastries, fruit, juices, and local selections."
+      },
+      "ROOM_UPGRADE": {
+        "eyebrow": "Room comfort",
+        "title": "Room upgrade",
+        "description": "Move to a higher category when available, with expanded space and refined amenities."
+      },
+      "LATE_CHECKOUT": {
+        "eyebrow": "Departure flexibility",
+        "title": "Late checkout",
+        "description": "Extend your departure window and enjoy the hotel facilities with more calm."
+      }
+    },
+    "pricing": {
+      "PER_PERSON": "Per person",
+      "PER_NIGHT": "Per night",
+      "ONE_TIME": "One-time fee"
+    },
+    "quantity": "{{count}} nights",
+    "add": "Add",
+    "selected": "Selected",
+    "baseTotal": "Reservation",
+    "selectedTotal": "Services",
+    "updatedTotal": "Updated total",
+    "skip": "Skip",
+    "continue": "Continue"
+  },
   "paymentTitle": "Payment",
   "paymentSubtitle": "Choose how you would like to settle the reservation balance.",
   "paymentTotalLabel": "Total due",

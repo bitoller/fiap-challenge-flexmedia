@@ -1,4 +1,4 @@
-import { CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, IdentityVerificationResponse, Reservation, Room, Session, SessionReservation } from "../../domain/models";
+import { CheckinAddOnOffer, CheckinAddOnQuote, CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, IdentityVerificationResponse, Reservation, Room, Session, SessionReservation } from "../../domain/models";
 
 export const checkoutResponseInterceptor = (data: any): CheckoutResponse => {
   return {
@@ -68,11 +68,38 @@ export const identityVerificationResponseInterceptor = (data: any): IdentityVeri
   };
 };
 
+export const checkinAddOnQuoteResponseInterceptor = (data: any): CheckinAddOnQuote => {
+  return {
+    sessionId: data.sessionId,
+    reservation: reservationResponseInterceptor(data.reservation),
+    offers: Array.isArray(data.offers)
+      ? data.offers.map((offer: any) => checkinAddOnOfferResponseInterceptor(offer))
+      : [],
+    selectedCodes: Array.isArray(data.selectedCodes) ? data.selectedCodes : [],
+    baseAmount: data.baseAmount ?? 0,
+    addOnsTotal: data.addOnsTotal ?? 0,
+    totalAmount: data.totalAmount ?? data.reservation?.totalAmount ?? 0,
+    currency: data.currency ?? data.reservation?.currency ?? "BRL",
+  };
+};
+
 const checkoutChargeResponseInterceptor = (data: any): CheckoutCharge => {
   return {
     code: data.code,
     description: data.description,
     amount: data.amount,
+  };
+};
+
+const checkinAddOnOfferResponseInterceptor = (data: any): CheckinAddOnOffer => {
+  return {
+    code: data.code,
+    pricingType: data.pricingType,
+    unitAmount: data.unitAmount ?? 0,
+    quantity: data.quantity ?? 1,
+    totalAmount: data.totalAmount ?? 0,
+    currency: data.currency ?? "BRL",
+    selected: Boolean(data.selected),
   };
 };
 
@@ -150,6 +177,12 @@ export const identityConfirmationRequestInterceptor = (
   return {
     termsAccepted,
     biometricConsentAccepted,
+  };
+};
+
+export const addOnSelectionRequestInterceptor = (selectedCodes: string[]) => {
+  return {
+    selectedCodes,
   };
 };
 

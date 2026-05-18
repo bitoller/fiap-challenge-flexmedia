@@ -1,4 +1,4 @@
-import { Reservation, Session, SessionReservation, CompleteCheckinResponse, IdentityVerificationResponse } from "../../domain/models";
+import { CheckinAddOnQuote, Reservation, Session, SessionReservation, CompleteCheckinResponse, IdentityVerificationResponse } from "../../domain/models";
 import { TimeoutError, ApiError } from "../../domain/errors";
 import { KIOSK_CONFIG } from "../../core/constants";
 import { apiPost, apiGet } from "../api/client";
@@ -13,6 +13,8 @@ import {
   identityConfirmationRequestInterceptor,
   identityImageRequestInterceptor,
   identityVerificationResponseInterceptor,
+  checkinAddOnQuoteResponseInterceptor,
+  addOnSelectionRequestInterceptor,
 } from "../api/interceptors";
 import {
   MOCK_SESSION,
@@ -204,5 +206,18 @@ export const checkinRepository = {
       }
       throw error;
     }
+  },
+
+  async listAddOns(sessionId: number): Promise<CheckinAddOnQuote> {
+    const response = await apiGet<any>(buildUrl(API_ENDPOINTS.CHECKIN_SESSION_ADD_ONS(sessionId)));
+    return checkinAddOnQuoteResponseInterceptor(response);
+  },
+
+  async applyAddOns(sessionId: number, selectedCodes: string[]): Promise<CheckinAddOnQuote> {
+    const response = await apiPost<any>(
+      buildUrl(API_ENDPOINTS.CHECKIN_SESSION_ADD_ONS(sessionId)),
+      addOnSelectionRequestInterceptor(selectedCodes)
+    );
+    return checkinAddOnQuoteResponseInterceptor(response);
   },
 };
