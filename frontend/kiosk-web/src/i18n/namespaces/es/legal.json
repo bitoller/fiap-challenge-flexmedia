@@ -1,0 +1,43 @@
+{
+  "eyebrow": "Política del huésped",
+  "title": "Privacidad, estancia y biometría",
+  "subtitle": "Revise cómo el hotel gestiona las reglas de estancia, validación de documento, reconocimiento facial y soporte.",
+  "back": "Volver a la pantalla anterior",
+  "sections": [
+    {
+      "title": "1. Reglas de estancia",
+      "body": [
+        "El huésped acepta seguir las reglas de convivencia, seguridad, silencio y uso de las instalaciones del hotel durante la estancia.",
+        "Las áreas comunes, comodidades y servicios de concierge pueden tener horarios de operación y criterios de capacidad específicos."
+      ]
+    },
+    {
+      "title": "2. Verificación de documento",
+      "body": [
+        "Para seguridad en check-in y checkout, el kiosco puede capturar una foto del documento físico para leer el nombre y número de documento del huésped.",
+        "La información extraída se compara con la reserva activa del hotel seleccionado antes de continuar el flujo."
+      ]
+    },
+    {
+      "title": "3. Validación biométrica facial",
+      "body": [
+        "Cuando esté disponible, el kiosco compara una selfie en vivo con el rostro presente en el documento capturado para reducir usos indebidos y proteger al titular de la reserva.",
+        "Si la comparación facial automática no está disponible o no es concluyente, el kiosco puede usar verificación solo por documento y dirigir al huésped a recepción cuando sea necesario."
+      ]
+    },
+    {
+      "title": "4. Tratamiento y retención de datos",
+      "body": [
+        "Las imágenes y resultados de verificación se usan solo para completar flujos operativos del hotel, prevenir fraude y apoyar auditoría.",
+        "El acceso se restringe a sistemas y equipos autorizados, y los registros deben conservarse solo durante el período exigido por la política del hotel o la legislación aplicable."
+      ]
+    },
+    {
+      "title": "5. Soporte humano",
+      "body": [
+        "El huésped puede solicitar ayuda del concierge o recepción en cualquier momento si el kiosco no puede completar una etapa de verificación.",
+        "Un miembro del equipo podrá revisar la reserva y continuar la atención manualmente cuando la validación automática no sea suficiente."
+      ]
+    }
+  ]
+}

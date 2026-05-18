@@ -19,5 +19,10 @@
   "privacyPolicy": "Política de Privacidad",
   "termsOfService": "Términos de Servicio",
   "contact": "Contacto Concierge",
+  "conciergeHelpTitle": "Recepción notificada",
+  "conciergeHelpBody": "Un miembro del equipo de concierge vendrá a ayudarle en breve.",
+  "conciergeHelpSending": "Notificando a recepción...",
+  "conciergeHelpErrorTitle": "No fue posible notificar a recepción",
+  "conciergeHelpErrorBody": "Inténtelo de nuevo o solicite ayuda directamente en recepción.",
   "copyright": "© 2024 {{hotelName}}"
 }

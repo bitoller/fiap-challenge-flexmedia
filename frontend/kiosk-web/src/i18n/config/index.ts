@@ -7,18 +7,21 @@ import enHome from "../namespaces/en/home.json";
 import enErrors from "../namespaces/en/errors.json";
 import enCheckin from "../namespaces/en/checkin.json";
 import enCheckout from "../namespaces/en/checkout.json";
+import enLegal from "../namespaces/en/legal.json";
 
 import ptBrCommon from "../namespaces/pt-BR/common.json";
 import ptBrHome from "../namespaces/pt-BR/home.json";
 import ptBrErrors from "../namespaces/pt-BR/errors.json";
 import ptBrCheckin from "../namespaces/pt-BR/checkin.json";
 import ptBrCheckout from "../namespaces/pt-BR/checkout.json";
+import ptBrLegal from "../namespaces/pt-BR/legal.json";
 
 import esCommon from "../namespaces/es/common.json";
 import esHome from "../namespaces/es/home.json";
 import esErrors from "../namespaces/es/errors.json";
 import esCheckin from "../namespaces/es/checkin.json";
 import esCheckout from "../namespaces/es/checkout.json";
+import esLegal from "../namespaces/es/legal.json";
 
 const resources = {
   en: {
@@ -27,6 +30,7 @@ const resources = {
     errors: enErrors,
     checkin: enCheckin,
     checkout: enCheckout,
+    legal: enLegal,
   },
   'pt-BR': {
     common: ptBrCommon,
@@ -34,6 +38,7 @@ const resources = {
     errors: ptBrErrors,
     checkin: ptBrCheckin,
     checkout: ptBrCheckout,
+    legal: ptBrLegal,
   },
   es: {
     common: esCommon,
@@ -41,6 +46,7 @@ const resources = {
     errors: esErrors,
     checkin: esCheckin,
     checkout: esCheckout,
+    legal: esLegal,
   },
 };
 
@@ -57,7 +63,7 @@ i18n
   interpolation: {
     escapeValue: false,
   },
-    ns: ['common', 'home', 'errors', 'checkin', 'checkout'],
+    ns: ['common', 'home', 'errors', 'checkin', 'checkout', 'legal'],
     defaultNS: 'common',
     detection: {
       order: ['localStorage', 'navigator'],

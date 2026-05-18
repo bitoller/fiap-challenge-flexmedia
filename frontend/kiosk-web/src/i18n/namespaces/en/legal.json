@@ -1,0 +1,43 @@
+{
+  "eyebrow": "Guest policy",
+  "title": "Privacy, stay, and biometric terms",
+  "subtitle": "Review how the hotel handles stay rules, document validation, facial verification, and support.",
+  "back": "Back to previous screen",
+  "sections": [
+    {
+      "title": "1. Stay rules",
+      "body": [
+        "Guests agree to follow hotel coexistence, safety, quiet hours, and property-use rules during the stay.",
+        "Shared areas, amenities, and concierge services may follow specific operating hours and capacity guidance."
+      ]
+    },
+    {
+      "title": "2. Document verification",
+      "body": [
+        "For check-in and checkout security, the kiosk may capture a photo of a physical document to read the guest name and document number.",
+        "The extracted information is compared with the active reservation for the selected hotel before the flow can continue."
+      ]
+    },
+    {
+      "title": "3. Facial biometric validation",
+      "body": [
+        "When enabled, the kiosk compares a live selfie with the face present on the captured document to reduce misuse and protect the reservation holder.",
+        "If automated facial comparison is unavailable or inconclusive, the kiosk may use document-only verification and direct the guest to reception when needed."
+      ]
+    },
+    {
+      "title": "4. Data handling and retention",
+      "body": [
+        "Images and verification results are used only to complete hotel operational flows, prevent fraud, and support auditability.",
+        "Access is restricted to authorized systems and staff, and records should be retained only for the period required by hotel policy or applicable law."
+      ]
+    },
+    {
+      "title": "5. Human support",
+      "body": [
+        "Guests may request concierge or reception assistance at any time if the kiosk cannot complete a verification step.",
+        "A team member may review the reservation and continue the service manually when automated validation is not enough."
+      ]
+    }
+  ]
+}

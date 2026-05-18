@@ -1,0 +1,43 @@
+{
+  "eyebrow": "Política do hóspede",
+  "title": "Privacidade, estadia e biometria",
+  "subtitle": "Revise como o hotel trata regras de estadia, validação de documento, reconhecimento facial e suporte.",
+  "back": "Voltar para a tela anterior",
+  "sections": [
+    {
+      "title": "1. Regras de estadia",
+      "body": [
+        "O hóspede concorda em seguir as regras de convivência, segurança, silêncio e uso das dependências do hotel durante a estadia.",
+        "Áreas comuns, comodidades e serviços de concierge podem seguir horários de funcionamento e orientações de capacidade específicos."
+      ]
+    },
+    {
+      "title": "2. Verificação de documento",
+      "body": [
+        "Para segurança no check-in e checkout, o totem pode capturar uma foto do documento físico para ler o nome e o número do documento do hóspede.",
+        "As informações extraídas são comparadas com a reserva ativa do hotel selecionado antes que o fluxo possa continuar."
+      ]
+    },
+    {
+      "title": "3. Validação biométrica facial",
+      "body": [
+        "Quando disponível, o totem compara uma selfie ao vivo com o rosto presente no documento capturado para reduzir uso indevido e proteger o titular da reserva.",
+        "Se a comparação facial automática estiver indisponível ou inconclusiva, o totem pode usar a verificação apenas por documento e encaminhar o hóspede à recepção quando necessário."
+      ]
+    },
+    {
+      "title": "4. Tratamento e retenção de dados",
+      "body": [
+        "Imagens e resultados de verificação são usados apenas para concluir fluxos operacionais do hotel, prevenir fraudes e apoiar auditoria.",
+        "O acesso é restrito a sistemas e equipes autorizadas, e os registros devem ser mantidos somente pelo período exigido pela política do hotel ou pela legislação aplicável."
+      ]
+    },
+    {
+      "title": "5. Suporte humano",
+      "body": [
+        "O hóspede pode solicitar ajuda da concierge ou recepção a qualquer momento caso o totem não consiga concluir uma etapa de verificação.",
+        "Um membro da equipe poderá revisar a reserva e continuar o atendimento manualmente quando a validação automática não for suficiente."
+      ]
+    }
+  ]
+}

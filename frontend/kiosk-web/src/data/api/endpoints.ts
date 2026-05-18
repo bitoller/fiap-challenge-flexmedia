@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   ADMIN_HOTELS: '/admin/hotels',
   ADMIN_HOTEL_PROFILE: (hotelId: number | string) => `/admin/hotels/${hotelId}`,
   ADMIN_DASHBOARD: '/admin/dashboard',
+  ADMIN_AUDIT_EVENTS: '/admin/audit-events',
 
   PUBLIC_HOTEL_PROFILE: (hotelId: number | string) => `/hotels/${hotelId}`,
 } as const;
