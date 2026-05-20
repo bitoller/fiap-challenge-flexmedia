@@ -44,6 +44,25 @@ public class JdbcCheckinAddOnRepository implements CheckinAddOnRepository {
     }
 
     @Override
+    public BigDecimal findBaseAmount(Long reservationId, Long sessionId, BigDecimal currentTotalAmount) {
+        BigDecimal storedBaseAmount = jdbc.queryForObject("""
+                SELECT MIN(base_amount)
+                  FROM fc_reservation_addon
+                 WHERE reservation_id = ?
+                   AND base_amount IS NOT NULL
+                """, BigDecimal.class, reservationId);
+        if (currentTotalAmount == null) {
+            return storedBaseAmount == null ? BigDecimal.ZERO : storedBaseAmount;
+        }
+
+        if (storedBaseAmount != null) {
+            return storedBaseAmount.min(currentTotalAmount);
+        }
+
+        return currentTotalAmount;
+    }
+
+    @Override
     public void replaceSelection(Long reservationId, Long sessionId, BigDecimal baseAmount, List<CheckinAddOnOfferResult> selectedOffers) {
         jdbc.update("""
                 UPDATE fc_reservation_addon
@@ -64,10 +83,11 @@ public class JdbcCheckinAddOnRepository implements CheckinAddOnRepository {
                         quantity,
                         unit_amount,
                         total_amount,
+                        base_amount,
                         currency,
                         status,
                         created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SELECTED', ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'SELECTED', ?)
                     """,
                     reservationId,
                     sessionId,
@@ -76,19 +96,20 @@ public class JdbcCheckinAddOnRepository implements CheckinAddOnRepository {
                     offer.quantity(),
                     offer.unitAmount(),
                     offer.totalAmount(),
+                    baseAmount,
                     offer.currency(),
                     now
             );
         }
 
-        BigDecimal addOnsTotal = selectedOffers.stream()
-                .map(CheckinAddOnOfferResult::totalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public void commitReservationTotal(Long reservationId, BigDecimal totalAmount) {
         jdbc.update("""
                 UPDATE fc_reservation
-                   SET total_amount = ?,
-                       updated_at = ?
+                   SET total_amount = ?
                  WHERE id = ?
-                """, baseAmount.add(addOnsTotal), now, reservationId);
+                """, totalAmount, reservationId);
     }
 }

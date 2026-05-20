@@ -45,8 +45,11 @@ public class DefaultApplyCheckinAddOnsUseCase implements ApplyCheckinAddOnsUseCa
         }
 
         ReservationResult currentReservation = reservationServiceClient.findById(reservationId);
-        BigDecimal previousAddOnsTotal = addOnRepository.findSelectedTotal(currentReservation.id(), sessionId);
-        BigDecimal baseAmount = currentReservation.totalAmount().subtract(previousAddOnsTotal);
+        BigDecimal baseAmount = addOnRepository.findBaseAmount(
+                currentReservation.id(),
+                sessionId,
+                currentReservation.totalAmount()
+        );
         Set<String> selectedCodes = normalizeSelectedCodes(command.selectedCodes());
         List<CheckinAddOnOfferResult> selectedOffers = catalog.listFor(currentReservation, selectedCodes).stream()
                 .filter(CheckinAddOnOfferResult::selected)
@@ -57,15 +60,16 @@ public class DefaultApplyCheckinAddOnsUseCase implements ApplyCheckinAddOnsUseCa
         ReservationResult updatedReservation = reservationServiceClient.findById(reservationId);
         var refreshedCodes = addOnRepository.findSelectedCodes(updatedReservation.id(), sessionId);
         BigDecimal addOnsTotal = addOnRepository.findSelectedTotal(updatedReservation.id(), sessionId);
+        BigDecimal totalAmount = baseAmount.add(addOnsTotal);
 
         return new CheckinAddOnQuoteResult(
                 sessionId,
                 updatedReservation,
                 catalog.listFor(updatedReservation, refreshedCodes),
                 refreshedCodes.stream().toList(),
-                updatedReservation.totalAmount().subtract(addOnsTotal),
+                baseAmount,
                 addOnsTotal,
-                updatedReservation.totalAmount(),
+                totalAmount,
                 updatedReservation.currency()
         );
     }

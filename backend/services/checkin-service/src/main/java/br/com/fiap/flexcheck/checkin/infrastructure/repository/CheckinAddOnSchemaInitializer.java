@@ -25,6 +25,7 @@ public class CheckinAddOnSchemaInitializer implements ApplicationRunner {
                     quantity NUMBER DEFAULT 1 NOT NULL,
                     unit_amount NUMBER(12,2) NOT NULL,
                     total_amount NUMBER(12,2) NOT NULL,
+                    base_amount NUMBER(12,2),
                     currency VARCHAR2(3) DEFAULT 'BRL' NOT NULL,
                     status VARCHAR2(30) DEFAULT 'SELECTED' NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -33,6 +34,7 @@ public class CheckinAddOnSchemaInitializer implements ApplicationRunner {
                     CONSTRAINT ck_reservation_addon_status CHECK (status IN ('SELECTED', 'REMOVED'))
                 )
                 """);
+        executeIfMissing("ALTER TABLE fc_reservation_addon ADD base_amount NUMBER(12,2)");
         executeIfMissing("CREATE INDEX ix_reservation_addon_session ON fc_reservation_addon(session_id)");
         executeIfMissing("CREATE INDEX ix_reservation_addon_reservation ON fc_reservation_addon(reservation_id)");
     }

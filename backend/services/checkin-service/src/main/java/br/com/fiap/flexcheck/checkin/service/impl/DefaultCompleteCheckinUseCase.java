@@ -8,6 +8,7 @@ import br.com.fiap.flexcheck.checkin.infrastructure.client.PmsAdapterServiceClie
 import br.com.fiap.flexcheck.checkin.infrastructure.client.NotificationServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.PaymentServiceClient;
 import br.com.fiap.flexcheck.checkin.infrastructure.client.ReservationServiceClient;
+import br.com.fiap.flexcheck.checkin.repository.CheckinAddOnRepository;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
 import br.com.fiap.flexcheck.checkin.repository.VerificationRepository;
@@ -16,6 +17,8 @@ import br.com.fiap.flexcheck.checkin.service.CompleteCheckinUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CompleteCheckinCommand;
 import br.com.fiap.flexcheck.checkin.service.result.CompleteCheckinResult;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
@@ -29,6 +32,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
     private final NotificationServiceClient notificationServiceClient;
     private final AuditServiceClient auditServiceClient;
     private final ReservationServiceClient reservationServiceClient;
+    private final CheckinAddOnRepository addOnRepository;
 
     public DefaultCompleteCheckinUseCase(
             SessionRepository sessionRepository,
@@ -40,7 +44,8 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
             PmsAdapterServiceClient pmsAdapterServiceClient,
             NotificationServiceClient notificationServiceClient,
             AuditServiceClient auditServiceClient,
-            ReservationServiceClient reservationServiceClient
+            ReservationServiceClient reservationServiceClient,
+            CheckinAddOnRepository addOnRepository
     ) {
         this.sessionRepository = sessionRepository;
         this.verificationRepository = verificationRepository;
@@ -52,6 +57,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         this.notificationServiceClient = notificationServiceClient;
         this.auditServiceClient = auditServiceClient;
         this.reservationServiceClient = reservationServiceClient;
+        this.addOnRepository = addOnRepository;
     }
 
     @Override
@@ -100,7 +106,8 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
-            paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "DECLINED", reservation.totalAmount(), null);
+            BigDecimal payableAmount = calculatePayableAmount(sessionId, reservation.id(), reservation.totalAmount());
+            paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "DECLINED", payableAmount, null);
             sessionRepository.failSession(sessionId, "PAYMENT_DECLINED");
             notificationServiceClient.sendAlert(
                     "reception",
@@ -112,8 +119,10 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
             throw new BusinessException("PAYMENT_DECLINED", "Payment declined. Try another card or contact reception.", 409);
         }
 
-        paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "APPROVED", reservation.totalAmount(), "AUTH-" + sessionId);
-        Long stayId = stayRepository.createStay(reservation.id(), reservation.room().id(), reservation.departureDate(), reservation.totalAmount());
+        BigDecimal payableAmount = calculatePayableAmount(sessionId, reservation.id(), reservation.totalAmount());
+        paymentServiceClient.recordPayment(null, reservation.id(), "PRE_AUTH", "APPROVED", payableAmount, "AUTH-" + sessionId);
+        addOnRepository.commitReservationTotal(reservation.id(), payableAmount);
+        Long stayId = stayRepository.createStay(reservation.id(), reservation.room().id(), reservation.departureDate(), payableAmount);
         var key = keyServiceClient.issueKey(stayId, reservation.room().id(), command.keyType(), reservation.departureDate());
         stayRepository.markCheckedIn(sessionId, reservation.id(), reservation.room().id());
         pmsAdapterServiceClient.syncCheckin(
@@ -122,7 +131,7 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                 reservation.room().id(),
                 reservation.room().number(),
                 reservation.guest().fullName(),
-                reservation.totalAmount()
+                payableAmount
         );
         notificationServiceClient.sendReceipt(
                 reservation.guest().email(),
@@ -138,9 +147,15 @@ public class DefaultCompleteCheckinUseCase implements CompleteCheckinUseCase {
                 "CHECKED_IN",
                 stayId,
                 reservation.room().number(),
-                reservation.totalAmount(),
+                payableAmount,
                 key
         );
+    }
+
+    private BigDecimal calculatePayableAmount(Long sessionId, Long reservationId, BigDecimal reservationAmount) {
+        BigDecimal baseAmount = addOnRepository.findBaseAmount(reservationId, sessionId, reservationAmount);
+        BigDecimal addOnsTotal = addOnRepository.findSelectedTotal(reservationId, sessionId);
+        return baseAmount.add(addOnsTotal);
     }
 
     private String defaultValue(String value, String fallback) {

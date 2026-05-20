@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../components/common/Button";
+import { CreditCard, QrCode, ShieldCheck, Sparkles } from "lucide-react";
 import { ApiError } from "../../../../domain/errors";
 import { CheckinPaymentMethod } from "../../../../domain/types";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
@@ -14,6 +14,7 @@ export function PaymentPage() {
   const navigate = useNavigate();
   const {
     reservation,
+    addOnQuote,
     paymentMethod: persistedPaymentMethod,
     completeCheckin,
     isLoading,
@@ -37,10 +38,21 @@ export function PaymentPage() {
   }
 
   const locale = i18n.language === "pt-BR" ? "pt-BR" : i18n.language === "es" ? "es-ES" : "en-US";
+  const paymentBaseAmount = addOnQuote?.baseAmount ?? reservation.totalAmount;
+  const paymentServicesAmount = addOnQuote?.addOnsTotal ?? 0;
+  const paymentTotalAmount = paymentBaseAmount + paymentServicesAmount;
   const totalAmount = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: reservation.currency,
-  }).format(reservation.totalAmount);
+  }).format(paymentTotalAmount);
+  const baseAmount = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: reservation.currency,
+  }).format(paymentBaseAmount);
+  const servicesAmount = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: reservation.currency,
+  }).format(paymentServicesAmount);
 
   const finishCheckin = async () => {
     try {
@@ -87,50 +99,88 @@ export function PaymentPage() {
           subtitle={t("paymentSubtitle")}
         />
 
-        <div className="checkin-payment__summary">
-          <div>
-            <span>{t("paymentTotalLabel")}</span>
-            <strong>{totalAmount}</strong>
-          </div>
-          <small>{t("paymentSafeLabel")}</small>
+        <div className="checkin-payment__layout">
+          <article className="checkin-payment__folio" aria-label={t("paymentSummaryTitle")}>
+            <div className="checkin-payment__folio-header">
+              <div>
+                <span>{t("paymentSummaryEyebrow")}</span>
+                <h2>{t("paymentSummaryTitle")}</h2>
+              </div>
+              <ShieldCheck aria-hidden="true" />
+            </div>
+
+            <dl className="checkin-payment__lines">
+              <div>
+                <dt>{t("paymentReservationLine")}</dt>
+                <dd>{baseAmount}</dd>
+              </div>
+              <div>
+                <dt>{t("paymentServicesLine")}</dt>
+                <dd>{servicesAmount}</dd>
+              </div>
+              <div className="is-total">
+                <dt>{t("paymentTotalLabel")}</dt>
+                <dd>{totalAmount}</dd>
+              </div>
+            </dl>
+
+            <p>{t("paymentSummaryNote", { room: reservation.room.number })}</p>
+          </article>
+
+          <aside className="checkin-payment__side">
+            <div className="checkin-payment__secure">
+              <Sparkles aria-hidden="true" />
+              <div>
+                <span>{t("paymentSafeLabel")}</span>
+                <strong>{t("paymentAccessNext")}</strong>
+              </div>
+            </div>
+
+            <div className="checkin-payment__methods">
+              <MethodOptionCard
+                title={t("paymentCardTitle")}
+                subtitle={t("paymentCardSubtitle")}
+                icon={<CreditCard aria-hidden="true" />}
+                selected={paymentMethod === "CARD"}
+                onClick={() => setPaymentMethodState("CARD")}
+              />
+              <MethodOptionCard
+                title={t("paymentPixTitle")}
+                subtitle={t("paymentPixSubtitle")}
+                icon={<QrCode aria-hidden="true" />}
+                selected={paymentMethod === "PIX"}
+                onClick={() => setPaymentMethodState("PIX")}
+              />
+            </div>
+          </aside>
         </div>
 
-        <div className="checkin-payment__methods">
-          <MethodOptionCard
-            title={t("paymentCardTitle")}
-            subtitle={t("paymentCardSubtitle")}
-            icon={
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="4" y="6.5" width="16" height="11" rx="1.5" />
-                <path d="M4 10h16" />
-                <path d="M8 14.2h3.5" />
-              </svg>
-            }
-            selected={paymentMethod === "CARD"}
-            onClick={() => setPaymentMethodState("CARD")}
-          />
-          <MethodOptionCard
-            title={t("paymentPixTitle")}
-            subtitle={t("paymentPixSubtitle")}
-            icon={
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z" />
-                <path d="M14 14h3v3h-3z" />
-                <path d="M11 11h2M11 14h2M14 11h2" />
-              </svg>
-            }
-            selected={paymentMethod === "PIX"}
-            onClick={() => setPaymentMethodState("PIX")}
-          />
-        </div>
+        {isLoading && (
+          <div className="checkin-payment__processing" role="status" aria-live="polite">
+            <span aria-hidden="true" />
+            <div>
+              <strong>{t("paymentProcessingTitle")}</strong>
+              <small>{t("paymentProcessingBody")}</small>
+            </div>
+          </div>
+        )}
 
         <div className="checkin-payment__actions">
-          <Button variant="secondary" size="lg" onClick={() => navigate("/checkin/add-ons")}>
+          <button
+            type="button"
+            className="checkin-action-button checkin-action-button--ghost"
+            onClick={() => navigate("/checkin/add-ons")}
+          >
             {t("back")}
-          </Button>
-          <Button variant="primary" size="lg" onClick={finishCheckin} isLoading={isLoading}>
-            {t("finalize")}
-          </Button>
+          </button>
+          <button
+            type="button"
+            className="checkin-action-button checkin-action-button--primary"
+            onClick={finishCheckin}
+            disabled={isLoading}
+          >
+            {isLoading ? t("paymentProcessingTitle") : t("finalize")}
+          </button>
         </div>
       </section>
     </CheckinFlowLayout>

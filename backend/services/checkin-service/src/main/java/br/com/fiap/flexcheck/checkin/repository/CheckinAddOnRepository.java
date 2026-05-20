@@ -11,5 +11,9 @@ public interface CheckinAddOnRepository {
 
     BigDecimal findSelectedTotal(Long reservationId, Long sessionId);
 
+    BigDecimal findBaseAmount(Long reservationId, Long sessionId, BigDecimal currentTotalAmount);
+
     void replaceSelection(Long reservationId, Long sessionId, BigDecimal baseAmount, List<CheckinAddOnOfferResult> selectedOffers);
+
+    void commitReservationTotal(Long reservationId, BigDecimal totalAmount);
 }

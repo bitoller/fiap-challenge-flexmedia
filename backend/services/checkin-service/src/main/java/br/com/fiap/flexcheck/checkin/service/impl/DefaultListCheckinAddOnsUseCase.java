@@ -40,7 +40,7 @@ public class DefaultListCheckinAddOnsUseCase implements ListCheckinAddOnsUseCase
         ReservationResult reservation = reservationServiceClient.findById(reservationId);
         var selectedCodes = addOnRepository.findSelectedCodes(reservation.id(), sessionId);
         BigDecimal addOnsTotal = addOnRepository.findSelectedTotal(reservation.id(), sessionId);
-        BigDecimal baseAmount = reservation.totalAmount().subtract(addOnsTotal);
+        BigDecimal baseAmount = addOnRepository.findBaseAmount(reservation.id(), sessionId, reservation.totalAmount());
 
         return new CheckinAddOnQuoteResult(
                 sessionId,
@@ -49,7 +49,7 @@ public class DefaultListCheckinAddOnsUseCase implements ListCheckinAddOnsUseCase
                 selectedCodes.stream().toList(),
                 baseAmount,
                 addOnsTotal,
-                reservation.totalAmount(),
+                baseAmount.add(addOnsTotal),
                 reservation.currency()
         );
     }
