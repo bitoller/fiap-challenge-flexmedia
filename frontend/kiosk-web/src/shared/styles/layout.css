@@ -219,6 +219,10 @@
 .action-button-content {
   height: 100%;
   display: grid;
+  grid-template-rows:
+    var(--home-card-icon-row, 5.5rem)
+    var(--home-card-title-row, 2.7rem)
+    var(--home-card-subtitle-row, 3.2rem);
   align-content: center;
   justify-items: center;
   gap: 0.95rem;
@@ -244,6 +248,9 @@
 
 .action-button-title {
   margin: 0;
+  min-height: var(--home-card-title-row, 2.7rem);
+  display: grid;
+  place-items: center;
   color: #2d251b;
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.7rem, 2.3vw, 2.2rem);
@@ -253,8 +260,12 @@
 
 .action-button-subtitle {
   margin: 0;
+  min-height: var(--home-card-subtitle-row, 3.2rem);
+  display: grid;
+  place-items: start center;
   color: rgba(132, 118, 100, 0.7);
   font-size: clamp(0.78rem, 0.9vw, 0.95rem);
+  line-height: 1.55;
   letter-spacing: 0.16em;
 }
 
@@ -538,15 +549,19 @@
   }
 
   .action-buttons-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.9rem;
   }
 
   .action-button {
-    min-height: clamp(186px, 18vh, 230px);
+    min-height: clamp(260px, 24vh, 340px);
     padding: clamp(1.1rem, 2.2vw, 1.6rem);
   }
 
   .action-button-content {
+    --home-card-icon-row: clamp(4.1rem, 10vw, 4.8rem);
+    --home-card-title-row: 2.8rem;
+    --home-card-subtitle-row: 4.1rem;
     gap: 0.8rem;
   }
 

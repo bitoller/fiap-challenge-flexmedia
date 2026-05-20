@@ -220,7 +220,7 @@
 .checkin-identification__methods {
   display: grid;
   grid-template-columns: 1fr;
-  grid-auto-rows: 104px;
+  grid-auto-rows: var(--checkin-method-card-height, 104px);
   gap: 0.62rem;
   align-content: start;
   width: 100%;
@@ -230,7 +230,8 @@
 .checkin-method-card {
   position: relative;
   width: 100%;
-  height: 104px;
+  height: var(--checkin-method-card-height, 104px);
+  min-height: var(--checkin-method-card-height, 104px);
   box-sizing: border-box;
   overflow: hidden;
   padding: 0.85rem 0.95rem;
@@ -325,6 +326,7 @@
   gap: 0.8rem;
   align-content: start;
   min-width: 0;
+  min-height: var(--checkin-entry-card-height, auto);
   padding: 1rem 1rem 0.95rem;
   border: 1px solid rgba(220, 204, 176, 0.62);
   border-radius: 20px;
@@ -678,6 +680,19 @@
   color: #4d3c14;
   background: linear-gradient(180deg, #d7b062, #c9a04d);
   border-color: rgba(165, 139, 95, 0.3);
+}
+
+.checkin-layout .btn-primary {
+  color: #4d3c14;
+  background: linear-gradient(180deg, #d7b062, #c9a04d);
+  border-color: rgba(165, 139, 95, 0.3);
+}
+
+.checkin-layout .btn-primary:hover,
+.checkin-layout .btn-primary:focus-visible {
+  color: #4d3c14;
+  background: linear-gradient(180deg, #deb866, #bf9442);
+  border-color: rgba(153, 113, 32, 0.42);
 }
 
 .checkin-action-button--secondary {
@@ -1386,14 +1401,14 @@
 
 .checkin-payment__actions .checkin-action-button--primary {
   min-width: min(100%, 300px);
-  color: #fff8e8;
-  background: linear-gradient(180deg, #9b7625, #806017);
-  border-color: rgba(116, 86, 18, 0.72);
-  box-shadow: 0 16px 30px rgba(97, 71, 21, 0.22);
+  color: #4d3c14;
+  background: linear-gradient(180deg, #d7b062, #c9a04d);
+  border-color: rgba(165, 139, 95, 0.3);
+  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
 }
 
 .checkin-payment__actions .checkin-action-button--primary:hover {
-  background: linear-gradient(180deg, #a8802a, #745511);
+  background: linear-gradient(180deg, #deb866, #bf9442);
 }
 
 .checkin-payment__actions .checkin-action-button--ghost {
@@ -1633,7 +1648,7 @@
 }
 
 .checkin-success {
-  width: min(100%, 1120px);
+  width: min(calc(100vw - 2rem), 1120px);
   margin: 0 auto;
   justify-items: center;
   text-align: center;
@@ -1665,12 +1680,13 @@
 .checkin-success__hero {
   width: 100%;
   min-width: 0;
-  min-height: 520px;
+  height: 610px;
+  min-height: 610px;
   padding: clamp(1.2rem, 2vw, 1.8rem);
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 340px minmax(0, 1fr);
   gap: 1rem;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(220, 204, 176, 0.66);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.96);
@@ -1679,7 +1695,7 @@
 
 .checkin-success__access-visual {
   position: relative;
-  min-height: 300px;
+  min-height: 320px;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -1759,6 +1775,9 @@
 .checkin-success__hero h2 {
   width: min(100%, 620px);
   margin: 0.2rem auto 0;
+  min-height: 2.4em;
+  display: grid;
+  place-items: center;
   color: #201c17;
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(2.1rem, 3.2vw, 3.35rem);
@@ -1768,6 +1787,7 @@
 .checkin-success__hero p {
   width: min(100%, 620px);
   margin: 0.7rem auto 0;
+  min-height: 4.8em;
   color: rgba(78, 67, 53, 0.82);
   font-size: 1rem;
   line-height: 1.6;
@@ -1777,6 +1797,7 @@
   width: 100%;
   min-width: 0;
   display: grid;
+  grid-template-rows: repeat(4, 142px);
   gap: 0.85rem;
   align-content: start;
 }
@@ -1784,16 +1805,18 @@
 .checkin-success__details article {
   width: 100%;
   box-sizing: border-box;
-  min-height: 128px;
+  height: 142px;
+  min-height: 142px;
   padding: 1.1rem 1.2rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.95rem;
   border: 1px solid rgba(220, 204, 176, 0.66);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 14px 28px rgba(92, 76, 50, 0.07);
   text-align: left;
+  overflow: visible;
 }
 
 .checkin-success__details article > div {
@@ -1825,17 +1848,58 @@
   display: block;
   margin-top: 0.3rem;
   color: rgba(78, 67, 53, 0.7);
-  font-size: 0.86rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
 .checkin-success__copy {
-  max-width: 720px;
+  width: min(100%, 760px);
+  min-height: 4.8em;
   margin: 0;
+  display: grid;
+  place-items: center;
   color: rgba(78, 67, 53, 0.84);
   font-size: 1rem;
   line-height: 1.6;
+  text-align: center;
+}
+
+.checkin-success__actions .checkin-action-button--primary {
+  color: #4d3c14;
+  background: linear-gradient(180deg, #d7b062, #c9a04d);
+  border-color: rgba(165, 139, 95, 0.3);
+  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
+}
+
+.checkin-success__actions .checkin-action-button--primary:hover {
+  background: linear-gradient(180deg, #deb866, #bf9442);
+}
+
+.checkin-success__actions .btn-primary {
+  --bs-btn-color: #4d3c14;
+  --bs-btn-bg: #c9a04d;
+  --bs-btn-border-color: rgba(165, 139, 95, 0.3);
+  --bs-btn-hover-color: #4d3c14;
+  --bs-btn-hover-bg: #bf9442;
+  --bs-btn-hover-border-color: rgba(153, 113, 32, 0.42);
+  --bs-btn-active-color: #4d3c14;
+  --bs-btn-active-bg: #bf9442;
+  --bs-btn-active-border-color: rgba(153, 113, 32, 0.42);
+  color: #4d3c14;
+  background: linear-gradient(180deg, #d7b062, #c9a04d);
+  border-color: rgba(165, 139, 95, 0.3);
+  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
+  font-family: "Georgia", "Times New Roman", serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.checkin-success__actions .btn-primary:hover,
+.checkin-success__actions .btn-primary:focus-visible {
+  color: #4d3c14;
+  background: linear-gradient(180deg, #deb866, #bf9442);
+  border-color: rgba(153, 113, 32, 0.42);
 }
 
 @keyframes checkin-face-pulse {
@@ -1967,16 +2031,19 @@
   }
 
   .checkin-identification__layout {
+    --checkin-method-card-height: 124px;
+    --checkin-entry-card-height: 620px;
     gap: 0.9rem;
   }
 
   .checkin-identification__methods {
-    grid-auto-rows: minmax(124px, 1fr);
+    grid-auto-rows: var(--checkin-method-card-height);
   }
 
   .checkin-method-card {
     padding: 0.95rem;
-    height: auto;
+    height: var(--checkin-method-card-height);
+    min-height: var(--checkin-method-card-height);
   }
 
   .checkin-keypad__key {
@@ -2009,7 +2076,7 @@
   }
 
   .checkin-success__layout {
-    grid-template-columns: minmax(0, 672px) minmax(0, 424px);
+    grid-template-columns: 672px 424px;
     gap: 1.35rem;
   }
 
@@ -2074,7 +2141,7 @@
 }
 
 .checkin-identity {
-  width: min(100%, 1060px);
+  width: min(calc(100vw - 2rem), 1060px);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -2083,9 +2150,10 @@
 
 .checkin-identity__layout {
   display: grid;
-  grid-template-columns: minmax(280px, 380px) minmax(520px, 1fr);
+  grid-template-columns: minmax(0, 380px) minmax(0, 656px);
   gap: 1.35rem;
   align-items: stretch;
+  justify-content: center;
 }
 
 .checkin-identity__steps {
@@ -2095,6 +2163,7 @@
 }
 
 .checkin-identity__step {
+  height: 126px;
   min-height: 126px;
   display: grid;
   grid-template-columns: 58px 1fr;
@@ -2106,6 +2175,7 @@
   background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 18px 42px rgba(60, 45, 25, 0.08);
   color: var(--color-text-primary);
+  overflow: hidden;
 }
 
 .checkin-identity__step.is-active {
@@ -2141,10 +2211,13 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(71, 58, 39, 0.76);
+  min-height: 2.1em;
+  overflow: hidden;
 }
 
 .checkin-identity__panel {
   position: relative;
+  height: 620px;
   min-height: 620px;
   border: 1px solid rgba(220, 204, 176, 0.72);
   border-radius: 22px;
@@ -2189,6 +2262,7 @@
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(250, 245, 235, 0.76));
   padding: clamp(1rem, 2vh, 1.5rem);
+  overflow: hidden;
 }
 
 .checkin-identity__camera-heading {
@@ -2290,10 +2364,15 @@
   margin: 0.6rem 0;
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 0.96;
+  min-height: 2.15em;
+  display: grid;
+  place-items: center;
 }
 
 .checkin-identity__checkbox {
   width: min(100%, 560px);
+  height: 82px;
+  min-height: 82px;
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -2336,7 +2415,7 @@
   }
 
   .checkin-identity__layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .checkin-identity__steps {
@@ -2346,7 +2425,7 @@
   .checkin-identity__panel,
   .checkin-identity__camera-card,
   .checkin-identity__consent-card {
-    min-height: auto;
+    min-height: 620px;
   }
 
   .checkin-identity__actions {
