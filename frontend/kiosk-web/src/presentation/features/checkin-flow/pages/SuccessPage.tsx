@@ -34,28 +34,7 @@ export function SuccessPage() {
   };
 
   return (
-    <CheckinFlowLayout
-      topRightContent={<span className="checkin-topbar__confirmation-label">{t("successTag")}</span>}
-      bottomItems={[
-        {
-          key: "home",
-          label: t("bottomHomeCompact"),
-          icon: "home",
-          onClick: () => navigate("/"),
-        },
-        {
-          key: "assistant",
-          label: t("bottomAssistant"),
-          icon: "assistant",
-          active: true,
-        },
-        {
-          key: "emergency",
-          label: t("bottomEmergency"),
-          icon: "emergency",
-        },
-      ]}
-    >
+    <CheckinFlowLayout>
       <section className="checkin-success" aria-label={t("successTitle")}>
         <FlowStepHeader
           step={t("stepSuccess")}

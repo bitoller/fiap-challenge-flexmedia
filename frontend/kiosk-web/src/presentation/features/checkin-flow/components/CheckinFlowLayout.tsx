@@ -3,8 +3,6 @@ import { KioskLayout } from "../../../components/layouts/KioskLayout";
 
 interface CheckinFlowLayoutProps {
   children: ReactNode;
-  topRightContent?: ReactNode;
-  bottomItems?: Array<unknown>;
   className?: string;
 }
 

@@ -70,28 +70,7 @@ export function PaymentPage() {
   };
 
   return (
-    <CheckinFlowLayout
-      topRightContent={<span className="checkin-topbar__confirmation-label">{t("paymentTag")}</span>}
-      bottomItems={[
-        {
-          key: "home",
-          label: t("bottomHomeCompact"),
-          icon: "home",
-          onClick: () => navigate("/"),
-        },
-        {
-          key: "assistant",
-          label: t("bottomAssistant"),
-          icon: "assistant",
-          active: true,
-        },
-        {
-          key: "emergency",
-          label: t("bottomEmergency"),
-          icon: "emergency",
-        },
-      ]}
-    >
+    <CheckinFlowLayout>
       <section className="checkin-payment" aria-label={t("paymentTitle")}>
         <FlowStepHeader
           step={t("stepPayment")}

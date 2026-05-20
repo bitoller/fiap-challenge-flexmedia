@@ -163,23 +163,24 @@
 
 .checkin-step-header__step {
   margin: 0;
+  position: relative;
+  padding-bottom: 0.45rem;
   color: #91713a;
   font-size: 0.85rem;
   letter-spacing: 0.34em;
   text-transform: uppercase;
 }
 
-.checkin-step-header__rule {
+.checkin-step-header__step::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
   width: min(220px, 30vw);
   height: 1px;
-  display: grid;
-  place-items: center;
-}
-
-.checkin-step-header__rule span {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.45), transparent);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
+  pointer-events: none;
 }
 
 .checkin-step-header__title {

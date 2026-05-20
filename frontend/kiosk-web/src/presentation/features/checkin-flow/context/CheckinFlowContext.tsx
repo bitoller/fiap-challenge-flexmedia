@@ -79,6 +79,12 @@ function mapApiErrorToRecoveryCode(error: ApiError): CheckinRecoveryCode {
   return "RESERVATION_NOT_FOUND";
 }
 
+function normalizeApiError(cause: unknown) {
+  return cause instanceof ApiError
+    ? cause
+    : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
+}
+
 export function CheckinFlowProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [reservation, setReservation] = useState<Reservation | null>(null);
@@ -122,6 +128,15 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
     setError(apiError);
   }, []);
 
+  const storeApiError = useCallback((apiError: ApiError) => {
+    setError(apiError);
+    setRecoveryState({
+      code: mapApiErrorToRecoveryCode(apiError),
+      message: apiError.message,
+    });
+    setFlowStepState("recovery");
+  }, []);
+
   const startIdentification = useCallback(
     async (searchType: CheckinSearchType, value: string, language: string) => {
       setIsLoading(true);
@@ -148,23 +163,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
 
         return attachedSession;
       } catch (cause) {
-        const apiError =
-          cause instanceof ApiError
-            ? cause
-            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-        setError(apiError);
-        setRecoveryState({
-          code: mapApiErrorToRecoveryCode(apiError),
-          message: apiError.message,
-        });
-        setFlowStepState("recovery");
+        const apiError = normalizeApiError(cause);
+        storeApiError(apiError);
         throw apiError;
       } finally {
         setIsLoading(false);
       }
     },
-    []
+    [storeApiError]
   );
 
   const verifyIdentityDocument = useCallback(
@@ -181,23 +187,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setIdentityVerification(result);
         return result;
       } catch (cause) {
-        const apiError =
-          cause instanceof ApiError
-            ? cause
-            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-        setError(apiError);
-        setRecoveryState({
-          code: mapApiErrorToRecoveryCode(apiError),
-          message: apiError.message,
-        });
-        setFlowStepState("recovery");
+        const apiError = normalizeApiError(cause);
+        storeApiError(apiError);
         throw apiError;
       } finally {
         setIsLoading(false);
       }
     },
-    [session]
+    [session, storeApiError]
   );
 
   const verifyIdentitySelfie = useCallback(
@@ -214,23 +211,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setIdentityVerification(result);
         return result;
       } catch (cause) {
-        const apiError =
-          cause instanceof ApiError
-            ? cause
-            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-        setError(apiError);
-        setRecoveryState({
-          code: mapApiErrorToRecoveryCode(apiError),
-          message: apiError.message,
-        });
-        setFlowStepState("recovery");
+        const apiError = normalizeApiError(cause);
+        storeApiError(apiError);
         throw apiError;
       } finally {
         setIsLoading(false);
       }
     },
-    [session]
+    [session, storeApiError]
   );
 
   const confirmIdentityVerification = useCallback(
@@ -253,23 +241,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setFlowStepState("add-ons");
         return result;
       } catch (cause) {
-        const apiError =
-          cause instanceof ApiError
-            ? cause
-            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-        setError(apiError);
-        setRecoveryState({
-          code: mapApiErrorToRecoveryCode(apiError),
-          message: apiError.message,
-        });
-        setFlowStepState("recovery");
+        const apiError = normalizeApiError(cause);
+        storeApiError(apiError);
         throw apiError;
       } finally {
         setIsLoading(false);
       }
     },
-    [session]
+    [session, storeApiError]
   );
 
   const loadAddOns = useCallback(async () => {
@@ -287,22 +266,13 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       setFlowStepState("add-ons");
       return result;
     } catch (cause) {
-      const apiError =
-        cause instanceof ApiError
-          ? cause
-          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-      setError(apiError);
-      setRecoveryState({
-        code: mapApiErrorToRecoveryCode(apiError),
-        message: apiError.message,
-      });
-      setFlowStepState("recovery");
+      const apiError = normalizeApiError(cause);
+      storeApiError(apiError);
       throw apiError;
     } finally {
       setIsLoading(false);
     }
-  }, [session]);
+  }, [session, storeApiError]);
 
   const applyAddOns = useCallback(async (selectedCodes: string[]) => {
     if (!session) {
@@ -319,22 +289,13 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       setFlowStepState("payment");
       return result;
     } catch (cause) {
-      const apiError =
-        cause instanceof ApiError
-          ? cause
-          : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-      setError(apiError);
-      setRecoveryState({
-        code: mapApiErrorToRecoveryCode(apiError),
-        message: apiError.message,
-      });
-      setFlowStepState("recovery");
+      const apiError = normalizeApiError(cause);
+      storeApiError(apiError);
       throw apiError;
     } finally {
       setIsLoading(false);
     }
-  }, [session]);
+  }, [session, storeApiError]);
 
   const completeCheckin = useCallback(
     async (nextPaymentMethod: CheckinPaymentMethod) => {
@@ -359,23 +320,14 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
         setFlowStepState("success");
         return result;
       } catch (cause) {
-        const apiError =
-          cause instanceof ApiError
-            ? cause
-            : new ApiError("UNEXPECTED_ERROR", "The operation could not be completed right now.");
-
-        setError(apiError);
-        setRecoveryState({
-          code: mapApiErrorToRecoveryCode(apiError),
-          message: apiError.message,
-        });
-        setFlowStepState("recovery");
+        const apiError = normalizeApiError(cause);
+        storeApiError(apiError);
         throw apiError;
       } finally {
         setIsLoading(false);
       }
     },
-    [biometricsAccepted, identityVerification, session]
+    [biometricsAccepted, identityVerification, session, storeApiError]
   );
 
   const value = useMemo<CheckinFlowContextValue>(
@@ -413,6 +365,7 @@ export function CheckinFlowProvider({ children }: { children: React.ReactNode })
       completeCheckin,
       error,
       flowStep,
+      identityVerification,
       isLoading,
       paymentMethod,
       recovery,

@@ -54,7 +54,7 @@ export function PrivacyPolicyPage() {
         </article>
 
         <div className="legal-policy__actions">
-          <Button variant="secondary" size="lg" onClick={handleBack}>
+          <Button variant="secondary" size="lg" onClick={handleBack} className="legal-policy__button">
             {t("back")}
           </Button>
         </div>

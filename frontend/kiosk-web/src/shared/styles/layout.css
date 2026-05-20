@@ -506,6 +506,28 @@
   padding-top: 0.4rem;
 }
 
+.legal-policy__actions .legal-policy__button.btn-secondary {
+  min-height: 72px;
+  min-width: min(360px, 100%);
+  padding: 1rem 1.6rem;
+  border: 1px solid rgba(165, 139, 95, 0.5);
+  border-radius: 4px;
+  color: #4b3d21;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 0.94rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 18px rgba(92, 76, 50, 0.05);
+}
+
+.legal-policy__actions .legal-policy__button.btn-secondary:hover,
+.legal-policy__actions .legal-policy__button.btn-secondary:focus-visible {
+  border-color: rgba(153, 113, 32, 0.42);
+  color: #4d3c14;
+  background: rgba(255, 255, 255, 0.98);
+}
+
 @media (max-width: 1100px) {
   .action-buttons-container {
     grid-template-columns: 1fr;

@@ -4,15 +4,13 @@ import { ActionButtonsContainer } from "../components/ActionButtonsContainer";
 
 export function HomePage() {
   const { t } = useTranslation("home");
-  const welcomeTitle = t("welcomeTitle");
-  const welcomeSubtitle = t("selectOption");
 
   return (
     <KioskLayout>
       <section className="home-screen" aria-label={t("welcomeTitle")}>
         <div className="home-hero">
-          <h1 className="welcome-title">{welcomeTitle}</h1>
-          <p className="welcome-subtitle">{welcomeSubtitle}</p>
+          <h1 className="welcome-title">{t("welcomeTitle")}</h1>
+          <p className="welcome-subtitle">{t("selectOption")}</p>
           <div className="home-watermark" aria-hidden="true">
             <span className="home-watermark-ring" />
             <span className="home-watermark-ring home-watermark-ring--inner" />

@@ -97,28 +97,7 @@ export function ReservationConfirmationPage() {
   };
 
   return (
-    <CheckinFlowLayout
-      topRightContent={<span className="checkin-topbar__confirmation-label">{t("confirmationTag")}</span>}
-      bottomItems={[
-        {
-          key: "home",
-          label: t("bottomHomeCompact"),
-          icon: "home",
-          onClick: () => navigate("/"),
-        },
-        {
-          key: "assistant",
-          label: t("bottomAssistant"),
-          icon: "assistant",
-          active: true,
-        },
-        {
-          key: "emergency",
-          label: t("bottomEmergency"),
-          icon: "emergency",
-        },
-      ]}
-    >
+    <CheckinFlowLayout>
       <section className="checkin-confirmation" aria-label={t("confirmationTitle")}>
         <FlowStepHeader
           step={t("stepConfirmation")}

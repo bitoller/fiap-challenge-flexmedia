@@ -1,5 +1,3 @@
-import React from 'react';
-
 type ActionIcon = 'checkin' | 'checkout' | 'services';
 
 interface ActionButtonProps {
@@ -9,7 +7,7 @@ interface ActionButtonProps {
   onClick: () => void;
 }
 
-export const ActionButton: React.FC<ActionButtonProps> = ({ icon, title, subtitle, onClick }) => {
+export function ActionButton({ icon, title, subtitle, onClick }: ActionButtonProps) {
   return (
     <button type="button" className="action-button" onClick={onClick}>
       <div className="action-button-content">
@@ -44,4 +42,4 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ icon, title, subtitl
       </div>
     </button>
   );
-};
+}
