@@ -14,6 +14,8 @@ import br.com.fiap.flexcheck.checkin.service.result.CheckoutResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 public class DefaultCheckoutUseCase implements CheckoutUseCase {
     private final StayRepository stayRepository;
@@ -54,7 +56,7 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
         }
 
         if ("TEST_CARD_DECLINED".equalsIgnoreCase(command.paymentMethod())) {
-            paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "DECLINED", stay.totalAmount(), null);
+            paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "DECLINED", stay.checkoutDue(), null);
             notificationServiceClient.sendAlert(
                     "reception",
                     "Checkout payment declined",
@@ -65,12 +67,14 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
             throw new BusinessException("PAYMENT_DECLINED", "Payment declined. Please contact reception.", 409);
         }
 
-        paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "APPROVED", stay.totalAmount(), "CAP-" + stayId);
+        if (stay.checkoutDue().compareTo(BigDecimal.ZERO) > 0) {
+            paymentServiceClient.recordPayment(stayId, stay.reservationId(), "CAPTURE", "APPROVED", stay.checkoutDue(), "CAP-" + stayId);
+        }
         keyServiceClient.revokeKeys(stayId);
         stayRepository.checkout(stay);
-        pmsAdapterServiceClient.syncCheckout(stay.reservationId(), stayId, stay.roomId(), stay.totalAmount());
+        pmsAdapterServiceClient.syncCheckout(stay.reservationId(), stayId, stay.roomId(), stay.checkoutDue());
         notificationServiceClient.sendReceipt(
-                "guest@flexcheck.local",
+                stay.guestEmail(),
                 "Check-out completed",
                 "Your check-out was completed successfully. Receipt " + "RCP-" + stayId + " is available.",
                 "STAY",
@@ -78,6 +82,6 @@ public class DefaultCheckoutUseCase implements CheckoutUseCase {
         );
         auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(stay.hotelId(), "KIOSK", null, "CHECKOUT_COMPLETED", "STAY", String.valueOf(stayId), "SUCCESS", null));
 
-        return new CheckoutResult(stayId, "CHECKED_OUT", stay.totalAmount(), "RCP-" + stayId);
+        return new CheckoutResult(stayId, "CHECKED_OUT", stay.checkoutDue(), "RCP-" + stayId);
     }
 }

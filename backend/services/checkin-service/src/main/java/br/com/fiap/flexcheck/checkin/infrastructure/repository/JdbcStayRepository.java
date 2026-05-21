@@ -4,6 +4,7 @@ import br.com.fiap.flexcheck.checkin.domain.entity.Stay;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutStayStateResult;
+import br.com.fiap.flexcheck.checkin.service.support.CheckoutChargeCalculator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -48,9 +49,17 @@ public class JdbcStayRepository implements StayRepository {
     @Override
     public Optional<Stay> findStay(Long stayId) {
         String sql = """
-                SELECT st.id, st.reservation_id, r.hotel_id, st.room_id, st.status, r.total_amount
+                SELECT st.id,
+                       st.reservation_id,
+                       r.hotel_id,
+                       st.room_id,
+                       st.status,
+                       st.expected_checkout_at,
+                       g.email
                   FROM fc_stay st
                   JOIN fc_reservation r ON r.id = st.reservation_id
+                  JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                  JOIN fc_guest g ON g.id = rg.guest_id
                  WHERE st.id = ?
                 """;
         List<Stay> stays = jdbc.query(sql, (rs, rowNum) -> new Stay(
@@ -59,7 +68,8 @@ public class JdbcStayRepository implements StayRepository {
                 rs.getLong("hotel_id"),
                 rs.getLong("room_id"),
                 rs.getString("status"),
-                rs.getBigDecimal("total_amount")
+                CheckoutChargeCalculator.calculateDue(rs.getTimestamp("expected_checkout_at")),
+                rs.getString("email")
         ), stayId);
         return stays.stream().findFirst();
     }
@@ -80,6 +90,7 @@ public class JdbcStayRepository implements StayRepository {
         String sql = """
                 SELECT st.id AS stay_id,
                        st.status AS stay_status,
+                       st.expected_checkout_at,
                        r.id AS reservation_id,
                        r.hotel_id,
                        r.reservation_code,
@@ -170,6 +181,7 @@ public class JdbcStayRepository implements StayRepository {
         String sql = """
                 SELECT st.id AS stay_id,
                        st.status AS stay_status,
+                       st.expected_checkout_at,
                        r.id AS reservation_id,
                        r.hotel_id,
                        r.reservation_code,
@@ -214,6 +226,7 @@ public class JdbcStayRepository implements StayRepository {
         String sql = """
                 SELECT st.id AS stay_id,
                        st.status AS stay_status,
+                       st.expected_checkout_at,
                        r.id AS reservation_id,
                        r.hotel_id,
                        r.reservation_code,
@@ -256,6 +269,7 @@ public class JdbcStayRepository implements StayRepository {
         String sql = """
                 SELECT st.id AS stay_id,
                        st.status AS stay_status,
+                       st.expected_checkout_at,
                        r.id AS reservation_id,
                        r.hotel_id,
                        r.reservation_code,
@@ -465,8 +479,14 @@ public class JdbcStayRepository implements StayRepository {
     public void checkout(Stay stay) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         jdbc.update("UPDATE fc_stay SET status = 'CHECKED_OUT', checked_out_at = ? WHERE id = ?", now, stay.id());
-        jdbc.update("UPDATE fc_reservation SET status = 'CHECKED_OUT', updated_at = ? WHERE id = ?", now, stay.reservationId());
-        jdbc.update("UPDATE fc_room SET status = 'CLEANING' WHERE id = ?", stay.roomId());
+        jdbc.update("""
+                UPDATE fc_reservation
+                   SET status = 'CHECKED_OUT',
+                       reservation_code = SUBSTR(reservation_code, 1, 25) || '-OUT-' || id,
+                       updated_at = ?
+                 WHERE id = ?
+                """, now, stay.reservationId());
+        jdbc.update("UPDATE fc_room SET status = 'AVAILABLE' WHERE id = ?", stay.roomId());
     }
 
     private record ReconciliationCandidate(

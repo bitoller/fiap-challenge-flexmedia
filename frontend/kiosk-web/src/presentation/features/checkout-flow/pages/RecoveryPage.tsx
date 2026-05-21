@@ -35,7 +35,7 @@ export function RecoveryPage() {
     if (code !== "PAYMENT_DECLINED") {
       clearFlow();
     }
-    navigate(code === "PAYMENT_DECLINED" ? "/checkout/payment" : "/checkout", { replace: true });
+    navigate(code === "PAYMENT_DECLINED" ? "/checkout/summary" : "/checkout", { replace: true });
   };
 
   const goHome = () => {

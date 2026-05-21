@@ -110,7 +110,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       );
 
       setStayPreview(preview);
-      setFlowStepState("summary");
+      setFlowStepState("settlement");
       return preview;
     } catch (cause) {
       const apiError =
@@ -144,7 +144,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       );
 
       setStayPreview(preview);
-      setFlowStepState("summary");
+      setFlowStepState("settlement");
       return preview;
     } catch (cause) {
       const apiError =
@@ -175,7 +175,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
     try {
       const result = await checkoutRepository.completeCheckout(stayPreview.stayId, paymentMethod);
       setCheckoutResult(result);
-      setFlowStepState("receipt");
+      setFlowStepState("success");
       return result;
     } catch (cause) {
       const apiError =

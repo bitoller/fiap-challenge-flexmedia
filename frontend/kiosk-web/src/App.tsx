@@ -15,10 +15,6 @@ import { RecoveryPage } from "./presentation/features/checkin-flow/pages/Recover
 import { CheckoutFlowProvider } from "./presentation/features/checkout-flow/context/CheckoutFlowContext";
 import { IdentificationPage as CheckoutIdentificationPage } from "./presentation/features/checkout-flow/pages/IdentificationPage";
 import { SummaryPage as CheckoutSummaryPage } from "./presentation/features/checkout-flow/pages/SummaryPage";
-import { ReconciliationPage as CheckoutReconciliationPage } from "./presentation/features/checkout-flow/pages/ReconciliationPage";
-import { PaymentPage as CheckoutPaymentPage } from "./presentation/features/checkout-flow/pages/PaymentPage";
-import { CardPage as CheckoutCardPage } from "./presentation/features/checkout-flow/pages/CardPage";
-import { ReceiptPage as CheckoutReceiptPage } from "./presentation/features/checkout-flow/pages/ReceiptPage";
 import { SuccessPage as CheckoutSuccessPage } from "./presentation/features/checkout-flow/pages/SuccessPage";
 import { RecoveryPage as CheckoutRecoveryPage } from "./presentation/features/checkout-flow/pages/RecoveryPage";
 import { PrivacyPolicyPage } from "./presentation/features/legal/pages/PrivacyPolicyPage";
@@ -81,10 +77,10 @@ export default function App() {
           <Route path="/checkin/recovery" element={<RecoveryPage />} />
           <Route path="/checkout" element={<CheckoutIdentificationPage />} />
           <Route path="/checkout/summary" element={<CheckoutSummaryPage />} />
-          <Route path="/checkout/reconciliation" element={<CheckoutReconciliationPage />} />
-          <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-          <Route path="/checkout/card" element={<CheckoutCardPage />} />
-          <Route path="/checkout/receipt" element={<CheckoutReceiptPage />} />
+          <Route path="/checkout/reconciliation" element={<Navigate to="/checkout/summary" replace />} />
+          <Route path="/checkout/payment" element={<Navigate to="/checkout/summary" replace />} />
+          <Route path="/checkout/card" element={<Navigate to="/checkout/summary" replace />} />
+          <Route path="/checkout/receipt" element={<Navigate to="/checkout/success" replace />} />
           <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           <Route path="/checkout/recovery" element={<CheckoutRecoveryPage />} />
           <Route path="/services" element={<FlowPlaceholderPage flow="services" />} />

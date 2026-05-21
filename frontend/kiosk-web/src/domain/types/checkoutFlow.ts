@@ -1,10 +1,6 @@
 export type CheckoutFlowStep =
   | "identification"
-  | "summary"
-  | "reconciliation"
-  | "payment"
-  | "card"
-  | "receipt"
+  | "settlement"
   | "success"
   | "recovery";
 

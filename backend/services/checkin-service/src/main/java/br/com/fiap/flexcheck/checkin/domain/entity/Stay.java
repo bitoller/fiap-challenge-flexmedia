@@ -8,7 +8,8 @@ public record Stay(
         Long hotelId,
         Long roomId,
         String status,
-        BigDecimal totalAmount
+        BigDecimal checkoutDue,
+        String guestEmail
 ) {
     public boolean isActiveForCheckout() {
         return "ACTIVE".equalsIgnoreCase(status) || "PENDING_KEY".equalsIgnoreCase(status);

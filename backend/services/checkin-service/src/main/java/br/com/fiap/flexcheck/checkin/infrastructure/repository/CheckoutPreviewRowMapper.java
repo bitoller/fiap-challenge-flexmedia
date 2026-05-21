@@ -1,6 +1,6 @@
 package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 
-import br.com.fiap.flexcheck.checkin.service.result.CheckoutChargeResult;
+import br.com.fiap.flexcheck.checkin.service.support.CheckoutChargeCalculator;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.GuestResult;
 import br.com.fiap.flexcheck.checkin.service.result.ReservationResult;
@@ -9,11 +9,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -22,8 +21,9 @@ public class CheckoutPreviewRowMapper implements RowMapper<CheckoutPreviewResult
     public CheckoutPreviewResult mapRow(ResultSet rs, int rowNum) throws SQLException {
         LocalDate arrivalDate = rs.getObject("arrival_date", LocalDate.class);
         LocalDate departureDate = rs.getObject("departure_date", LocalDate.class);
-        int nights = (int) Math.max(1, ChronoUnit.DAYS.between(arrivalDate, departureDate));
-        BigDecimal totalAmount = rs.getBigDecimal("total_amount");
+        Timestamp expectedCheckoutAt = rs.getTimestamp("expected_checkout_at");
+        BigDecimal reservationTotal = rs.getBigDecimal("total_amount");
+        BigDecimal checkoutDue = CheckoutChargeCalculator.calculateDue(expectedCheckoutAt);
 
         ReservationResult reservation = new ReservationResult(
                 rs.getLong("reservation_id"),
@@ -33,7 +33,7 @@ public class CheckoutPreviewRowMapper implements RowMapper<CheckoutPreviewResult
                 rs.getString("hotel_name"),
                 arrivalDate,
                 departureDate,
-                totalAmount,
+                reservationTotal,
                 rs.getString("currency"),
                 true,
                 List.of(),
@@ -57,33 +57,9 @@ public class CheckoutPreviewRowMapper implements RowMapper<CheckoutPreviewResult
         return new CheckoutPreviewResult(
                 rs.getLong("stay_id"),
                 rs.getString("stay_status"),
-                totalAmount,
+                checkoutDue,
                 reservation,
-                buildCharges(totalAmount, nights, rs.getString("room_type"))
-        );
-    }
-
-    private static List<CheckoutChargeResult> buildCharges(BigDecimal totalAmount, int nights, String roomType) {
-        BigDecimal accommodation = totalAmount.multiply(new BigDecimal("0.7347")).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal minibar = totalAmount.multiply(new BigDecimal("0.0612")).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal restaurant = totalAmount.subtract(accommodation).subtract(minibar).setScale(2, RoundingMode.HALF_UP);
-
-        return List.of(
-                new CheckoutChargeResult(
-                        "ACCOMMODATION",
-                        nights + " nights - " + roomType,
-                        accommodation
-                ),
-                new CheckoutChargeResult(
-                        "MINIBAR",
-                        "Mini bar usage",
-                        minibar
-                ),
-                new CheckoutChargeResult(
-                        "RESTAURANT",
-                        "Dining and room service",
-                        restaurant
-                )
+                CheckoutChargeCalculator.buildCharges(expectedCheckoutAt)
         );
     }
 

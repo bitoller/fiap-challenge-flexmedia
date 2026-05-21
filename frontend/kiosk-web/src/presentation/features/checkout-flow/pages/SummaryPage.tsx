@@ -1,123 +1,175 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../components/common/Button";
+import { CreditCard, QrCode, ShieldCheck } from "lucide-react";
 import { useCheckoutFlow } from "../context/CheckoutFlowContext";
-import { CheckoutFlowLayout } from "../components/CheckoutFlowLayout";
-import { CheckoutStepHeader } from "../components/CheckoutStepHeader";
-import { CheckoutChargeList } from "../components/CheckoutChargeList";
+import { CheckinFlowLayout } from "../../checkin-flow/components/CheckinFlowLayout";
+import { FlowStepHeader } from "../../checkin-flow/components/FlowStepHeader";
+import { MethodOptionCard } from "../../checkin-flow/components/MethodOptionCard";
 
-function formatDate(date: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date));
+function getLocale(language: string) {
+  if (language === "pt-BR") return "pt-BR";
+  if (language === "es") return "es-ES";
+  return "en-US";
 }
 
 function formatCurrency(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
+  const value = new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
   }).format(amount);
+
+  return currency === "BRL" ? value.replace(/^R\$(?=\d)/, "R$ ") : value;
 }
 
-function getNights(arrivalDate: string, departureDate: string) {
-  const start = new Date(`${arrivalDate}T00:00:00`);
-  const end = new Date(`${departureDate}T00:00:00`);
-  const diff = end.getTime() - start.getTime();
-  return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
+function getChargeLabel(code: string, description: string, translate: (key: string, options?: Record<string, string>) => string) {
+  if (code === "LATE_CHECKOUT") {
+    return translate("settlementLateCheckout");
+  }
+
+  return description;
 }
 
 export function SummaryPage() {
   const { t, i18n } = useTranslation("checkout");
   const navigate = useNavigate();
-  const { stayPreview, setFlowStep } = useCheckoutFlow();
+  const { stayPreview, paymentMethod, setPaymentMethod, completeCheckout, isLoading, setFlowStep } = useCheckoutFlow();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!stayPreview) {
       navigate("/checkout", { replace: true });
+      return;
     }
-  }, [navigate, stayPreview]);
 
-  const locale = useMemo(() => {
-    if (i18n.language === "pt-BR") return "pt-BR";
-    if (i18n.language === "es") return "es-ES";
-    return "en-US";
-  }, [i18n.language]);
+    setFlowStep("settlement");
+  }, [navigate, setFlowStep, stayPreview]);
+
+  const locale = useMemo(() => getLocale(i18n.language), [i18n.language]);
 
   if (!stayPreview) {
     return null;
   }
 
   const reservation = stayPreview.reservation;
-  const totalAmount = formatCurrency(stayPreview.totalDue, reservation.currency, locale);
-  const arrivalDate = formatDate(reservation.arrivalDate, locale);
-  const departureDate = formatDate(reservation.departureDate, locale);
-  const nights = getNights(reservation.arrivalDate, reservation.departureDate);
+  const baseAmount = formatCurrency(reservation.totalAmount, reservation.currency, locale);
+  const totalDue = formatCurrency(stayPreview.totalDue, reservation.currency, locale);
+  const hasBalance = stayPreview.totalDue > 0;
+  const hasCharges = stayPreview.charges.length > 0;
 
-  const proceed = () => {
-    setFlowStep("payment");
-    navigate("/checkout/payment");
-  };
+  const finalizeCheckout = async () => {
+    setIsProcessing(true);
 
-  const dispute = () => {
-    setFlowStep("reconciliation");
-    navigate("/checkout/reconciliation");
+    try {
+      await new Promise((resolve) => window.setTimeout(resolve, 900));
+      await completeCheckout();
+      navigate("/checkout/success");
+    } catch {
+      navigate("/checkout/recovery", { replace: true });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
-    <CheckoutFlowLayout>
-      <section className="checkout-summary" aria-label={t("summaryTitle")}>
-        <CheckoutStepHeader step={t("stepSummary")} title={t("summaryTitle")} subtitle={t("summarySubtitle")} />
+    <CheckinFlowLayout>
+      <section className="checkout-settlement" aria-label={t("settlementTitle")}>
+        <FlowStepHeader
+          step={t("stepSettlement")}
+          title={t("settlementTitle")}
+          subtitle={t("settlementSubtitle")}
+        />
 
-        <div className="checkout-summary__layout">
-          <article className="checkout-summary__folio">
-            <header className="checkout-summary__folio-head">
-              <div>
-                <span>{t("summaryRoomLabel", { room: reservation.room.number })}</span>
-                <strong>{t("summaryFolioTitle")}</strong>
-              </div>
-              <small>{t("summaryDateLabel", { date: arrivalDate })}</small>
-            </header>
-
-            <CheckoutChargeList charges={stayPreview.charges} currency={reservation.currency} locale={locale} />
-
-            <div className="checkout-summary__total">
-              <div>
-                <span>{t("summaryTotalLabel")}</span>
-                <small>{t("summaryTaxCopy")}</small>
-              </div>
-              <strong>{totalAmount}</strong>
+        <div className="checkout-settlement__layout">
+          <article className="checkout-settlement__card checkout-settlement__balance-card">
+            <div className="checkout-settlement__badge">
+              <ShieldCheck />
+              <span>{t("settlementSecurityLabel")}</span>
             </div>
+            <p className="checkout-settlement__eyebrow">{t("settlementFinalReview")}</p>
+            <h2>{t("settlementBalanceTitle")}</h2>
+
+            <div className="checkout-settlement__line">
+              <span>{t("settlementReservationPaid")}</span>
+              <strong>{baseAmount}</strong>
+            </div>
+
+            <div className="checkout-settlement__charges" aria-label={t("settlementChargesTitle")}>
+              <span>{t("settlementChargesTitle")}</span>
+              {hasCharges ? (
+                stayPreview.charges.map((charge) => (
+                  <div className="checkout-settlement__charge" key={charge.code}>
+                    <small>{getChargeLabel(charge.code, charge.description, t)}</small>
+                    <strong>{formatCurrency(charge.amount, reservation.currency, locale)}</strong>
+                  </div>
+                ))
+              ) : (
+                <p>{t("settlementNoCharges")}</p>
+              )}
+            </div>
+
+            <div className="checkout-settlement__total">
+              <span>{t("settlementTotalDue")}</span>
+              <strong>{totalDue}</strong>
+            </div>
+
+            <p className="checkout-settlement__room-note">
+              {t("settlementRoomNote", { room: reservation.room.number })}
+            </p>
           </article>
 
-          <aside className="checkout-summary__aside">
-            <div className="checkout-summary__image-card">
-              <div className="checkout-summary__image-copy">
-                <span>{t("summaryGuestExperience")}</span>
-                <strong>{t("summaryGuestCopy")}</strong>
-              </div>
-            </div>
+          <article className="checkout-settlement__card checkout-settlement__payment-card">
+            <p className="checkout-settlement__eyebrow">{t("settlementPaymentEyebrow")}</p>
+            <h2>{hasBalance ? t("settlementPaymentTitle") : t("settlementNoPaymentTitle")}</h2>
+            <p className="checkout-settlement__copy">
+              {hasBalance ? t("settlementPaymentCopy") : t("settlementNoPaymentCopy")}
+            </p>
 
-            <div className="checkout-summary__info-card">
-              <span>{t("summaryStayLabel")}</span>
-              <strong>{reservation.guest.fullName}</strong>
-              <small>{t("summaryNights", { count: nights })}</small>
-              <small>{arrivalDate} - {departureDate}</small>
+            <div className="checkout-settlement__methods">
+              <MethodOptionCard
+                title={t("paymentCardTitle")}
+                subtitle={t("paymentCardSubtitle")}
+                icon={<CreditCard />}
+                selected={paymentMethod === "CARD"}
+                onClick={() => setPaymentMethod("CARD")}
+              />
+              <MethodOptionCard
+                title={t("paymentPixTitle")}
+                subtitle={t("paymentPixSubtitle")}
+                icon={<QrCode />}
+                selected={paymentMethod === "PIX"}
+                onClick={() => setPaymentMethod("PIX")}
+              />
             </div>
+          </article>
+        </div>
 
-            <div className="checkout-summary__actions">
-              <Button variant="secondary" size="lg" onClick={dispute}>
-                {t("summaryDispute")}
-              </Button>
-              <Button variant="primary" size="lg" onClick={proceed}>
-                {t("summaryContinue")}
-              </Button>
-            </div>
-          </aside>
+        {isProcessing ? (
+          <div className="checkout-settlement__processing" role="status" aria-live="polite">
+            <span className="checkout-settlement__spinner" aria-hidden="true" />
+            <strong>{hasBalance ? t("settlementProcessingPayment") : t("settlementClosingStay")}</strong>
+          </div>
+        ) : null}
+
+        <div className="checkin-payment__actions checkout-settlement__actions">
+          <button
+            type="button"
+            className="checkin-action-button checkin-action-button--secondary"
+            onClick={() => navigate("/checkout")}
+            disabled={isLoading || isProcessing}
+          >
+            {t("back")}
+          </button>
+          <button
+            type="button"
+            className="checkin-action-button checkin-action-button--primary"
+            onClick={finalizeCheckout}
+            disabled={isLoading || isProcessing}
+          >
+            {hasBalance ? t("settlementPayAndClose") : t("settlementCloseStay")}
+          </button>
         </div>
       </section>
-    </CheckoutFlowLayout>
+    </CheckinFlowLayout>
   );
 }
