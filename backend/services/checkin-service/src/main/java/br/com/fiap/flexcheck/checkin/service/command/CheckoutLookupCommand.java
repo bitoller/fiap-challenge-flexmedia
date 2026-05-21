@@ -4,6 +4,8 @@ public record CheckoutLookupCommand(
         Long hotelId,
         String roomNumber,
         String documentType,
-        String documentNumber
+        String documentNumber,
+        String faceImageBase64,
+        String faceMimeType
 ) {
 }

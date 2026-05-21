@@ -114,7 +114,9 @@ public final class ApiMapper {
                 request.hotelId(),
                 normalize(request.roomNumber()),
                 normalize(request.documentType()),
-                normalize(request.documentNumber())
+                normalize(request.documentNumber()),
+                normalize(request.faceImageBase64()),
+                normalize(request.faceMimeType())
         );
     }
 

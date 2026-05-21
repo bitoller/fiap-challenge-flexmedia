@@ -15,6 +15,8 @@ public interface StayRepository {
 
     Optional<CheckoutPreviewResult> findCheckoutPreview(Long hotelId, String roomNumber, String documentType, String documentNumber);
 
+    Optional<CheckoutPreviewResult> findCheckoutPreviewByStayId(Long stayId);
+
     Optional<CheckoutStayStateResult> findCheckoutState(Long hotelId, String roomNumber, String documentType, String documentNumber);
 
     void markCheckedIn(Long sessionId, Long reservationId, Long roomId);

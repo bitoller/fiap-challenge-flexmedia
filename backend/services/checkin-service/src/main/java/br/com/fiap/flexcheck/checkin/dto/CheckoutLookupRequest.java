@@ -6,6 +6,8 @@ public record CheckoutLookupRequest(
         @NotNull Long hotelId,
         String roomNumber,
         String documentType,
-        String documentNumber
+        String documentNumber,
+        String faceImageBase64,
+        String faceMimeType
 ) {
 }

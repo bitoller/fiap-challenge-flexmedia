@@ -171,7 +171,9 @@ public class CheckinFlowUseCaseTest {
                 1L,
                 "1204",
                 "CPF",
-                "12345678909"
+                "12345678909",
+                null,
+                null
         ));
 
         assertThat(checkoutPreview.stayId()).isEqualTo(checkin.stayId());

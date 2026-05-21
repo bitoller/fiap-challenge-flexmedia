@@ -21,14 +21,29 @@
 .checkout-step-header {
   text-align: center;
   margin-bottom: 2rem;
+  display: grid;
+  justify-items: center;
 }
 
 .checkout-step-header__eyebrow {
-  margin: 0 0 0.75rem;
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.32em;
   font-size: 0.82rem;
   color: var(--kiosk-primary);
+}
+
+.checkout-step-header__rule {
+  width: min(13.75rem, 36vw);
+  height: 1px;
+  margin: 0.35rem 0 0.8rem;
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.45), transparent);
+}
+
+.checkout-step-header__rule span {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .checkout-step-header__title {
@@ -47,153 +62,65 @@
   line-height: 1.65;
 }
 
-.checkout-identification__layout {
+.checkout-identification .checkin-identification__methods {
+  grid-template-rows: none !important;
+  grid-auto-rows: var(--checkin-method-card-height, 104px) !important;
+  align-content: start;
+}
+
+.checkout-identification .checkin-method-card {
+  width: 100%;
+  height: var(--checkin-method-card-height, 104px);
+  min-height: var(--checkin-method-card-height, 104px);
+}
+
+.checkout-identification .checkin-identification__entry {
+  width: 100%;
+  min-height: var(--checkin-entry-card-height, auto);
+}
+
+.checkout-identification__identity-panel {
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 1.5rem;
-  align-items: stretch;
+  gap: 0.8rem;
 }
 
-.checkout-identification__cards {
+.checkout-identification__identity-panel .checkin-identity__panel {
+  width: 100%;
+  height: var(--checkin-entry-card-height, 620px);
+  min-height: var(--checkin-entry-card-height, 620px);
+}
+
+.checkout-identification__identity-panel .checkin-identity__camera-card {
+  height: 100%;
+  min-height: calc(var(--checkin-entry-card-height, 620px) - 2.7rem);
+}
+
+.checkout-identification__identity-panel .checkin-identity__camera-heading {
+  min-height: 76px;
+  margin-bottom: 0.85rem;
+}
+
+.checkout-identification__identity-panel .checkin-identity__camera-heading p {
+  min-height: 2.9em;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  place-items: center;
 }
 
-.checkout-input-card {
-  min-height: 14rem;
-  border: 1px solid rgba(176, 145, 67, 0.18);
-  border-radius: 1rem;
-  padding: 1.4rem 1.2rem;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 0.55rem;
-  box-shadow: 0 18px 36px rgba(110, 89, 48, 0.06);
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+.checkout-identification__identity-panel .checkin-identity__camera-frame {
+  width: min(100%, 560px);
 }
 
-.checkout-input-card:hover,
-.checkout-input-card.is-selected {
-  transform: translateY(-2px);
-  border-color: rgba(176, 145, 67, 0.45);
-  box-shadow: 0 22px 40px rgba(110, 89, 48, 0.1);
-}
-
-.checkout-input-card--ghost {
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.checkout-input-card__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.8rem;
-  color: var(--kiosk-primary);
-  background: rgba(176, 145, 67, 0.12);
-}
-
-.checkout-input-card__icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.checkout-input-card__title {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.05rem;
-}
-
-.checkout-input-card__value {
-  font-size: 1.1rem;
-  color: var(--kiosk-text-primary);
-}
-
-.checkout-input-card__caption {
-  color: var(--kiosk-text-secondary);
-  font-size: 0.82rem;
+.checkout-identification__identity-panel .checkin-identity__camera-actions .checkin-action-button {
+  width: auto;
+  height: 58px;
+  min-height: 58px;
+  min-width: 220px;
+  padding: 0.75rem 1.1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.checkout-identification__entry {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.checkout-entry-label {
-  font-size: 0.86rem;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  color: var(--kiosk-primary);
-}
-
-.checkout-entry-field {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.95rem 1.05rem;
-  min-height: 4.1rem;
-  border-bottom: 1px solid rgba(176, 145, 67, 0.4);
-}
-
-.checkout-entry-field__value {
-  font-size: clamp(1.2rem, 2vw, 1.65rem);
-  letter-spacing: 0.08em;
-  font-family: Georgia, "Times New Roman", serif;
-}
-
-.checkout-entry-field__icon {
-  color: var(--kiosk-primary);
-}
-
-.checkout-keypad {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(4.6rem, 1fr));
-  gap: 0.6rem;
-  max-width: 24rem;
-  padding: 0.5rem 0.5rem 0 0.5rem;
-}
-
-.checkout-keypad__key {
-  min-height: 3.8rem;
-  border: 0;
-  border-radius: 0.45rem;
-  background: rgba(255, 255, 255, 0.74);
-  color: var(--kiosk-text-primary);
-  font-size: 1.2rem;
-  box-shadow: inset 0 0 0 1px rgba(176, 145, 67, 0.12);
-}
-
-.checkout-keypad__key:hover {
-  background: rgba(176, 145, 67, 0.1);
-}
-
-.checkout-keypad__key--soft {
-  color: var(--kiosk-text-secondary);
-}
-
-.checkout-keypad__key--confirm {
-  background: linear-gradient(180deg, var(--kiosk-primary), #a8822a);
-  color: #fff;
-}
-
-.checkout-keypad__key--confirm.is-disabled {
-  opacity: 0.6;
-}
-
-.checkout-identification__actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  padding-top: 0.75rem;
 }
 
 .checkout-summary__layout,
@@ -777,7 +704,6 @@
 }
 
 @media (max-width: 1100px) {
-  .checkout-identification__layout,
   .checkout-summary__layout,
   .checkout-payment__layout,
   .checkout-receipt__layout,
@@ -786,7 +712,6 @@
     grid-template-columns: 1fr;
   }
 
-  .checkout-identification__cards,
   .checkout-payment__methods {
     grid-template-columns: 1fr;
   }
@@ -798,5 +723,11 @@
   .checkout-success__actions,
   .checkout-recovery__actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .checkout-layout__main {
+    padding-inline: 1rem;
   }
 }

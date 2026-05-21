@@ -26,6 +26,7 @@ interface CheckoutFlowContextValue {
   isLoading: boolean;
   error: ApiError | null;
   lookupStay: (roomNumber: string, documentNumber: string) => Promise<CheckoutStayPreview>;
+  lookupStayByFace: (imageBase64: string, mimeType: string) => Promise<CheckoutStayPreview>;
   completeCheckout: () => Promise<CheckoutResponse>;
   setPaymentMethod: (paymentMethod: CheckoutPaymentMethod) => void;
   setReceiptEmail: (email: string) => void;
@@ -129,6 +130,40 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  const lookupStayByFace = useCallback(async (imageBase64: string, mimeType: string) => {
+    setIsLoading(true);
+    setError(null);
+    setRecoveryState(null);
+    setIdentification({ roomNumber: "", documentNumber: "" });
+
+    try {
+      const preview = await checkoutRepository.lookupStayByFace(
+        KIOSK_CONFIG.ACTIVE_HOTEL_ID,
+        imageBase64,
+        mimeType
+      );
+
+      setStayPreview(preview);
+      setFlowStepState("summary");
+      return preview;
+    } catch (cause) {
+      const apiError =
+        cause instanceof ApiError
+          ? cause
+          : new ApiError("CHECKOUT_LOOKUP_FAILED", "The stay could not be located right now.");
+
+      setError(apiError);
+      setRecoveryState({
+        code: mapApiErrorToRecoveryCode(apiError),
+        message: apiError.message,
+      });
+      setFlowStepState("recovery");
+      throw apiError;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const completeCheckout = useCallback(async () => {
     if (!stayPreview) {
       throw new ApiError("CHECKOUT_NOT_READY", "Checkout could not be completed right now.");
@@ -172,6 +207,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       isLoading,
       error,
       lookupStay,
+      lookupStayByFace,
       completeCheckout,
       setPaymentMethod: setPaymentMethodState,
       setReceiptEmail: setReceiptEmailState,
@@ -189,6 +225,7 @@ export function CheckoutFlowProvider({ children }: { children: React.ReactNode }
       identification,
       isLoading,
       lookupStay,
+      lookupStayByFace,
       paymentMethod,
       receiptEmail,
       recovery,

@@ -76,6 +76,48 @@ public class JdbcStayRepository implements StayRepository {
     }
 
     @Override
+    public Optional<CheckoutPreviewResult> findCheckoutPreviewByStayId(Long stayId) {
+        String sql = """
+                SELECT st.id AS stay_id,
+                       st.status AS stay_status,
+                       r.id AS reservation_id,
+                       r.hotel_id,
+                       r.reservation_code,
+                       r.status AS reservation_status,
+                       h.name AS hotel_name,
+                       r.arrival_date,
+                       r.departure_date,
+                       r.total_amount,
+                       r.currency,
+                       g.id AS guest_id,
+                       g.full_name,
+                       g.document_type,
+                       g.document_number,
+                       g.birth_date,
+                       g.email,
+                       g.phone,
+                       room.id AS room_id,
+                       room.room_number,
+                       room.room_type,
+                       room.status AS room_status
+                  FROM fc_stay st
+                  JOIN fc_reservation r ON r.id = st.reservation_id
+                  JOIN fc_hotel h ON h.id = r.hotel_id
+                  JOIN fc_room room ON room.id = st.room_id
+                  JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
+                  JOIN fc_guest g ON g.id = rg.guest_id
+                 WHERE st.id = ?
+                   AND UPPER(st.status) IN ('ACTIVE', 'PENDING_KEY')
+                   AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
+                 FETCH FIRST 1 ROWS ONLY
+                """;
+
+        return jdbc.query(sql, checkoutPreviewRowMapper, stayId)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public Optional<CheckoutStayStateResult> findCheckoutState(Long hotelId, String roomNumber, String documentType, String documentNumber) {
         return lookupCheckoutState(hotelId, roomNumber, documentType, documentNumber);
     }

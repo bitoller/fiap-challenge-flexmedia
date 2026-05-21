@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.checkin.service.impl;
 
 import br.com.fiap.flexcheck.checkin.domain.exception.BusinessException;
+import br.com.fiap.flexcheck.checkin.repository.BiometricReferenceRepository;
 import br.com.fiap.flexcheck.checkin.repository.SessionRepository;
 import br.com.fiap.flexcheck.checkin.repository.VerificationRepository;
 import br.com.fiap.flexcheck.checkin.service.VerifyIdentitySelfieUseCase;
@@ -20,19 +21,22 @@ public class DefaultVerifyIdentitySelfieUseCase implements VerifyIdentitySelfieU
     private final FaceMatchProviderClient faceMatchProviderClient;
     private final IdentityDocumentImageStore imageStore;
     private final IdentityVerificationProperties properties;
+    private final BiometricReferenceRepository biometricReferenceRepository;
 
     public DefaultVerifyIdentitySelfieUseCase(
             SessionRepository sessionRepository,
             VerificationRepository verificationRepository,
             FaceMatchProviderClient faceMatchProviderClient,
             IdentityDocumentImageStore imageStore,
-            IdentityVerificationProperties properties
+            IdentityVerificationProperties properties,
+            BiometricReferenceRepository biometricReferenceRepository
     ) {
         this.sessionRepository = sessionRepository;
         this.verificationRepository = verificationRepository;
         this.faceMatchProviderClient = faceMatchProviderClient;
         this.imageStore = imageStore;
         this.properties = properties;
+        this.biometricReferenceRepository = biometricReferenceRepository;
     }
 
     @Override
@@ -53,6 +57,18 @@ public class DefaultVerifyIdentitySelfieUseCase implements VerifyIdentitySelfieU
         String provider = fallback ? "DOCUMENT_ONLY" : faceMatch.provider();
         String reference = faceMatch.referenceCode() == null || faceMatch.referenceCode().isBlank() ? "BIO-" + sessionId : faceMatch.referenceCode();
         verificationRepository.insertBiometryVerification(sessionId, context.reservation().guest().id(), status, provider, reference, faceMatch.score());
+        if (approved) {
+            biometricReferenceRepository.saveFaceReference(
+                    sessionId,
+                    context.reservation().id(),
+                    context.reservation().guest().id(),
+                    context.reservation().hotelId(),
+                    provider,
+                    command.imageBase64(),
+                    command.mimeType(),
+                    faceMatch.score()
+            );
+        }
 
         return new IdentityVerificationResult(
                 sessionId,

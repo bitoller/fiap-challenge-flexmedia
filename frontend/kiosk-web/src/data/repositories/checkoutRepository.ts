@@ -36,6 +36,31 @@ export const checkoutRepository = {
     }
   },
 
+  async lookupStayByFace(
+    hotelId: number,
+    faceImageBase64: string,
+    faceMimeType: string
+  ): Promise<CheckoutStayPreview> {
+    try {
+      const response = await apiPost<any>(
+        buildUrl(API_ENDPOINTS.CHECKOUT_LOOKUP),
+        {
+          hotelId,
+          faceImageBase64,
+          faceMimeType,
+        }
+      );
+
+      return checkoutLookupResponseInterceptor(response);
+    } catch (error) {
+      if (error instanceof TimeoutError || USE_MOCKS) {
+        throw new ApiError("CHECKOUT_LOOKUP_FAILED", "The stay could not be located right now.");
+      }
+
+      throw error;
+    }
+  },
+
   async completeCheckout(stayId: number, paymentMethod: string): Promise<CheckoutResponse> {
     const response = await apiPost<any>(buildUrl(API_ENDPOINTS.CHECKOUT(stayId)), {
       paymentMethod,

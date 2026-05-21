@@ -163,22 +163,15 @@
 
 .checkin-step-header__step {
   margin: 0;
-  position: relative;
-  padding-bottom: 0.45rem;
   color: #91713a;
   font-size: 0.85rem;
   letter-spacing: 0.34em;
   text-transform: uppercase;
 }
 
-.checkin-step-header__step::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0;
+.checkin-step-header__rule {
   width: min(220px, 30vw);
   height: 1px;
-  transform: translateX(-50%);
   background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
   pointer-events: none;
 }
