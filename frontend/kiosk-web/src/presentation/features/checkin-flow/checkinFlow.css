@@ -172,8 +172,24 @@
 .checkin-step-header__rule {
   width: min(220px, 30vw);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
+  min-height: 1px;
+  display: block;
+  position: relative;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  box-sizing: content-box;
   pointer-events: none;
+}
+
+.checkin-step-header__rule::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
 }
 
 .checkin-step-header__title {
@@ -2442,11 +2458,3 @@
   }
 }
 
-@media (orientation: landscape) {
-  .checkin-payment > .checkin-step-header .checkin-step-header__rule {
-    display: block;
-    width: min(220px, 30vw);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
-  }
-}

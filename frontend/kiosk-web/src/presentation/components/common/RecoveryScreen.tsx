@@ -39,9 +39,7 @@ export function RecoveryScreen({
         <RecoveryIcon />
 
         <p className="kiosk-recovery-screen__eyebrow">{eyebrow}</p>
-        <div className="kiosk-recovery-screen__rule" aria-hidden="true">
-          <span />
-        </div>
+        <div className="kiosk-recovery-screen__rule" aria-hidden="true" />
         <h1 className="kiosk-recovery-screen__title">{title}</h1>
         <p className="kiosk-recovery-screen__body">{body}</p>
 
