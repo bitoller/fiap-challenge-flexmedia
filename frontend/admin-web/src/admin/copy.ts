@@ -268,6 +268,13 @@ type AdminCopyShape = {
     confirmDeleteReservation: string;
     reservationDeleted: string;
     deleteReservationFailed: string;
+    networkUnavailable: string;
+    sessionExpired: string;
+    invalidCredentials: string;
+    serviceUnavailable: string;
+    unexpectedError: string;
+    reloadPage: string;
+    goToLogin: string;
   };
   overviewPage: OverviewCopy;
   reservationsPage: ReservationsCopy;
@@ -307,16 +314,23 @@ const en: AdminCopyShape = {
   refresh: "Refresh overview",
   saveBranding: "Save branding",
   saveContent: "Save content",
-  messages: {
-    loadPortalData: "Failed to load portal data.",
-    loginFailed: "Login failed.",
-    refreshOverviewData: "Failed to refresh overview data.",
-    reservationCreated: "Reservation {code} created.",
-    createReservationFailed: "Failed to create reservation.",
-    confirmDeleteReservation: "Do you really want to delete this reservation?",
-    reservationDeleted: "Reservation deleted.",
-    deleteReservationFailed: "Failed to delete reservation.",
-  },
+    messages: {
+      loadPortalData: "Failed to load portal data.",
+      loginFailed: "Login failed.",
+      refreshOverviewData: "Failed to refresh overview data.",
+      reservationCreated: "Reservation {code} created.",
+      createReservationFailed: "Failed to create reservation.",
+      confirmDeleteReservation: "Do you really want to delete this reservation?",
+      reservationDeleted: "Reservation deleted.",
+      deleteReservationFailed: "Failed to delete reservation.",
+      networkUnavailable: "The admin service is unavailable right now.",
+      sessionExpired: "Your session has expired. Please sign in again.",
+      invalidCredentials: "The username or password is incorrect.",
+      serviceUnavailable: "The admin service is temporarily unavailable. Please try again.",
+      unexpectedError: "Something went wrong while loading this page.",
+      reloadPage: "Reload page",
+      goToLogin: "Go to login",
+    },
   overviewPage: {
     liveActivityLabel: "Live activity",
     performanceTitle: "Performance by unit",
@@ -574,16 +588,23 @@ const ptBR: AdminCopyShape = {
   refresh: "Atualizar overview",
   saveBranding: "Salvar branding",
   saveContent: "Salvar conteúdo",
-  messages: {
-    loadPortalData: "Não foi possível carregar os dados do portal.",
-    loginFailed: "Falha no login.",
-    refreshOverviewData: "Não foi possível atualizar os dados do overview.",
-    reservationCreated: "Reserva {code} criada.",
-    createReservationFailed: "Não foi possível criar a reserva.",
-    confirmDeleteReservation: "Você realmente quer excluir esta reserva?",
-    reservationDeleted: "Reserva excluída.",
-    deleteReservationFailed: "Não foi possível excluir a reserva.",
-  },
+    messages: {
+      loadPortalData: "Não foi possível carregar os dados do portal.",
+      loginFailed: "Falha no login.",
+      refreshOverviewData: "Não foi possível atualizar os dados do overview.",
+      reservationCreated: "Reserva {code} criada.",
+      createReservationFailed: "Não foi possível criar a reserva.",
+      confirmDeleteReservation: "Você realmente quer excluir esta reserva?",
+      reservationDeleted: "Reserva excluída.",
+      deleteReservationFailed: "Não foi possível excluir a reserva.",
+      networkUnavailable: "O serviço administrativo não está disponível no momento.",
+      sessionExpired: "Sua sessão expirou. Entre novamente.",
+      invalidCredentials: "Usuário ou senha incorretos.",
+      serviceUnavailable: "O serviço administrativo está temporariamente indisponível. Tente novamente.",
+      unexpectedError: "Algo deu errado ao carregar esta página.",
+      reloadPage: "Recarregar página",
+      goToLogin: "Ir para o login",
+    },
   overviewPage: {
     liveActivityLabel: "Atividade ao vivo",
     performanceTitle: "Desempenho por unidade",
@@ -841,16 +862,23 @@ const es: AdminCopyShape = {
   refresh: "Actualizar resumen",
   saveBranding: "Guardar branding",
   saveContent: "Guardar contenido",
-  messages: {
-    loadPortalData: "No se pudieron cargar los datos del portal.",
-    loginFailed: "Error al iniciar sesión.",
-    refreshOverviewData: "No se pudieron actualizar los datos del resumen.",
-    reservationCreated: "Reserva {code} creada.",
-    createReservationFailed: "No se pudo crear la reserva.",
-    confirmDeleteReservation: "¿Realmente desea eliminar esta reserva?",
-    reservationDeleted: "Reserva eliminada.",
-    deleteReservationFailed: "No se pudo eliminar la reserva.",
-  },
+    messages: {
+      loadPortalData: "No se pudieron cargar los datos del portal.",
+      loginFailed: "Error al iniciar sesión.",
+      refreshOverviewData: "No se pudieron actualizar los datos del resumen.",
+      reservationCreated: "Reserva {code} creada.",
+      createReservationFailed: "No se pudo crear la reserva.",
+      confirmDeleteReservation: "¿Realmente desea eliminar esta reserva?",
+      reservationDeleted: "Reserva eliminada.",
+      deleteReservationFailed: "No se pudo eliminar la reserva.",
+      networkUnavailable: "El servicio administrativo no está disponible ahora.",
+      sessionExpired: "Su sesión expiró. Inicie sesión nuevamente.",
+      invalidCredentials: "El usuario o la contraseña son incorrectos.",
+      serviceUnavailable: "El servicio administrativo no está disponible temporalmente. Inténtelo de nuevo.",
+      unexpectedError: "Algo salió mal al cargar esta página.",
+      reloadPage: "Recargar página",
+      goToLogin: "Ir al inicio de sesión",
+    },
   overviewPage: {
     liveActivityLabel: "Actividad en vivo",
     performanceTitle: "Rendimiento por unidad",

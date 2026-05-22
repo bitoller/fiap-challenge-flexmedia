@@ -11,6 +11,25 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api/v1";
 
+class ApiError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+function toApiError(error: unknown) {
+  if (error instanceof ApiError) {
+    return error;
+  }
+  return new ApiError("Network request failed.", 0, "NETWORK_ERROR");
+}
+
 function authHeaders() {
   const token = localStorage.getItem("admin-token");
   return token;
@@ -28,15 +47,32 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers,
+  }).catch((error) => {
+    throw toApiError(error);
   });
 
   if (!response.ok) {
     const raw = await response.text();
+    const contentType = response.headers.get("content-type") || "";
+    const looksLikeHtml = contentType.includes("text/html") || raw.trimStart().startsWith("<");
+
+    if (response.status === 401 && path.includes("/admin/auth/login")) {
+      throw new ApiError("Invalid username or password.", response.status, "INVALID_CREDENTIALS");
+    }
+
+    if (response.status === 401) {
+      throw new ApiError("Unauthorized.", response.status, "UNAUTHORIZED");
+    }
+
+    if (looksLikeHtml || response.status >= 500) {
+      throw new ApiError("The admin service is temporarily unavailable.", response.status, "SERVICE_UNAVAILABLE");
+    }
+
     try {
       const parsed = JSON.parse(raw) as { message?: string; error?: string; code?: string };
-      throw new Error(parsed.message || parsed.error || `HTTP ${response.status}`);
+      throw new ApiError(parsed.message || parsed.error || `HTTP ${response.status}`, response.status, parsed.code);
     } catch {
-      throw new Error(raw || `HTTP ${response.status}`);
+      throw new ApiError(raw || `HTTP ${response.status}`, response.status, "UNKNOWN_ERROR");
     }
   }
 
@@ -96,3 +132,13 @@ export const adminApi = {
     });
   },
 };
+
+export function isUnauthorizedError(error: unknown) {
+  return error instanceof ApiError && error.status === 401;
+}
+
+export function isNetworkError(error: unknown) {
+  return error instanceof ApiError && error.code === "NETWORK_ERROR";
+}
+
+export { ApiError };

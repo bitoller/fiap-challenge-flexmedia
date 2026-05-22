@@ -260,7 +260,13 @@ button:disabled {
 }
 
 .admin-message {
-  color: #8a2f2f;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(197, 102, 102, 0.22);
+  border-radius: 1rem;
+  background: rgba(255, 246, 242, 0.95);
+  color: #7a2d2d;
+  line-height: 1.5;
 }
 
 .admin-message--inline {
