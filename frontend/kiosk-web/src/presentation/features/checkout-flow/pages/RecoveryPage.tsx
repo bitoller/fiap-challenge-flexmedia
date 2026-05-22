@@ -55,7 +55,7 @@ export function RecoveryPage() {
           variant: "primary",
         }}
         secondaryAction={{
-          label: t("goReception"),
+          label: t("backToHome"),
           onClick: goHome,
           variant: "secondary",
         }}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, BedDouble, Check, Clock3, Coffee, Plus } from "lucide-react";
 import { CheckinAddOnOffer } from "../../../../domain/models";
+import { formatCurrency } from "../../../../shared/formatters/currency";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
@@ -43,20 +44,12 @@ export function AddOnsPage() {
     };
   }, [loadAddOns, navigate, reservation?.id]);
 
-  const currencyFormatter = useMemo(
-    () =>
-      new Intl.NumberFormat(i18n.language, {
-        style: "currency",
-        currency: addOnQuote?.currency ?? reservation?.currency ?? "BRL",
-      }),
-    [addOnQuote?.currency, i18n.language, reservation?.currency]
-  );
-
   const selectedOffers = useMemo(() => {
     const selected = new Set(selectedCodes);
     return addOnQuote?.offers.filter((offer) => selected.has(offer.code)) ?? [];
   }, [addOnQuote?.offers, selectedCodes]);
 
+  const currency = addOnQuote?.currency ?? reservation?.currency ?? "BRL";
   const selectedTotal = selectedOffers.reduce((total, offer) => total + offer.totalAmount, 0);
   const baseAmount = addOnQuote?.baseAmount ?? reservation?.totalAmount ?? 0;
   const updatedTotal = baseAmount + selectedTotal;
@@ -109,7 +102,7 @@ export function AddOnsPage() {
                   <div className="checkin-addons__footer">
                     <div>
                       <span>{t(`addOns.pricing.${offer.pricingType}`)}</span>
-                      <strong>{currencyFormatter.format(offer.unitAmount)}</strong>
+                      <strong>{formatCurrency(offer.unitAmount, currency, i18n.language)}</strong>
                       {offer.quantity > 1 && <small>{t("addOns.quantity", { count: offer.quantity })}</small>}
                     </div>
                     <button type="button" onClick={() => toggleOffer(offer)} aria-pressed={selected}>
@@ -126,15 +119,15 @@ export function AddOnsPage() {
         <div className="checkin-addons__summary" aria-live="polite">
           <div>
             <span>{t("addOns.baseTotal")}</span>
-            <strong>{currencyFormatter.format(baseAmount)}</strong>
+            <strong>{formatCurrency(baseAmount, currency, i18n.language)}</strong>
           </div>
           <div>
             <span>{t("addOns.selectedTotal")}</span>
-            <strong>{currencyFormatter.format(selectedTotal)}</strong>
+            <strong>{formatCurrency(selectedTotal, currency, i18n.language)}</strong>
           </div>
           <div>
             <span>{t("addOns.updatedTotal")}</span>
-            <strong>{currencyFormatter.format(updatedTotal)}</strong>
+            <strong>{formatCurrency(updatedTotal, currency, i18n.language)}</strong>
           </div>
         </div>
 

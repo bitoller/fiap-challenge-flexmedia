@@ -69,5 +69,6 @@
   "recoveryStayBody": "We could not locate an active checked-in stay for the provided identification.",
   "recoveryGenericBody": "Something interrupted the checkout flow. Please try again or contact reception.",
   "retryLookup": "Try again",
+  "backToHome": "Back to home",
   "goReception": "Go to reception"
 }

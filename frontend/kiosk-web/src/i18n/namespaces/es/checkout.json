@@ -69,5 +69,6 @@
   "recoveryStayBody": "No pudimos encontrar una estadía activa con check-in realizado para la identificación indicada.",
   "recoveryGenericBody": "Algo interrumpió el flujo de check-out. Intente nuevamente o contacte a recepción.",
   "retryLookup": "Intentar de nuevo",
+  "backToHome": "Volver al inicio",
   "goReception": "Ir a recepción"
 }
