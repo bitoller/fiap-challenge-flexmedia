@@ -4,6 +4,7 @@ import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCo
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
 import br.com.fiap.flexcheck.reservation.domain.entity.Reservation;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
+import br.com.fiap.flexcheck.reservation.security.SensitiveDataCodec;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class JdbcReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbc;
     private final ReservationRowMapper reservationRowMapper;
+    private final SensitiveDataCodec sensitiveDataCodec;
 
-    public JdbcReservationRepository(JdbcTemplate jdbc, ReservationRowMapper reservationRowMapper) {
+    public JdbcReservationRepository(JdbcTemplate jdbc, ReservationRowMapper reservationRowMapper, SensitiveDataCodec sensitiveDataCodec) {
         this.jdbc = jdbc;
         this.reservationRowMapper = reservationRowMapper;
+        this.sensitiveDataCodec = sensitiveDataCodec;
     }
 
     @Override
@@ -29,7 +32,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String searchValue = value == null ? "" : value.trim();
         String searchDigits = searchValue.replaceAll("\\D", "");
         String where = switch (normalizedType) {
-            case "CPF", "DOCUMENT", "PASSPORT" -> "g.document_number = ?";
+            case "CPF", "DOCUMENT", "PASSPORT" -> "(r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))";
             case "EMAIL" -> "LOWER(g.email) = LOWER(?)";
             case "QR_TOKEN" -> "(UPPER(r.reservation_code) = UPPER(?) OR REGEXP_REPLACE(UPPER(r.reservation_code), '[^0-9]', '') = ?)";
             default -> "UPPER(r.reservation_code) = UPPER(?)";
@@ -52,10 +55,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -74,6 +77,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         if (normalizedType.equals("QR_TOKEN")) {
             args.add(searchValue);
             args.add(searchDigits);
+        } else if (normalizedType.equals("CPF") || normalizedType.equals("DOCUMENT") || normalizedType.equals("PASSPORT")) {
+            List<String> hashes = documentHashes(normalizedType, searchValue);
+            args.add(hashes.get(0));
+            args.add(hashes.get(1));
+            args.add(searchValue);
+            args.add(hashes.get(0));
+            args.add(hashes.get(1));
         } else {
             args.add(value);
         }
@@ -106,10 +116,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -142,10 +152,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -167,21 +177,28 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbc.update("""
                 UPDATE fc_guest
                    SET full_name = ?,
-                       document_type = ?,
-                       document_number = ?,
                        birth_date = ?,
-                       email = ?,
-                       phone = ?,
                        updated_at = CURRENT_TIMESTAMP
                  WHERE id = ?
                 """,
                 command.fullName(),
-                command.documentType(),
-                command.documentNumber(),
                 command.birthDate(),
-                command.email(),
-                command.phone(),
                 command.guestId()
+        );
+        jdbc.update("""
+                UPDATE fc_reservation
+                   SET guest_document_hash = ?,
+                       guest_document_encrypted = ?,
+                       guest_email_encrypted = ?,
+                       guest_phone_encrypted = ?,
+                       updated_at = CURRENT_TIMESTAMP
+                 WHERE id = ?
+                """,
+                sensitiveDataCodec.documentHash(command.documentType(), command.documentNumber()),
+                sensitiveDataCodec.encrypt(command.documentNumber()),
+                sensitiveDataCodec.encrypt(command.email()),
+                sensitiveDataCodec.encrypt(command.phone()),
+                reservationId
         );
     }
 
@@ -207,6 +224,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteReservation(Long hotelId, Long reservationId) {
+        List<Long> guestIds = jdbc.query("""
+                SELECT guest_id
+                  FROM fc_reservation_guest
+                 WHERE reservation_id = ?
+                """,
+                (rs, rowNum) -> rs.getLong("guest_id"),
+                reservationId
+        );
+
         String stayStatus = jdbc.query("""
                 SELECT status
                   FROM fc_stay
@@ -233,12 +259,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         deleteSessionChildren(reservationId);
         deleteStayChildren(reservationId);
+        jdbc.update("DELETE FROM fc_reservation_addon WHERE reservation_id = ?", reservationId);
+        jdbc.update("DELETE FROM fc_biometric_reference WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_reservation_guest WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_payment_transaction WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_pms_event WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_checkin_session WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_stay WHERE reservation_id = ?", reservationId);
         jdbc.update("DELETE FROM fc_reservation WHERE id = ?", reservationId);
+        deleteOrphanGuests(guestIds);
     }
 
     private void deleteSessionChildren(Long reservationId) {
@@ -259,6 +288,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             jdbc.update("DELETE FROM fc_consent WHERE session_id = ?", sessionId);
             jdbc.update("DELETE FROM fc_document_verification WHERE session_id = ?", sessionId);
             jdbc.update("DELETE FROM fc_biometry_verification WHERE session_id = ?", sessionId);
+            jdbc.update("DELETE FROM fc_biometric_reference WHERE session_id = ?", sessionId);
+            jdbc.update("DELETE FROM fc_reservation_addon WHERE session_id = ?", sessionId);
         }
     }
 
@@ -279,6 +310,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         for (Long stayId : stayIds) {
             jdbc.update("DELETE FROM fc_key_credential WHERE stay_id = ?", stayId);
             jdbc.update("DELETE FROM fc_payment_transaction WHERE stay_id = ?", stayId);
+        }
+    }
+
+    private void deleteOrphanGuests(List<Long> guestIds) {
+        for (Long guestId : guestIds) {
+            Integer links = jdbc.queryForObject("""
+                    SELECT COUNT(*)
+                      FROM fc_reservation_guest
+                     WHERE guest_id = ?
+                    """, Integer.class, guestId);
+            if (links == null || links > 0) {
+                continue;
+            }
+            jdbc.update("DELETE FROM fc_guest WHERE id = ?", guestId);
         }
     }
 
@@ -349,13 +394,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private Long ensureGuest(CreateReservationCommand command) {
+        List<String> hashes = documentHashes(command.guestDocumentType(), command.guestDocumentNumber());
         try {
             return jdbc.queryForObject("""
                     SELECT id
-                      FROM fc_guest
+                     FROM fc_guest
                      WHERE document_type = ?
-                       AND document_number = ?
-                    """, Long.class, command.guestDocumentType(), command.guestDocumentNumber());
+                       AND document_number IN (?, ?, ?)
+                     FETCH FIRST 1 ROWS ONLY
+                    """, Long.class, command.guestDocumentType(), hashes.get(0), hashes.get(1), command.guestDocumentNumber());
         } catch (EmptyResultDataAccessException ignored) {
             jdbc.update("""
                     INSERT INTO fc_guest (
@@ -371,11 +418,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                     """,
                     command.guestFullName(),
                     command.guestDocumentType(),
-                    command.guestDocumentNumber(),
+                    sensitiveDataCodec.documentHash(command.guestDocumentType(), command.guestDocumentNumber()),
                     command.guestBirthDate(),
                     command.guestNationality(),
-                    command.guestEmail(),
-                    command.guestPhone(),
+                    null,
+                    null,
                     LocalDateTime.now()
             );
             return jdbc.queryForObject("""
@@ -383,7 +430,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                       FROM fc_guest
                      WHERE document_type = ?
                        AND document_number = ?
-                    """, Long.class, command.guestDocumentType(), command.guestDocumentNumber());
+                    """, Long.class, command.guestDocumentType(), hashes.get(0));
         }
     }
 
@@ -406,8 +453,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                     children,
                     total_amount,
                     currency,
+                    guest_document_hash,
+                    guest_document_encrypted,
+                    guest_email_encrypted,
+                    guest_phone_encrypted,
                     created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 command.hotelId(),
                 roomId,
@@ -420,6 +471,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 command.children(),
                 command.totalAmount(),
                 command.currency(),
+                sensitiveDataCodec.documentHash(command.guestDocumentType(), command.guestDocumentNumber()),
+                sensitiveDataCodec.encrypt(command.guestDocumentNumber()),
+                sensitiveDataCodec.encrypt(command.guestEmail()),
+                sensitiveDataCodec.encrypt(command.guestPhone()),
                 LocalDateTime.now()
         );
 
@@ -436,5 +491,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (RuntimeException ex) {
             return 1;
         }
+    }
+
+    private List<String> documentHashes(String documentType, String documentNumber) {
+        List<String> hashes = sensitiveDataCodec.documentHashCandidates(documentType, documentNumber);
+        if (hashes.size() == 1) {
+            return List.of(hashes.get(0), hashes.get(0));
+        }
+        return hashes;
     }
 }

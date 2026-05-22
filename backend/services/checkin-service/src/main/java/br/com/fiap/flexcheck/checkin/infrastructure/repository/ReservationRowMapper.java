@@ -3,6 +3,7 @@ package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 import br.com.fiap.flexcheck.checkin.domain.entity.Guest;
 import br.com.fiap.flexcheck.checkin.domain.entity.Reservation;
 import br.com.fiap.flexcheck.checkin.domain.entity.Room;
+import br.com.fiap.flexcheck.checkin.security.SensitiveDataCodec;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,12 @@ import java.sql.SQLException;
 
 @Component
 public class ReservationRowMapper implements RowMapper<Reservation> {
+    private final SensitiveDataCodec sensitiveDataCodec;
+
+    public ReservationRowMapper(SensitiveDataCodec sensitiveDataCodec) {
+        this.sensitiveDataCodec = sensitiveDataCodec;
+    }
+
     @Override
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         Room room = null;
@@ -39,10 +46,10 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
                         rs.getLong("guest_id"),
                         rs.getString("full_name"),
                         rs.getString("document_type"),
-                        rs.getString("document_number"),
+                        sensitiveDataCodec.decrypt(rs.getString("document_number")),
                         rs.getObject("birth_date", java.time.LocalDate.class),
-                        rs.getString("email"),
-                        rs.getString("phone")
+                        sensitiveDataCodec.decrypt(rs.getString("email")),
+                        sensitiveDataCodec.decrypt(rs.getString("phone"))
                 ),
                 room
         );

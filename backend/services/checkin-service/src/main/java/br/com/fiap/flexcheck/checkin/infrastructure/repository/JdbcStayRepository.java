@@ -2,6 +2,7 @@ package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 
 import br.com.fiap.flexcheck.checkin.domain.entity.Stay;
 import br.com.fiap.flexcheck.checkin.repository.StayRepository;
+import br.com.fiap.flexcheck.checkin.security.SensitiveDataCodec;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutStayStateResult;
 import br.com.fiap.flexcheck.checkin.service.support.CheckoutChargeCalculator;
@@ -25,10 +26,12 @@ public class JdbcStayRepository implements StayRepository {
     private final JdbcTemplate jdbc;
     private final SimpleJdbcInsert stayInsert;
     private final CheckoutPreviewRowMapper checkoutPreviewRowMapper;
+    private final SensitiveDataCodec sensitiveDataCodec;
 
-    public JdbcStayRepository(JdbcTemplate jdbc, DataSource dataSource, CheckoutPreviewRowMapper checkoutPreviewRowMapper) {
+    public JdbcStayRepository(JdbcTemplate jdbc, DataSource dataSource, CheckoutPreviewRowMapper checkoutPreviewRowMapper, SensitiveDataCodec sensitiveDataCodec) {
         this.jdbc = jdbc;
         this.checkoutPreviewRowMapper = checkoutPreviewRowMapper;
+        this.sensitiveDataCodec = sensitiveDataCodec;
         this.stayInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("fc_stay")
                 .usingGeneratedKeyColumns("id");
@@ -55,7 +58,7 @@ public class JdbcStayRepository implements StayRepository {
                        st.room_id,
                        st.status,
                        st.expected_checkout_at,
-                       g.email
+                       COALESCE(r.guest_email_encrypted, g.email) AS email
                   FROM fc_stay st
                   JOIN fc_reservation r ON r.id = st.reservation_id
                   JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
@@ -69,7 +72,7 @@ public class JdbcStayRepository implements StayRepository {
                 rs.getLong("room_id"),
                 rs.getString("status"),
                 CheckoutChargeCalculator.calculateDue(rs.getTimestamp("expected_checkout_at")),
-                rs.getString("email")
+                sensitiveDataCodec.decrypt(rs.getString("email"))
         ), stayId);
         return stays.stream().findFirst();
     }
@@ -103,10 +106,10 @@ public class JdbcStayRepository implements StayRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -194,10 +197,10 @@ public class JdbcStayRepository implements StayRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -211,13 +214,14 @@ public class JdbcStayRepository implements StayRepository {
                  WHERE h.id = ?
                    AND room.room_number = ?
                    AND UPPER(g.document_type) = UPPER(?)
-                   AND g.document_number = ?
+                   AND (r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))
                    AND UPPER(st.status) IN ('ACTIVE', 'PENDING_KEY')
                    AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
                  FETCH FIRST 1 ROWS ONLY
                 """;
 
-        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, roomNumber, documentType, documentNumber)
+        List<String> hashes = documentHashes(documentType, documentNumber);
+        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, roomNumber, documentType, hashes.get(0), hashes.get(1), documentNumber, hashes.get(0), hashes.get(1))
                 .stream()
                 .findFirst();
     }
@@ -239,10 +243,10 @@ public class JdbcStayRepository implements StayRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -282,10 +286,10 @@ public class JdbcStayRepository implements StayRepository {
                        g.id AS guest_id,
                        g.full_name,
                        g.document_type,
-                       g.document_number,
+                       COALESCE(r.guest_document_encrypted, g.document_number) AS document_number,
                        g.birth_date,
-                       g.email,
-                       g.phone,
+                       COALESCE(r.guest_email_encrypted, g.email) AS email,
+                       COALESCE(r.guest_phone_encrypted, g.phone) AS phone,
                        room.id AS room_id,
                        room.room_number,
                        room.room_type,
@@ -298,13 +302,14 @@ public class JdbcStayRepository implements StayRepository {
                   JOIN fc_guest g ON g.id = rg.guest_id
                  WHERE h.id = ?
                    AND UPPER(g.document_type) = UPPER(?)
-                   AND g.document_number = ?
+                   AND (r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))
                    AND UPPER(st.status) IN ('ACTIVE', 'PENDING_KEY')
                    AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
                  FETCH FIRST 1 ROWS ONLY
                 """;
 
-        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, documentType, documentNumber)
+        List<String> hashes = documentHashes(documentType, documentNumber);
+        return jdbc.query(sql, checkoutPreviewRowMapper, hotelId, documentType, hashes.get(0), hashes.get(1), documentNumber, hashes.get(0), hashes.get(1))
                 .stream()
                 .findFirst();
     }
@@ -322,15 +327,16 @@ public class JdbcStayRepository implements StayRepository {
                  WHERE h.id = ?
                    AND room.room_number = ?
                    AND UPPER(g.document_type) = UPPER(?)
-                   AND g.document_number = ?
+                   AND (r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))
                  ORDER BY st.checked_in_at DESC
                  FETCH FIRST 1 ROWS ONLY
                 """;
 
+        List<String> hashes = documentHashes(documentType, documentNumber);
         return jdbc.query(sql, (rs, rowNum) -> new CheckoutStayStateResult(
                 rs.getLong("stay_id"),
                 rs.getString("stay_status")
-        ), hotelId, roomNumber, documentType, documentNumber)
+        ), hotelId, roomNumber, documentType, hashes.get(0), hashes.get(1), documentNumber, hashes.get(0), hashes.get(1))
                 .stream()
                 .findFirst();
     }
@@ -369,20 +375,22 @@ public class JdbcStayRepository implements StayRepository {
                   JOIN fc_guest g ON g.id = rg.guest_id
                  WHERE h.id = ?
                    AND UPPER(g.document_type) = UPPER(?)
-                   AND g.document_number = ?
+                   AND (r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))
                  ORDER BY st.checked_in_at DESC
                  FETCH FIRST 1 ROWS ONLY
                 """;
 
+        List<String> hashes = documentHashes(documentType, documentNumber);
         return jdbc.query(sql, (rs, rowNum) -> new CheckoutStayStateResult(
                 rs.getLong("stay_id"),
                 rs.getString("stay_status")
-        ), hotelId, documentType, documentNumber)
+        ), hotelId, documentType, hashes.get(0), hashes.get(1), documentNumber, hashes.get(0), hashes.get(1))
                 .stream()
                 .findFirst();
     }
 
     private void reconcileMissingStay(Long hotelId, String roomNumber, String documentType, String documentNumber) {
+        List<String> hashes = documentHashes(documentType, documentNumber);
         Optional<ReconciliationCandidate> candidate = jdbc.query("""
                         SELECT r.id AS reservation_id,
                                r.room_id,
@@ -396,7 +404,7 @@ public class JdbcStayRepository implements StayRepository {
                          WHERE h.id = ?
                            AND room.room_number = ?
                            AND UPPER(g.document_type) = UPPER(?)
-                           AND g.document_number = ?
+                           AND (r.guest_document_hash IN (?, ?) OR g.document_number IN (?, ?, ?))
                            AND UPPER(r.status) IN ('CHECKED_IN', 'ACTIVE')
                         FETCH FIRST 1 ROWS ONLY
                         """,
@@ -409,7 +417,11 @@ public class JdbcStayRepository implements StayRepository {
                 hotelId,
                 roomNumber,
                 documentType,
-                documentNumber
+                hashes.get(0),
+                hashes.get(1),
+                documentNumber,
+                hashes.get(0),
+                hashes.get(1)
         ).stream().findFirst();
 
         if (candidate.isEmpty()) {
@@ -466,6 +478,14 @@ public class JdbcStayRepository implements StayRepository {
         return value != null && !value.isBlank();
     }
 
+    private List<String> documentHashes(String documentType, String documentNumber) {
+        List<String> hashes = sensitiveDataCodec.documentHashCandidates(documentType, documentNumber);
+        if (hashes.size() == 1) {
+            return List.of(hashes.get(0), hashes.get(0));
+        }
+        return hashes;
+    }
+
     @Override
     public void markCheckedIn(Long sessionId, Long reservationId, Long roomId) {
         jdbc.update("UPDATE fc_reservation SET status = 'CHECKED_IN', updated_at = ? WHERE id = ?",
@@ -487,6 +507,13 @@ public class JdbcStayRepository implements StayRepository {
                  WHERE id = ?
                 """, now, stay.reservationId());
         jdbc.update("UPDATE fc_room SET status = 'AVAILABLE' WHERE id = ?", stay.roomId());
+        jdbc.update("""
+                UPDATE fc_biometric_reference
+                   SET status = 'REVOKED',
+                       image_base64 = 'REVOKED'
+                 WHERE reservation_id = ?
+                   AND status = 'ACTIVE'
+                """, stay.reservationId());
     }
 
     private record ReconciliationCandidate(

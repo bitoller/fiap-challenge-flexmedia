@@ -1,23 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CreditCard, MailCheck, ReceiptText, RotateCcw, Sparkles } from "lucide-react";
+import { formatCurrency } from "../../../../shared/formatters/currency";
 import { useCheckoutFlow } from "../context/CheckoutFlowContext";
 import { CheckinFlowLayout } from "../../checkin-flow/components/CheckinFlowLayout";
 import { FlowStepHeader } from "../../checkin-flow/components/FlowStepHeader";
-
-function getLocale(language: string) {
-  if (language === "pt-BR") return "pt-BR";
-  if (language === "es") return "es-ES";
-  return "en-US";
-}
-
-function formatCurrency(amount: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(amount);
-}
 
 export function SuccessPage() {
   const { t, i18n } = useTranslation("checkout");
@@ -34,8 +22,6 @@ export function SuccessPage() {
     setFlowStep("success");
   }, [checkoutResult, navigate, setFlowStep, stayPreview]);
 
-  const locale = useMemo(() => getLocale(i18n.language), [i18n.language]);
-
   if (!checkoutResult || !stayPreview) {
     return null;
   }
@@ -46,7 +32,7 @@ export function SuccessPage() {
   };
 
   const email = stayPreview.reservation.guest.email;
-  const totalPaid = formatCurrency(checkoutResult.totalPaid, stayPreview.reservation.currency, locale);
+  const totalPaid = formatCurrency(checkoutResult.totalPaid, stayPreview.reservation.currency, i18n.language);
 
   return (
     <CheckinFlowLayout>

@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 
 import br.com.fiap.flexcheck.checkin.service.support.CheckoutChargeCalculator;
+import br.com.fiap.flexcheck.checkin.security.SensitiveDataCodec;
 import br.com.fiap.flexcheck.checkin.service.result.CheckoutPreviewResult;
 import br.com.fiap.flexcheck.checkin.service.result.GuestResult;
 import br.com.fiap.flexcheck.checkin.service.result.ReservationResult;
@@ -17,6 +18,12 @@ import java.util.List;
 
 @Component
 public class CheckoutPreviewRowMapper implements RowMapper<CheckoutPreviewResult> {
+    private final SensitiveDataCodec sensitiveDataCodec;
+
+    public CheckoutPreviewRowMapper(SensitiveDataCodec sensitiveDataCodec) {
+        this.sensitiveDataCodec = sensitiveDataCodec;
+    }
+
     @Override
     public CheckoutPreviewResult mapRow(ResultSet rs, int rowNum) throws SQLException {
         LocalDate arrivalDate = rs.getObject("arrival_date", LocalDate.class);
@@ -41,10 +48,10 @@ public class CheckoutPreviewRowMapper implements RowMapper<CheckoutPreviewResult
                         rs.getLong("guest_id"),
                         rs.getString("full_name"),
                         rs.getString("document_type"),
-                        maskDocument(rs.getString("document_number")),
+                        maskDocument(sensitiveDataCodec.decrypt(rs.getString("document_number"))),
                         rs.getObject("birth_date", LocalDate.class),
-                        rs.getString("email"),
-                        rs.getString("phone")
+                        sensitiveDataCodec.decrypt(rs.getString("email")),
+                        sensitiveDataCodec.decrypt(rs.getString("phone"))
                 ),
                 new RoomResult(
                         rs.getLong("room_id"),

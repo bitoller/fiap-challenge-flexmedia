@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BadgeCheck, CreditCard, DoorOpen, ScanFace } from "lucide-react";
 import { Button } from "../../../components/common/Button";
+import { formatCurrency } from "../../../../shared/formatters/currency";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
@@ -22,11 +23,7 @@ export function SuccessPage() {
     return null;
   }
 
-  const locale = i18n.language === "pt-BR" ? "pt-BR" : i18n.language === "es" ? "es-ES" : "en-US";
-  const totalPaid = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: reservation.currency,
-  }).format(checkinResult.totalPaid);
+  const totalPaid = formatCurrency(checkinResult.totalPaid, reservation.currency, i18n.language);
 
   const concludeFlow = () => {
     clearFlow();

@@ -1,6 +1,7 @@
 package br.com.fiap.flexcheck.checkin.infrastructure.repository;
 
 import br.com.fiap.flexcheck.checkin.repository.BiometricReferenceRepository;
+import br.com.fiap.flexcheck.checkin.security.SensitiveDataCodec;
 import br.com.fiap.flexcheck.checkin.service.result.BiometricReferenceCandidateResult;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,9 +14,11 @@ import java.util.List;
 @Repository
 public class JdbcBiometricReferenceRepository implements BiometricReferenceRepository {
     private final JdbcTemplate jdbc;
+    private final SensitiveDataCodec sensitiveDataCodec;
 
-    public JdbcBiometricReferenceRepository(JdbcTemplate jdbc) {
+    public JdbcBiometricReferenceRepository(JdbcTemplate jdbc, SensitiveDataCodec sensitiveDataCodec) {
         this.jdbc = jdbc;
+        this.sensitiveDataCodec = sensitiveDataCodec;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class JdbcBiometricReferenceRepository implements BiometricReferenceRepos
                 guestId,
                 hotelId,
                 provider,
-                imageBase64,
+                sensitiveDataCodec.encrypt(imageBase64),
                 mimeType == null || mimeType.isBlank() ? "image/jpeg" : mimeType,
                 score,
                 Timestamp.valueOf(LocalDateTime.now())
@@ -89,7 +92,7 @@ public class JdbcBiometricReferenceRepository implements BiometricReferenceRepos
                         rs.getLong("stay_id"),
                         rs.getLong("reservation_id"),
                         rs.getLong("guest_id"),
-                        rs.getString("image_base64"),
+                        sensitiveDataCodec.decrypt(rs.getString("image_base64")),
                         rs.getString("mime_type")
                 ),
                 hotelId

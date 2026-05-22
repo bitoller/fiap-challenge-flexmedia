@@ -2441,3 +2441,12 @@
     height: auto;
   }
 }
+
+@media (orientation: landscape) {
+  .checkin-payment > .checkin-step-header .checkin-step-header__rule {
+    display: block;
+    width: min(220px, 30vw);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
+  }
+}

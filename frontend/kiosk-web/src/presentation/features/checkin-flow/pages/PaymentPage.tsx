@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CreditCard, QrCode, ShieldCheck, Sparkles } from "lucide-react";
 import { ApiError } from "../../../../domain/errors";
 import { CheckinPaymentMethod } from "../../../../domain/types";
+import { formatCurrency } from "../../../../shared/formatters/currency";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
@@ -37,22 +38,12 @@ export function PaymentPage() {
     return null;
   }
 
-  const locale = i18n.language === "pt-BR" ? "pt-BR" : i18n.language === "es" ? "es-ES" : "en-US";
   const paymentBaseAmount = addOnQuote?.baseAmount ?? reservation.totalAmount;
   const paymentServicesAmount = addOnQuote?.addOnsTotal ?? 0;
   const paymentTotalAmount = paymentBaseAmount + paymentServicesAmount;
-  const totalAmount = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: reservation.currency,
-  }).format(paymentTotalAmount);
-  const baseAmount = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: reservation.currency,
-  }).format(paymentBaseAmount);
-  const servicesAmount = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: reservation.currency,
-  }).format(paymentServicesAmount);
+  const totalAmount = formatCurrency(paymentTotalAmount, reservation.currency, i18n.language);
+  const baseAmount = formatCurrency(paymentBaseAmount, reservation.currency, i18n.language);
+  const servicesAmount = formatCurrency(paymentServicesAmount, reservation.currency, i18n.language);
 
   const finishCheckin = async () => {
     try {

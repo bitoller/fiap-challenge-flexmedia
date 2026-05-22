@@ -25,6 +25,7 @@ ORACLE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
 ORACLE_USER=your_oracle_user
 ORACLE_PASSWORD=your_oracle_password
 JPA_DDL_AUTO=update
+SENSITIVE_DATA_SECRET=change_me_to_a_long_random_sensitive_data_secret
 
 ADMIN_USERNAME=admin@example.local
 ADMIN_PASSWORD=change_me_admin_password
@@ -32,6 +33,8 @@ ADMIN_NAME=FlexCheck Administrator
 ```
 
 Do not place real credentials in service source files, READMEs, SQL examples, or OpenSpec documents.
+
+`SENSITIVE_DATA_SECRET` protects reservation-scoped document, contact, and biometric reference data. Use a long random value and keep the same value across `reservation-service` and `checkin-service`; changing it after data exists prevents old encrypted values from being decoded.
 
 Identity verification is configured from the same root `.env`:
 

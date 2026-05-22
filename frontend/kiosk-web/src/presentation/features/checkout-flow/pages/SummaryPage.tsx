@@ -1,26 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CreditCard, QrCode, ShieldCheck } from "lucide-react";
+import { formatCurrency } from "../../../../shared/formatters/currency";
 import { useCheckoutFlow } from "../context/CheckoutFlowContext";
 import { CheckinFlowLayout } from "../../checkin-flow/components/CheckinFlowLayout";
 import { FlowStepHeader } from "../../checkin-flow/components/FlowStepHeader";
 import { MethodOptionCard } from "../../checkin-flow/components/MethodOptionCard";
-
-function getLocale(language: string) {
-  if (language === "pt-BR") return "pt-BR";
-  if (language === "es") return "es-ES";
-  return "en-US";
-}
-
-function formatCurrency(amount: number, currency: string, locale: string) {
-  const value = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(amount);
-
-  return currency === "BRL" ? value.replace(/^R\$(?=\d)/, "R$ ") : value;
-}
 
 function getChargeLabel(code: string, description: string, translate: (key: string, options?: Record<string, string>) => string) {
   if (code === "LATE_CHECKOUT") {
@@ -45,15 +31,13 @@ export function SummaryPage() {
     setFlowStep("settlement");
   }, [navigate, setFlowStep, stayPreview]);
 
-  const locale = useMemo(() => getLocale(i18n.language), [i18n.language]);
-
   if (!stayPreview) {
     return null;
   }
 
   const reservation = stayPreview.reservation;
-  const baseAmount = formatCurrency(reservation.totalAmount, reservation.currency, locale);
-  const totalDue = formatCurrency(stayPreview.totalDue, reservation.currency, locale);
+  const baseAmount = formatCurrency(reservation.totalAmount, reservation.currency, i18n.language);
+  const totalDue = formatCurrency(stayPreview.totalDue, reservation.currency, i18n.language);
   const hasBalance = stayPreview.totalDue > 0;
   const hasCharges = stayPreview.charges.length > 0;
 
@@ -100,7 +84,7 @@ export function SummaryPage() {
                 stayPreview.charges.map((charge) => (
                   <div className="checkout-settlement__charge" key={charge.code}>
                     <small>{getChargeLabel(charge.code, charge.description, t)}</small>
-                    <strong>{formatCurrency(charge.amount, reservation.currency, locale)}</strong>
+                    <strong>{formatCurrency(charge.amount, reservation.currency, i18n.language)}</strong>
                   </div>
                 ))
               ) : (
