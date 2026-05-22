@@ -1,27 +1,30 @@
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../admin/dashboard";
+import type { AdminCopy } from "../../admin/copy";
 import type { DeviceStatus, KioskDevice } from "../../types";
 
 type DevicesPageProps = {
   deviceStatus: DeviceStatus | null;
   hotelName: string | null;
   emptyState: string;
+  copy: AdminCopy["devicesPage"];
+  locale: string;
   onRefresh: () => void;
 };
 
 function formatBattery(value: number | null) {
   if (value === null || Number.isNaN(value)) {
-    return "N/A";
+    return null;
   }
   return `${value}%`;
 }
 
-function formatLastSeen(value: string) {
+function formatLastSeen(value: string, locale: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return value;
   }
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
@@ -42,8 +45,8 @@ function moduleTone(active: boolean) {
   return active ? "good" : "danger";
 }
 
-function moduleLabel(active: boolean) {
-  return active ? "Ready" : "Offline";
+function moduleLabel(active: boolean, copy: AdminCopy["devicesPage"]) {
+  return active ? copy.online : copy.offline;
 }
 
 function sortDevices(devices: KioskDevice[]) {
@@ -57,7 +60,7 @@ function sortDevices(devices: KioskDevice[]) {
   });
 }
 
-function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: DevicesPageProps) {
+function DevicesPage({ deviceStatus, hotelName, emptyState, copy, locale, onRefresh }: DevicesPageProps) {
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
 
   const devices = useMemo(() => sortDevices(deviceStatus?.devices ?? []), [deviceStatus]);
@@ -65,8 +68,8 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: Devices
   const online = deviceStatus?.onlineDevices ?? 0;
   const alerts = (deviceStatus?.offlineDevices ?? 0) + (deviceStatus?.maintenanceDevices ?? 0) + (deviceStatus?.errorDevices ?? 0);
   const connectivity = total > 0 ? ((online / total) * 100).toFixed(1) : "0.0";
-  const activeLabel = total > 0 ? `${formatNumber(total)} units` : "0 units";
-  const alertLabel = alerts > 0 ? `${formatNumber(alerts)} pending` : "00";
+  const activeLabel = total > 0 ? `${formatNumber(total, locale)} ${copy.units}` : `0 ${copy.units}`;
+  const alertLabel = alerts > 0 ? `${formatNumber(alerts, locale)} ${copy.pending}` : `0 ${copy.pending}`;
 
   const selectedDevice = devices.find((device) => device.id === selectedDeviceId) ?? null;
 
@@ -75,12 +78,12 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: Devices
       <section className="admin-devices">
         <div className="admin-devices__hero">
           <div>
-            <p className="admin-eyebrow">Network operations center</p>
-            <h2>Device Status & Monitoring</h2>
+            <p className="admin-eyebrow">{copy.heroKicker}</p>
+            <h2>{copy.heroTitle}</h2>
             <p className="admin-copy admin-copy--compact">{emptyState}</p>
           </div>
           <button type="button" className="admin-secondary-button" onClick={onRefresh}>
-            Refresh fleet
+            {copy.refreshFleet}
           </button>
         </div>
       </section>
@@ -91,54 +94,56 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: Devices
     <section className="admin-devices">
       <div className="admin-devices__hero">
         <div>
-          <p className="admin-eyebrow">Network operations center</p>
-          <h2>Device Status & Monitoring</h2>
+          <p className="admin-eyebrow">{copy.heroKicker}</p>
+          <h2>{copy.heroTitle}</h2>
           <p className="admin-copy admin-copy--compact">
-            {hotelName ? `Fleet overview for ${hotelName}` : "Fleet overview for the selected hotel, with live operational health and kiosk status."}
+            {hotelName ? copy.heroSubtitleWithHotel.replace("{hotelName}", hotelName) : copy.heroSubtitleFallback}
           </p>
         </div>
         <button type="button" className="admin-secondary-button" onClick={onRefresh}>
-          Refresh fleet
+          {copy.refreshFleet}
         </button>
       </div>
 
       <div className="admin-metrics admin-devices__metrics">
         <article className="admin-card admin-card--metric admin-card--device-metric">
-          <p>Total active kiosks</p>
+          <p>{copy.totalActiveKiosks}</p>
           <strong>{activeLabel}</strong>
-          <span>All systems operational</span>
+          <span>{copy.allSystemsOperational}</span>
         </article>
         <article className="admin-card admin-card--metric admin-card--device-metric">
-          <p>Average connectivity</p>
+          <p>{copy.averageConnectivity}</p>
           <strong>{connectivity}%</strong>
-          <span>{online > 0 ? `+${formatNumber(online)} online` : "No active devices"}</span>
+          <span>{online > 0 ? `+${formatNumber(online, locale)} ${copy.online}` : copy.offline}</span>
         </article>
         <article className="admin-card admin-card--metric admin-card--device-metric">
-          <p>Alerts pending</p>
+          <p>{copy.alertsPending}</p>
           <strong>{alertLabel}</strong>
-          <span>{alerts > 0 ? "Attention needed" : "No critical tasks"}</span>
+          <span>{alerts > 0 ? copy.attentionNeeded : copy.noCriticalTasks}</span>
         </article>
       </div>
 
       <article className="admin-card admin-devices__fleet">
         <div className="admin-devices__fleet-head">
           <div>
-            <h3>Kiosk Fleet Status</h3>
-            <p className="admin-copy">Live status, hardware health, and last-seen information for the selected property.</p>
+            <h3>{copy.fleetStatus}</h3>
+            <p className="admin-copy">{copy.liveStatus}</p>
           </div>
-          <span className="admin-live-pill">{hotelName ?? "All properties"}</span>
+          <span className="admin-live-pill">{hotelName ?? copy.allProperties}</span>
         </div>
 
         <div className="admin-device-list">
           {devices.map((device) => {
             const isSelected = selectedDevice?.id === device.id;
+            const batteryLabel = formatBattery(device.batteryLevel);
+
             return (
               <div key={device.id} className={`admin-device-card ${isSelected ? "is-selected" : ""}`}>
                 <div className="admin-device-card__row">
                   <div className="admin-device-card__identity">
                     <strong>{device.name}</strong>
                     <span>
-                      ID: {device.deviceCode} • Hotel {device.hotelId}
+                      ID: {device.deviceCode} - Hotel {device.hotelId}
                     </span>
                   </div>
                   <div className={`admin-device-pill admin-device-pill--${statusTone(device.status)}`}>{device.status}</div>
@@ -146,36 +151,36 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: Devices
 
                 <div className="admin-device-card__row admin-device-card__row--modules">
                   <div className={`admin-device-module admin-device-module--${moduleTone(device.printerOnline)}`}>
-                    <span>Printer</span>
-                    <strong>{moduleLabel(device.printerOnline)}</strong>
+                    <span>{copy.printer}</span>
+                    <strong>{moduleLabel(device.printerOnline, copy)}</strong>
                   </div>
                   <div className={`admin-device-module admin-device-module--${moduleTone(device.cameraOnline)}`}>
-                    <span>Camera</span>
-                    <strong>{moduleLabel(device.cameraOnline)}</strong>
+                    <span>{copy.camera}</span>
+                    <strong>{moduleLabel(device.cameraOnline, copy)}</strong>
                   </div>
                   <div className={`admin-device-module admin-device-module--${device.batteryLevel !== null && device.batteryLevel >= 20 ? "good" : "warning"}`}>
-                    <span>Battery</span>
-                    <strong>{formatBattery(device.batteryLevel)}</strong>
+                    <span>{copy.battery}</span>
+                    <strong>{batteryLabel ?? copy.batteryUnavailable}</strong>
                   </div>
                   <div className="admin-device-module">
-                    <span>Last seen</span>
-                    <strong>{formatLastSeen(device.lastSeenAt)}</strong>
+                    <span>{copy.lastSeen}</span>
+                    <strong>{formatLastSeen(device.lastSeenAt, locale)}</strong>
                   </div>
                 </div>
 
                 {isSelected ? (
                   <div className="admin-device-card__details">
                     <div>
-                      <span>Device code</span>
+                      <span>{copy.deviceCode}</span>
                       <strong>{device.deviceCode}</strong>
                     </div>
                     <div>
-                      <span>Status</span>
+                      <span>{copy.status}</span>
                       <strong>{device.status}</strong>
                     </div>
                     <div>
-                      <span>Battery level</span>
-                      <strong>{formatBattery(device.batteryLevel)}</strong>
+                      <span>{copy.batteryLevel}</span>
+                      <strong>{batteryLabel ?? copy.batteryUnavailable}</strong>
                     </div>
                   </div>
                 ) : null}
@@ -186,9 +191,11 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, onRefresh }: Devices
                     className="admin-secondary-button"
                     onClick={() => setSelectedDeviceId((current) => (current === device.id ? null : device.id))}
                   >
-                    {isSelected ? "Hide details" : "Details"}
+                    {isSelected ? copy.hideDetails : copy.details}
                   </button>
-                  <span className="admin-device-card__meta">Updated {formatLastSeen(device.lastSeenAt)}</span>
+                  <span className="admin-device-card__meta">
+                    {copy.updated} {formatLastSeen(device.lastSeenAt, locale)}
+                  </span>
                 </div>
               </div>
             );

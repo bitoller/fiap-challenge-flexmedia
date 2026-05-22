@@ -1,14 +1,15 @@
-import type { DashboardResult, HotelProfile, HotelSummary, KioskDevice, ReservationSummary } from "../types";
+import type { DashboardResult, HotelProfile, HotelSummary, KioskDevice } from "../types";
 import type { OverviewActivity, OverviewMetric, OverviewUnit, TrendPoint } from "./types";
+import type { AdminCopy } from "./copy";
 
-const TREND_LABELS = ["00:00", "06:00", "12:00", "18:00", "AGORA"];
+type DashboardLabels = AdminCopy["overviewPage"]["dashboard"];
 
-export function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(value);
+export function formatCurrency(value: number, currency: string, locale = "en") {
+  return new Intl.NumberFormat(locale, { style: "currency", currency }).format(value);
 }
 
-export function formatNumber(value: number) {
-  return new Intl.NumberFormat(undefined).format(value);
+export function formatNumber(value: number, locale = "en") {
+  return new Intl.NumberFormat(locale).format(value);
 }
 
 function normalizeText(value: unknown, fallback = "—") {
@@ -42,8 +43,8 @@ function getRecordValue(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-function parseActivity(record: Record<string, unknown>, index: number, hotelId: number | null): OverviewActivity {
-  const action = normalizeText(getRecordValue(record, ["action", "event", "name"]), "Operational event");
+function parseActivity(record: Record<string, unknown>, index: number, hotelId: number | null, labels: DashboardLabels["activity"]): OverviewActivity {
+  const action = normalizeText(getRecordValue(record, ["action", "event", "name"]), labels.eventPrefix);
   const resourceType = normalizeText(getRecordValue(record, ["resourceType", "resource_type", "type"]), "");
   const actorType = normalizeText(getRecordValue(record, ["actorType", "actor_type"]), "");
   const result = normalizeText(getRecordValue(record, ["result", "status"]), "OK");
@@ -53,12 +54,12 @@ function parseActivity(record: Record<string, unknown>, index: number, hotelId: 
 
   const contextBits = [actorType, resourceType, resourceId].filter(Boolean).join(" ");
   const suffix = correlationId && correlationId !== "—" ? ` • ${correlationId}` : "";
-  const hotelLabel = hotelId !== null ? `Hotel ${hotelId}` : "All hotels";
+  const hotelLabel = hotelId !== null ? `${labels.hotelPrefix} ${hotelId}` : labels.allHotels;
 
   return {
     title: `${action}${contextBits ? ` ${contextBits}` : ""}`,
-    subtitle: result === "OK" ? `${hotelLabel} operation completed` : `${hotelLabel} operation needs attention`,
-    meta: `${timestamp || `Event ${index + 1}`}${suffix}`,
+    subtitle: result === "OK" ? `${hotelLabel} ${labels.operationCompleted}` : `${hotelLabel} ${labels.operationNeedsAttention}`,
+    meta: `${timestamp || `${labels.eventPrefix} ${index + 1}`}${suffix}`,
     tone: result.toUpperCase().includes("FAIL") ? "muted" : index === 0 ? "gold" : "neutral",
   };
 }
@@ -68,7 +69,7 @@ function pickAccent(index: number) {
   return palette[index % palette.length];
 }
 
-export function buildTrendPoints(dashboard: DashboardResult | null): TrendPoint[] {
+export function buildTrendPoints(dashboard: DashboardResult | null, labels: DashboardLabels): TrendPoint[] {
   const reservations = dashboard?.reservationsToday ?? 0;
   const active = dashboard?.activeStays ?? 0;
   const checkins = dashboard?.completedCheckins ?? 0;
@@ -84,11 +85,11 @@ export function buildTrendPoints(dashboard: DashboardResult | null): TrendPoint[
   const closing = Math.max(baseline + 1, Math.round((online / Math.max(total, 1)) * peak));
 
   return [
-    { label: TREND_LABELS[0], value: baseline },
-    { label: TREND_LABELS[1], value: Math.max(baseline + 1, Math.round(reservations * 0.45) + baseline) },
-    { label: TREND_LABELS[2], value: Math.max(secondPeak, checkins + active) },
-    { label: TREND_LABELS[3], value: Math.max(baseline + 2, checkouts + failures + baseline) },
-    { label: TREND_LABELS[4], value: peak > 0 ? peak : closing },
+    { label: labels.trendLabels[0], value: baseline },
+    { label: labels.trendLabels[1], value: Math.max(baseline + 1, Math.round(reservations * 0.45) + baseline) },
+    { label: labels.trendLabels[2], value: Math.max(secondPeak, checkins + active) },
+    { label: labels.trendLabels[3], value: Math.max(baseline + 2, checkouts + failures + baseline) },
+    { label: labels.trendLabels[4], value: peak > 0 ? peak : closing },
   ];
 }
 
@@ -113,7 +114,7 @@ export function buildTrendPath(points: TrendPoint[]) {
     .join(" ");
 }
 
-export function buildMetricCards(dashboard: DashboardResult | null): OverviewMetric[] {
+export function buildMetricCards(dashboard: DashboardResult | null, labels: DashboardLabels["metrics"], locale = "en"): OverviewMetric[] {
   const totalDevices = dashboard?.deviceStatus.totalDevices ?? 0;
   const onlineDevices = dashboard?.deviceStatus.onlineDevices ?? 0;
   const totalHealth = totalDevices > 0 ? Math.round((onlineDevices / totalDevices) * 100) : 0;
@@ -124,31 +125,31 @@ export function buildMetricCards(dashboard: DashboardResult | null): OverviewMet
 
   return [
     {
-      label: "Quartos ativos",
-      value: formatNumber(dashboard?.activeStays ?? 0),
-      detail: `${formatNumber(dashboard?.reservationsToday ?? 0)} reservas hoje`,
+      label: labels.activeRoomsTitle,
+      value: formatNumber(dashboard?.activeStays ?? 0, locale),
+      detail: `${formatNumber(dashboard?.reservationsToday ?? 0, locale)} ${labels.activeRoomsDetailSuffix}`,
     },
     {
-      label: "Check-ins diarios",
-      value: formatNumber(dashboard?.completedCheckins ?? 0),
-      detail: `${formatNumber(dashboard?.completedCheckouts ?? 0)} check-outs`,
+      label: labels.checkinsTitle,
+      value: formatNumber(dashboard?.completedCheckins ?? 0, locale),
+      detail: `${formatNumber(dashboard?.completedCheckouts ?? 0, locale)} ${labels.checkinsDetailSuffix}`,
     },
     {
-      label: "Transacao media",
+      label: labels.transactionTitle,
       value: `${averageTransaction > 0 ? averageTransaction.toFixed(0) : 0} sec`,
-      detail: "Tempo estimado por interacao",
+      detail: labels.transactionDetail,
     },
     {
-      label: "Saude do sistema",
-      value: totalHealth > 0 ? "Estavel" : "Sem dados",
-      detail: `${formatNumber(onlineDevices)} de ${formatNumber(totalDevices)} online`,
+      label: labels.systemHealthTitle,
+      value: totalHealth > 0 ? labels.systemHealthStable : labels.systemHealthNoData,
+      detail: `${formatNumber(onlineDevices, locale)} ${labels.systemHealthDetailOnlineSuffix} ${formatNumber(totalDevices, locale)} ${labels.systemHealthDetailOfSuffix} online`,
     },
   ];
 }
 
-export function buildActivityFeed(dashboard: DashboardResult | null, hotelId: number | null): OverviewActivity[] {
+export function buildActivityFeed(dashboard: DashboardResult | null, hotelId: number | null, labels: DashboardLabels["activity"]): OverviewActivity[] {
   const records = dashboard?.recentSessions ?? [];
-  const activities = records.slice(0, 4).map((record, index) => parseActivity(record, index, hotelId));
+  const activities = records.slice(0, 4).map((record, index) => parseActivity(record, index, hotelId, labels));
 
   if (activities.length > 0) {
     return activities;
@@ -156,42 +157,57 @@ export function buildActivityFeed(dashboard: DashboardResult | null, hotelId: nu
 
   return [
     {
-      title: "No recent activity",
-      subtitle: "The overview will list operational events here as they arrive.",
-      meta: hotelId !== null ? `Hotel ${hotelId}` : "All hotels",
+      title: labels.noRecentActivityTitle,
+      subtitle: labels.noRecentActivitySubtitle,
+      meta: hotelId !== null ? `${labels.hotelPrefix} ${hotelId}` : labels.allHotels,
       tone: "muted",
     },
   ];
 }
 
-export function buildUnits(dashboard: DashboardResult | null, selectedHotel: HotelSummary | null, hotelProfile: HotelProfile | null): OverviewUnit[] {
+function translateDeviceStatus(status: string, labels: DashboardLabels["units"]) {
+  const value = status.toUpperCase();
+  if (value === "ONLINE") return labels.online;
+  if (value === "OFFLINE") return labels.attention;
+  if (value.includes("MAINT")) return labels.review;
+  if (value.includes("ERROR")) return labels.attention;
+  return toTitleCase(status);
+}
+
+export function buildUnits(
+  dashboard: DashboardResult | null,
+  selectedHotel: HotelSummary | null,
+  hotelProfile: HotelProfile | null,
+  labels: DashboardLabels["units"],
+  locale = "en"
+): OverviewUnit[] {
   const devices = dashboard?.deviceStatus.devices ?? [];
   const totalDevices = dashboard?.deviceStatus.totalDevices ?? 0;
   const online = dashboard?.deviceStatus.onlineDevices ?? 0;
   const offline = dashboard?.deviceStatus.offlineDevices ?? 0;
   const maintenance = dashboard?.deviceStatus.maintenanceDevices ?? 0;
   const errors = dashboard?.deviceStatus.errorDevices ?? 0;
-  const hotelName = selectedHotel?.name ?? "Selected hotel";
-  const amenity = hotelProfile?.content.amenities?.[0] ?? "Guest flow";
+  const hotelName = selectedHotel?.name ?? labels.selectedHotel;
+  const amenity = hotelProfile?.content.amenities?.[0] ?? labels.roomCirculation;
 
   const deviceUnits: OverviewUnit[] = devices.slice(0, 3).map((device, index) => {
     const kiosk = device as KioskDevice;
-    const name = normalizeText(kiosk.name, `Kiosk ${index + 1}`);
+    const name = normalizeText(kiosk.name, `${labels.selectedHotel} ${index + 1}`);
     const status = normalizeText(kiosk.status, "ONLINE");
-    const uptime = normalizeText(kiosk.lastSeenAt, "Monitoring active");
+    const uptime = normalizeText(kiosk.lastSeenAt, labels.monitoringActive);
     const statusUpper = status.toUpperCase();
 
     return {
       name,
       subtitle: uptime,
-      status: toTitleCase(status),
+      status: translateDeviceStatus(status, labels),
       statusTone: statusUpper.includes("OFFLINE") || statusUpper.includes("ERROR")
         ? "danger"
         : statusUpper.includes("MAINT") || statusUpper.includes("WARN")
           ? "warning"
           : "good",
-      metric: kiosk.batteryLevel === null ? "Battery N/A" : `${kiosk.batteryLevel}% battery`,
-      detail: `${hotelName} ${index === 0 ? "front line" : "operations"}`,
+      metric: kiosk.batteryLevel === null ? labels.batteryUnavailable : `${kiosk.batteryLevel}% ${labels.batterySuffix}`,
+      detail: `${hotelName} ${index === 0 ? labels.frontLineSuffix : labels.operationsSuffix}`,
       accent: pickAccent(index),
     } satisfies OverviewUnit;
   });
@@ -202,30 +218,30 @@ export function buildUnits(dashboard: DashboardResult | null, selectedHotel: Hot
 
   return [
     {
-      name: "Reception",
+      name: labels.reception,
       subtitle: amenity,
-      status: totalDevices > 0 && offline === 0 && errors === 0 ? "Online" : "Review",
+      status: totalDevices > 0 && offline === 0 && errors === 0 ? labels.online : labels.review,
       statusTone: totalDevices > 0 && offline === 0 && errors === 0 ? "good" : "warning",
-      metric: `${formatNumber(online)} online`,
-      detail: `${formatNumber(totalDevices)} devices observed`,
+      metric: `${formatNumber(online, locale)} ${labels.online}`,
+      detail: `${formatNumber(totalDevices, locale)} ${labels.observedDevices}`,
       accent: pickAccent(0),
     },
     {
-      name: "Guest floors",
-      subtitle: "Room circulation",
-      status: maintenance > 0 ? "Maintenance" : "Stable",
+      name: labels.guestFloors,
+      subtitle: labels.roomCirculation,
+      status: maintenance > 0 ? labels.review : labels.stable,
       statusTone: maintenance > 0 ? "warning" : "good",
-      metric: `${formatNumber(dashboard?.activeStays ?? 0)} active`,
-      detail: `${formatNumber(offline)} offline devices`,
+      metric: `${formatNumber(dashboard?.activeStays ?? 0, locale)} ${labels.online}`,
+      detail: `${formatNumber(offline, locale)} ${labels.observedDevices}`,
       accent: pickAccent(1),
     },
     {
-      name: "Operations",
-      subtitle: "Admin oversight",
-      status: errors > 0 || (dashboard?.failedSessions ?? 0) > 0 ? "Attention" : "Healthy",
+      name: labels.operations,
+      subtitle: labels.adminOversight,
+      status: errors > 0 || (dashboard?.failedSessions ?? 0) > 0 ? labels.attention : labels.healthy,
       statusTone: errors > 0 || (dashboard?.failedSessions ?? 0) > 0 ? "danger" : "good",
-      metric: `${formatNumber(dashboard?.failedSessions ?? 0)} failures`,
-      detail: `${formatNumber(dashboard?.completedCheckins ?? 0)} check-ins completed`,
+      metric: `${formatNumber(dashboard?.failedSessions ?? 0, locale)} ${labels.failures}`,
+      detail: `${formatNumber(dashboard?.completedCheckins ?? 0, locale)} ${labels.checkInsCompleted}`,
       accent: pickAccent(2),
     },
   ];

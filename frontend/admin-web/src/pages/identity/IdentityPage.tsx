@@ -1,14 +1,15 @@
+import type { AdminCopy } from "../../admin/copy";
+
 type IdentityPageProps = {
-  title: string;
-  message: string;
+  copy: AdminCopy["identityPage"];
 };
 
-function IdentityPage({ title, message }: IdentityPageProps) {
+function IdentityPage({ copy }: IdentityPageProps) {
   return (
     <section className="admin-panel">
       <div className="admin-card">
-        <h2>{title}</h2>
-        <p className="admin-empty">{message}</p>
+        <h2>{copy.title}</h2>
+        <p className="admin-empty">{copy.message}</p>
       </div>
     </section>
   );

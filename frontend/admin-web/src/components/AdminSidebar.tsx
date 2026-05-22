@@ -20,13 +20,13 @@ function AdminSidebar({ portal, role, labels, logoutLabel, selectedView, onSelec
 
       <nav className="admin-nav">
         {(["overview", "reservations", "devices", "audit", "branding", "identity"] as ViewKey[]).map((view) => (
-          <button key={view} className={selectedView === view ? "is-active" : ""} onClick={() => onSelectView(view)}>
+          <button key={view} type="button" className={selectedView === view ? "is-active" : ""} onClick={() => onSelectView(view)}>
             {labels[view]}
           </button>
         ))}
       </nav>
 
-      <button className="admin-secondary-button" onClick={onLogout}>
+      <button className="admin-secondary-button" type="button" onClick={onLogout}>
         {logoutLabel}
       </button>
     </aside>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../admin/dashboard";
+import type { AdminCopy } from "../../admin/copy";
 import type { AuditEvent } from "../../types";
 
 type AuditFilter = "all" | "security" | "system" | "ux";
@@ -8,14 +9,9 @@ type AuditSort = "newest" | "oldest";
 type AuditPageProps = {
   audit: AuditEvent[];
   emptyState: string;
+  copy: AdminCopy["auditPage"];
+  locale: string;
   onRefresh: () => void;
-};
-
-const FILTER_LABELS: Record<AuditFilter, string> = {
-  all: "All events",
-  security: "Security",
-  system: "System",
-  ux: "UX interactions",
 };
 
 function normalize(value: string | null | undefined, fallback = "—") {
@@ -50,20 +46,20 @@ function getTone(result: string) {
   return "good";
 }
 
-function getCategoryLabel(category: AuditFilter) {
+function getCategoryLabel(category: AuditFilter, copy: AdminCopy["auditPage"]) {
   switch (category) {
     case "security":
-      return "Security";
+      return copy.security;
     case "system":
-      return "System";
+      return copy.system;
     case "ux":
-      return "UX";
+      return copy.ux;
     default:
-      return "All";
+      return copy.allEvents;
   }
 }
 
-function AuditPage({ audit, emptyState, onRefresh }: AuditPageProps) {
+function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProps) {
   const [selectedFilter, setSelectedFilter] = useState<AuditFilter>("all");
   const [sortOrder, setSortOrder] = useState<AuditSort>("newest");
 
@@ -84,17 +80,24 @@ function AuditPage({ audit, emptyState, onRefresh }: AuditPageProps) {
   const uxCount = entries.filter((entry) => entry.category === "ux").length;
   const activeCount = entries.filter((entry) => getTone(entry.event.result) !== "danger").length;
 
+  const filterLabels: Record<AuditFilter, string> = {
+    all: copy.filterAll,
+    security: copy.filterSecurity,
+    system: copy.filterSystem,
+    ux: copy.filterUx,
+  };
+
   if (!audit.length) {
     return (
       <section className="admin-audit">
         <div className="admin-audit__hero">
           <div>
-            <p className="admin-eyebrow">Audit trail</p>
-            <h2>Operational events</h2>
+            <p className="admin-eyebrow">{copy.trailKicker}</p>
+            <h2>{copy.title}</h2>
             <p className="admin-copy admin-copy--compact">{emptyState}</p>
           </div>
           <button type="button" className="admin-secondary-button" onClick={onRefresh}>
-            Refresh logs
+            {copy.refreshLogs}
           </button>
         </div>
       </section>
@@ -105,78 +108,76 @@ function AuditPage({ audit, emptyState, onRefresh }: AuditPageProps) {
     <section className="admin-audit">
       <div className="admin-audit__hero">
         <div>
-          <p className="admin-eyebrow">Audit trail</p>
-          <h2>Operational events</h2>
-          <p className="admin-copy admin-copy--compact">
-            Real-time history of security, system, and guest-flow events for the selected hotel.
-          </p>
+          <p className="admin-eyebrow">{copy.trailKicker}</p>
+          <h2>{copy.title}</h2>
+          <p className="admin-copy admin-copy--compact">{copy.subtitle}</p>
         </div>
         <button type="button" className="admin-secondary-button" onClick={onRefresh}>
-          Refresh logs
+          {copy.refreshLogs}
         </button>
       </div>
 
       <div className="admin-metrics admin-audit__metrics">
         <article className="admin-card admin-card--metric admin-card--audit-metric">
-          <p>Security alerts</p>
-          <strong>{formatNumber(securityCount)}</strong>
-          <span>High priority events</span>
+          <p>{copy.securityAlerts}</p>
+          <strong>{formatNumber(securityCount, locale)}</strong>
+          <span>{copy.highPriorityEvents}</span>
         </article>
         <article className="admin-card admin-card--metric admin-card--audit-metric">
-          <p>System errors</p>
-          <strong>{formatNumber(systemCount)}</strong>
-          <span>Hardware or platform issues</span>
+          <p>{copy.systemErrors}</p>
+          <strong>{formatNumber(systemCount, locale)}</strong>
+          <span>{copy.hardwareIssues}</span>
         </article>
         <article className="admin-card admin-card--metric admin-card--audit-metric">
-          <p>UX interactions</p>
-          <strong>{formatNumber(uxCount)}</strong>
-          <span>Guest-facing operations</span>
+          <p>{copy.uxInteractions}</p>
+          <strong>{formatNumber(uxCount, locale)}</strong>
+          <span>{copy.guestFacingOperations}</span>
         </article>
         <article className="admin-card admin-card--metric admin-card--audit-metric">
-          <p>Active events</p>
-          <strong>{formatNumber(activeCount)}</strong>
-          <span>Successful actions in view</span>
+          <p>{copy.activeEvents}</p>
+          <strong>{formatNumber(activeCount, locale)}</strong>
+          <span>{copy.successfulActions}</span>
         </article>
       </div>
 
       <article className="admin-card admin-audit__panel">
         <div className="admin-audit__toolbar">
-          <div className="admin-audit__tabs" role="tablist" aria-label="Audit filters">
-            {(Object.keys(FILTER_LABELS) as AuditFilter[]).map((filter) => (
+          <div className="admin-audit__tabs" role="tablist" aria-label={copy.trailKicker}>
+            {(Object.keys(filterLabels) as AuditFilter[]).map((filter) => (
               <button
                 key={filter}
                 type="button"
                 className={selectedFilter === filter ? "is-active" : ""}
                 onClick={() => setSelectedFilter(filter)}
               >
-                {FILTER_LABELS[filter]}
+                {filterLabels[filter]}
               </button>
             ))}
           </div>
 
           <label className="admin-audit__sort">
-            <span>Sort by</span>
+            <span>{copy.sortBy}</span>
             <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value as AuditSort)}>
-              <option value="newest">Most recent</option>
-              <option value="oldest">Oldest</option>
+              <option value="newest">{copy.mostRecent}</option>
+              <option value="oldest">{copy.oldest}</option>
             </select>
           </label>
         </div>
 
         <div className="admin-audit__table">
           <div className="admin-audit__head">
-            <span>Entry</span>
-            <span>Reference ID</span>
-            <span>Category</span>
-            <span>Details</span>
-            <span>Status</span>
+            <span>{copy.entry}</span>
+            <span>{copy.referenceId}</span>
+            <span>{copy.category}</span>
+            <span>{copy.details}</span>
+            <span>{copy.status}</span>
           </div>
 
           {filteredEntries.length ? (
             filteredEntries.map(({ event, category, position }) => (
               <div key={`${position}-${event.correlationId ?? event.action}-${event.resourceId ?? event.actorId ?? ""}`} className="admin-audit__row">
                 <div className="admin-audit__cell">
-                  <strong>#{formatNumber(position)}</strong>
+                  <strong>#{formatNumber(position, locale)}</strong>
                   <small>{normalize(event.actorType, "Kiosk")}</small>
                 </div>
                 <div className="admin-audit__cell">
@@ -184,12 +185,12 @@ function AuditPage({ audit, emptyState, onRefresh }: AuditPageProps) {
                   <small>{normalize(event.resourceType, "—")}</small>
                 </div>
                 <div className="admin-audit__cell">
-                  <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category)}</span>
+                  <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category, copy)}</span>
                 </div>
                 <div className="admin-audit__cell">
                   <strong>{event.action}</strong>
                   <small>
-                    {normalize(event.resourceType, "Resource")} • {normalize(event.correlationId, "No correlation")}
+                    {normalize(event.resourceType, copy.resource)} • {normalize(event.correlationId, copy.noCorrelation)}
                   </small>
                 </div>
                 <div className="admin-audit__cell">
@@ -204,7 +205,7 @@ function AuditPage({ audit, emptyState, onRefresh }: AuditPageProps) {
 
         <div className="admin-audit__footer">
           <small>
-            Showing {formatNumber(filteredEntries.length)} of {formatNumber(entries.length)} recent entries
+            {copy.showing} {formatNumber(filteredEntries.length, locale)} {copy.of} {formatNumber(entries.length, locale)} {copy.recentEntries}
           </small>
         </div>
       </article>

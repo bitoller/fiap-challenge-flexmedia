@@ -1,15 +1,15 @@
-﻿.checkin-layout {
+.checkin-layout {
   position: relative;
   min-height: 100dvh;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   background:
-    radial-gradient(circle at 50% 12%, rgba(212, 191, 150, 0.22), transparent 18%),
-    linear-gradient(180deg, #fbf8f2 0%, #f8f2e8 48%, #faf8f3 100%);
+    radial-gradient(circle at 50% 12%, var(--kiosk-page-glow), transparent 18%),
+    linear-gradient(180deg, var(--kiosk-surface-soft) 0%, var(--kiosk-bg-light) 48%, var(--kiosk-surface-strong) 100%);
   border: 0;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 0 1px var(--kiosk-border-contrast);
 }
 
 .checkin-layout::before {
@@ -18,8 +18,8 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 24%, rgba(189, 153, 73, 0.08), transparent 16%),
-    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.58), transparent 28%);
+    radial-gradient(circle at 50% 24%, var(--kiosk-page-glow), transparent 16%),
+    radial-gradient(circle at 50% 24%, var(--kiosk-page-halo), transparent 28%);
   opacity: 0.9;
 }
 
@@ -36,13 +36,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(191, 177, 146, 0.26);
-  background: rgba(255, 253, 249, 0.92);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 1px 12px rgba(77, 64, 45, 0.05);
+  border-bottom: 1px solid var(--kiosk-border-soft);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 1px 0 var(--kiosk-inset-highlight) inset, 0 1px 12px rgba(var(--kiosk-shadow-rgb), 0.05);
 }
 
 .checkin-topbar__brand {
-  color: #9a7318;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.1rem, 1.75vw, 1.65rem);
   font-weight: 500;
@@ -63,7 +63,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #7f6320;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.88rem;
   letter-spacing: 0.14em;
@@ -90,7 +90,7 @@
 }
 
 .checkin-topbar__confirmation-label {
-  color: #8a6b21;
+  color: var(--kiosk-text-secondary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.84rem;
   letter-spacing: 0.18em;
@@ -115,9 +115,9 @@
   align-items: center;
   justify-content: space-around;
   gap: 1rem;
-  border-top: 1px solid rgba(191, 177, 146, 0.3);
-  background: rgba(255, 253, 249, 0.96);
-  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.95) inset;
+  border-top: 1px solid var(--kiosk-border-soft);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 -1px 0 var(--kiosk-inset-highlight) inset;
 }
 
 .checkin-bottom-nav__item {
@@ -127,14 +127,14 @@
   gap: 0.2rem;
   border: 0;
   background: transparent;
-  color: rgba(125, 105, 73, 0.78);
+  color: var(--kiosk-text-secondary);
   font-family: "Georgia", "Times New Roman", serif;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .checkin-bottom-nav__item.is-active {
-  color: #8d6a17;
+  color: var(--kiosk-primary);
 }
 
 .checkin-bottom-nav__icon {
@@ -163,7 +163,7 @@
 
 .checkin-step-header__step {
   margin: 0;
-  color: #91713a;
+  color: var(--kiosk-primary);
   font-size: 0.85rem;
   letter-spacing: 0.34em;
   text-transform: uppercase;
@@ -172,29 +172,13 @@
 .checkin-step-header__rule {
   width: min(220px, 30vw);
   height: 1px;
-  min-height: 1px;
-  display: block;
-  position: relative;
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 0;
-  overflow: visible;
-  background: none;
-  box-sizing: content-box;
+  background: linear-gradient(90deg, transparent, var(--kiosk-muted-line-strong), transparent);
   pointer-events: none;
-}
-
-.checkin-step-header__rule::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  display: block;
-  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.7), transparent);
 }
 
 .checkin-step-header__title {
   margin: 0;
-  color: #1e1c1a;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.95rem, 3vw, 3rem);
   font-weight: 500;
@@ -204,7 +188,7 @@
 .checkin-step-header__subtitle {
   width: min(760px, 100%);
   margin: 0.25rem auto 0;
-  color: rgba(92, 78, 61, 0.82);
+  color: var(--kiosk-text-secondary);
   font-size: clamp(0.84rem, 0.95vw, 1rem);
   line-height: 1.6;
 }
@@ -250,26 +234,24 @@
   align-items: center;
   justify-items: start;
   gap: 0.72rem;
-  border: 1px solid rgba(205, 187, 149, 0.42);
+  border: 1px solid var(--kiosk-border);
   border-radius: 16px;
   appearance: none;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(251, 248, 242, 0.95)),
-    rgba(255, 255, 255, 0.95);
+    linear-gradient(180deg, var(--kiosk-surface), var(--kiosk-surface-soft));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95) inset,
-    0 10px 18px rgba(84, 70, 47, 0.04);
+    0 1px 0 var(--kiosk-inset-highlight) inset,
+    0 10px 18px rgba(var(--kiosk-shadow-rgb), 0.04);
   text-align: left;
 }
 
 .checkin-method-card.is-selected {
-  border-color: rgba(157, 119, 35, 0.64);
+  border-color: var(--kiosk-border-strong);
   background:
-    linear-gradient(180deg, rgba(255, 253, 246, 0.98), rgba(247, 239, 224, 0.98)),
-    rgba(255, 255, 255, 0.96);
+    linear-gradient(180deg, var(--kiosk-surface), var(--kiosk-surface-strong));
   box-shadow:
-    0 14px 28px rgba(97, 79, 45, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+    0 14px 28px rgba(var(--kiosk-shadow-rgb), 0.08),
+    inset 0 1px 0 var(--kiosk-inset-highlight-soft);
 }
 
 .checkin-method-card.is-disabled {
@@ -281,7 +263,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: linear-gradient(180deg, rgba(186, 142, 47, 0.9), rgba(220, 185, 108, 0.92));
+    background: linear-gradient(180deg, var(--kiosk-primary), var(--kiosk-accent));
 }
 
 .checkin-method-card__icon {
@@ -289,8 +271,8 @@
   height: 2.55rem;
   display: grid;
   place-items: center;
-  color: #996f16;
-  background: rgba(214, 192, 148, 0.14);
+  color: var(--kiosk-primary-dark);
+  background: var(--kiosk-accent-soft);
   border-radius: 14px;
 }
 
@@ -310,7 +292,7 @@
 .checkin-method-card__title {
   width: 100%;
   min-height: 2.2em;
-  color: #6f5a31;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.9rem;
   line-height: 1.12;
@@ -323,7 +305,7 @@
   width: 100%;
   min-height: 2.6em;
   max-width: none;
-  color: rgba(126, 110, 87, 0.78);
+  color: var(--kiosk-text-secondary);
   font-size: 0.64rem;
   line-height: 1.3;
   letter-spacing: 0.15em;
@@ -338,12 +320,11 @@
   min-width: 0;
   min-height: var(--checkin-entry-card-height, auto);
   padding: 1rem 1rem 0.95rem;
-  border: 1px solid rgba(220, 204, 176, 0.62);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 20px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 243, 233, 0.96)),
-    rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 28px rgba(92, 76, 50, 0.08);
+    linear-gradient(180deg, var(--kiosk-surface-soft), var(--kiosk-surface-strong));
+  box-shadow: 0 14px 28px rgba(var(--kiosk-shadow-rgb), 0.08);
   width: 100%;
 }
 
@@ -385,10 +366,10 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0 1rem 0 1.1rem;
-  border: 1px solid rgba(205, 187, 149, 0.45);
+  border: 1px solid var(--kiosk-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.88);
-  color: #7f6320;
+  background: var(--kiosk-surface-soft);
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   letter-spacing: 0.08em;
 }
@@ -402,14 +383,14 @@
 .checkin-identification__loading-spinner {
   width: 1rem;
   height: 1rem;
-  border: 2px solid rgba(151, 116, 40, 0.26);
-  border-top-color: rgba(151, 116, 40, 0.9);
+  border: 2px solid var(--kiosk-border);
+  border-top-color: var(--kiosk-primary);
   border-radius: 999px;
   animation: checkin-spin 0.8s linear infinite;
 }
 
 .checkin-identification__field-label {
-  color: #8c6b2a;
+  color: var(--kiosk-primary);
   font-size: 0.86rem;
   line-height: 1.2;
   letter-spacing: 0.18em;
@@ -422,14 +403,14 @@
   align-items: center;
   gap: 1rem;
   padding: 0 1rem 0 1.1rem;
-  border: 1px solid rgba(190, 174, 143, 0.38);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 12px;
-  background: rgba(248, 244, 236, 0.82);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  background: var(--kiosk-surface-soft);
+  box-shadow: inset 0 1px 0 var(--kiosk-inset-highlight-soft);
 }
 
 .checkin-identification__field.is-invalid {
-  border-color: rgba(165, 89, 70, 0.78);
+  border-color: var(--kiosk-border-strong);
 }
 
 .checkin-identification__field input {
@@ -438,7 +419,7 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.15rem, 1.7vw, 1.55rem);
   letter-spacing: 0.12em;
@@ -449,7 +430,7 @@
   height: 1.5rem;
   display: grid;
   place-items: center;
-  color: rgba(138, 109, 47, 0.82);
+  color: var(--kiosk-primary-dark);
 }
 
 .checkin-identification__field-icon svg {
@@ -459,7 +440,7 @@
 
 .checkin-identification__helper {
   margin: 0;
-  color: rgba(108, 93, 71, 0.88);
+  color: var(--kiosk-ink-muted);
   font-size: 0.82rem;
   line-height: 1.5;
 }
@@ -482,12 +463,12 @@
   display: grid;
   gap: 0.9rem;
   padding: 0.9rem;
-  border: 1px solid rgba(205, 187, 149, 0.45);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 246, 238, 0.98)),
-    rgba(255, 255, 255, 0.94);
-  box-shadow: 0 18px 40px rgba(93, 77, 53, 0.08);
+    linear-gradient(180deg, var(--kiosk-surface-overlay), var(--kiosk-surface-overlay-strong)),
+    var(--kiosk-surface-overlay);
+  box-shadow: 0 18px 40px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-qr-scanner__viewport {
@@ -496,11 +477,11 @@
   margin-inline: auto;
   overflow: hidden;
   border-radius: 18px;
-  border: 1px solid rgba(182, 160, 118, 0.28);
+  border: 1px solid var(--kiosk-border-contrast);
   background:
-    radial-gradient(circle at 50% 35%, rgba(217, 197, 156, 0.16), transparent 32%),
-    linear-gradient(180deg, rgba(250, 246, 238, 0.98), rgba(243, 236, 224, 0.98));
-  box-shadow: 0 18px 40px rgba(93, 77, 53, 0.12);
+    radial-gradient(circle at 50% 35%, var(--kiosk-page-halo), transparent 32%),
+    linear-gradient(180deg, var(--kiosk-surface-overlay-strong), var(--kiosk-surface-soft));
+  box-shadow: 0 18px 40px rgba(var(--kiosk-shadow-rgb), 0.12);
   position: relative;
 }
 
@@ -515,7 +496,7 @@
   display: block;
   object-fit: cover;
   object-position: center;
-  background: rgba(20, 18, 15, 0.92);
+  background: var(--kiosk-bg-dark);
 }
 
 .checkin-qr-scanner__content {
@@ -530,7 +511,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  color: #8d6b25;
+  color: var(--kiosk-primary);
   font-size: 0.84rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -538,7 +519,7 @@
 
 .checkin-qr-scanner__title {
   margin: 0;
-  color: #1e1c1a;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.5rem, 2.1vw, 2rem);
   font-weight: 500;
@@ -547,13 +528,13 @@
 .checkin-qr-scanner__copy,
 .checkin-qr-scanner__status {
   margin: 0;
-  color: rgba(92, 78, 61, 0.9);
+  color: var(--kiosk-text-secondary);
   font-size: 0.92rem;
   line-height: 1.55;
 }
 
 .checkin-qr-scanner__status {
-  color: #7e6223;
+  color: var(--kiosk-primary-dark);
   font-weight: 600;
 }
 
@@ -561,10 +542,10 @@
   justify-self: center;
   min-height: 48px;
   padding: 0.75rem 1.2rem;
-  border: 1px solid rgba(165, 139, 95, 0.46);
+  border: 1px solid var(--kiosk-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #4b3d21;
+  background: var(--kiosk-surface-soft);
+  color: var(--kiosk-button-text-strong);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.84rem;
   letter-spacing: 0.16em;
@@ -578,18 +559,18 @@
   gap: 0.5rem;
   padding: 0.6rem;
   box-sizing: border-box;
-  border: 1px solid rgba(204, 186, 151, 0.5);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 30px rgba(93, 77, 53, 0.08);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 14px 30px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-keypad__key {
   min-height: 62px;
   border: 0;
   border-radius: 12px;
-  color: #252220;
-  background: #efede8;
+  color: var(--kiosk-text-primary);
+  background: var(--kiosk-surface-strong);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1.08rem;
   font-weight: 500;
@@ -615,8 +596,8 @@
 }
 
 .checkin-keypad__key--confirm {
-  color: #4c3b12;
-  background: linear-gradient(180deg, #d3ad5e, #c79e49);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
 }
 
 .checkin-keypad__key--confirm.is-disabled {
@@ -630,7 +611,7 @@
 
 .checkin-keypad__key:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(93, 77, 53, 0.08);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-not-found {
@@ -644,11 +625,11 @@
   height: 4.6rem;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(205, 187, 149, 0.55);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 12px;
-  color: #9a7120;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 18px rgba(92, 75, 47, 0.08);
+  color: var(--kiosk-primary-dark);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-not-found__icon svg {
@@ -676,37 +657,37 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  border: 1px solid rgba(165, 139, 95, 0.5);
+  border: 1px solid var(--kiosk-border);
   border-radius: 4px;
-  color: #4b3d21;
+  color: var(--kiosk-button-text-strong);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.94rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--kiosk-surface-soft);
 }
 
 .checkin-action-button--primary {
-  color: #4d3c14;
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  border-color: rgba(165, 139, 95, 0.3);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-button-outline);
 }
 
 .checkin-layout .btn-primary {
-  color: #4d3c14;
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  border-color: rgba(165, 139, 95, 0.3);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-button-outline);
 }
 
 .checkin-layout .btn-primary:hover,
 .checkin-layout .btn-primary:focus-visible {
-  color: #4d3c14;
-  background: linear-gradient(180deg, #deb866, #bf9442);
-  border-color: rgba(153, 113, 32, 0.42);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-border-strong);
 }
 
 .checkin-action-button--secondary {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--kiosk-surface-soft);
 }
 
 .checkin-action-button--ghost {
@@ -752,16 +733,16 @@
 .checkin-confirmation__details {
   min-height: 486px;
   padding: 1.9rem 1.9rem 1.8rem;
-  border: 1px solid rgba(220, 204, 176, 0.62);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 28px rgba(92, 76, 50, 0.08);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 14px 28px rgba(var(--kiosk-shadow-rgb), 0.08);
   align-content: start;
 }
 
 .checkin-confirmation__details h2 {
   margin: 0;
-  color: #1f1b18;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.55rem, 2.5vw, 2.2rem);
   font-weight: 500;
@@ -771,7 +752,7 @@
 .checkin-confirmation__divider {
   height: 1px;
   margin: 1.2rem 0;
-  background: linear-gradient(90deg, transparent, rgba(205, 186, 150, 0.56), transparent);
+  background: linear-gradient(90deg, transparent, var(--kiosk-muted-line-strong), transparent);
 }
 
 .checkin-confirmation__field {
@@ -783,14 +764,14 @@
 .checkin-confirmation__mini-field span,
 .checkin-confirmation__total-card span,
 .checkin-confirmation__image-copy span {
-  color: #8c7b65;
+  color: var(--kiosk-ink-soft);
   font-size: 0.74rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .checkin-confirmation__field strong {
-  color: #7f5f13;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.45rem, 2vw, 1.85rem);
   font-weight: 500;
@@ -799,7 +780,7 @@
 }
 
 .checkin-confirmation__field small {
-  color: rgba(86, 76, 63, 0.8);
+  color: var(--kiosk-ink-muted);
   font-size: 0.92rem;
 }
 
@@ -816,7 +797,7 @@
 }
 
 .checkin-confirmation__mini-field strong {
-  color: #23201d;
+  color: var(--kiosk-text-primary);
   font-size: 1.1rem;
   font-weight: 600;
   min-height: 1.35rem;
@@ -825,7 +806,7 @@
 .checkin-confirmation__notes {
   margin-top: 1.15rem;
   min-height: 3.7rem;
-  color: rgba(78, 67, 53, 0.82);
+  color: var(--kiosk-ink-muted);
   font-size: 0.9rem;
   line-height: 1.55;
 }
@@ -843,7 +824,7 @@
   min-height: 382px;
   overflow: hidden;
   border-radius: 14px;
-  border: 1px solid rgba(220, 204, 176);
+  border: 1px solid var(--kiosk-border-soft);
   padding: 1.7rem 1.65rem 1.5rem;
   display: grid;
   justify-items: center;
@@ -851,10 +832,10 @@
   gap: 0.92rem;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 24%, rgba(219, 171, 75, 0.2), transparent 26%),
-    radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.14), transparent 20%),
-    linear-gradient(180deg, rgba(19, 25, 31, 0.95) 0%, rgba(42, 56, 68, 0.9) 48%, rgba(244, 238, 228, 0.98) 100%);
-  box-shadow: 0 14px 26px rgba(92, 76, 50, 0.08);
+    radial-gradient(circle at 50% 24%, var(--kiosk-page-glow-strong), transparent 26%),
+    radial-gradient(circle at 50% 46%, var(--kiosk-page-halo-strong), transparent 20%),
+    linear-gradient(180deg, var(--kiosk-primary-dark) 0%, color-mix(in srgb, var(--kiosk-primary-dark) 74%, var(--kiosk-surface) 26%) 48%, var(--kiosk-surface-overlay-strong) 100%);
+  box-shadow: 0 14px 26px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-confirmation__summary-card::before {
@@ -862,15 +843,15 @@
   position: absolute;
   inset: 14px 12px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 214, 140, 0.28);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--kiosk-border-contrast-strong);
+  box-shadow: inset 0 0 0 1px var(--kiosk-border-contrast);
 }
 
 .checkin-confirmation__summary-card::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgba(245, 240, 233, 0.18) 100%);
+  background: linear-gradient(180deg, transparent 58%, var(--kiosk-surface-overlay) 100%);
 }
 
 .checkin-confirmation__summary-card-badge {
@@ -880,9 +861,9 @@
   display: grid;
   place-items: center;
   border-radius: 1.15rem;
-  color: #9f741d;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 8px 18px rgba(54, 44, 27, 0.18);
+  color: var(--kiosk-primary-dark);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-shadow-rgb), 0.18);
 }
 
 .checkin-confirmation__summary-card-badge svg {
@@ -895,7 +876,7 @@
   z-index: 1;
   margin: 0;
   min-height: 1rem;
-  color: rgba(255, 235, 196, 0.92);
+  color: var(--kiosk-surface-overlay-strong);
   font-size: 0.72rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -907,7 +888,7 @@
   margin: 0;
   min-height: 5rem;
   max-width: 12.2ch;
-  color: #fbf8f2;
+  color: var(--kiosk-button-text);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.6rem, 2.3vw, 2.1rem);
   font-weight: 500;
@@ -924,7 +905,7 @@
   min-height: 4.35rem;
   max-width: 26ch;
   margin: 0;
-  color: rgba(245, 238, 227, 0.9);
+  color: var(--kiosk-surface-overlay-strong);
   font-size: 0.94rem;
   line-height: 1.56;
   display: -webkit-box;
@@ -941,21 +922,21 @@
   padding: 0.95rem 1.05rem;
   min-width: min(100%, 276px);
   min-height: 5.1rem;
-  border: 1px solid rgba(255, 214, 140, 0.24);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--kiosk-surface-overlay-strong);
+  box-shadow: inset 0 1px 0 var(--kiosk-inset-highlight-soft);
 }
 
 .checkin-confirmation__summary-card-stat span {
-  color: rgba(255, 235, 196, 0.84);
+  color: var(--kiosk-text-secondary);
   font-size: 0.68rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
 
 .checkin-confirmation__summary-card-stat strong {
-  color: #fbf8f2;
+  color: var(--kiosk-button-text);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.3rem, 1.9vw, 1.65rem);
   font-weight: 500;
@@ -971,10 +952,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 214, 140, 0.32);
+  border: 1px solid var(--kiosk-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #8b6718;
+  background: var(--kiosk-surface-overlay);
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.7rem;
   letter-spacing: 0.18em;
@@ -992,10 +973,10 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.45rem;
-  border: 1px solid rgba(220, 204, 176, 0.62);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 8px;
-  background: rgba(248, 243, 229, 0.95);
-  box-shadow: 0 10px 20px rgba(92, 76, 50, 0.06);
+  background: var(--kiosk-surface-strong);
+  box-shadow: 0 10px 20px rgba(var(--kiosk-shadow-rgb), 0.06);
 }
 
 .checkin-confirmation__total-card > div {
@@ -1007,14 +988,14 @@
 .checkin-confirmation__total-card small {
   display: block;
   margin-top: 0.25rem;
-  color: rgba(128, 108, 82, 0.8);
+  color: var(--kiosk-text-secondary);
   font-size: 0.72rem;
   font-style: italic;
   min-height: 2.05rem;
 }
 
 .checkin-confirmation__total-card strong {
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.4rem, 2.1vw, 1.95rem);
   font-weight: 500;
@@ -1029,7 +1010,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border-top: 1px solid rgba(205, 186, 150, 0.3);
+  border-top: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-confirmation__actions .checkin-action-button {
@@ -1072,10 +1053,10 @@
 .checkin-payment__summary,
 .checkin-success__card,
 .checkin-recovery__icon {
-  border: 1px solid rgba(220, 204, 176, 0.62);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 28px rgba(92, 76, 50, 0.08);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 14px 28px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-contact__summary {
@@ -1087,7 +1068,7 @@
 
 .checkin-contact__summary h2 {
   margin: 0;
-  color: #1f1b18;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.45rem, 2.1vw, 2rem);
   font-weight: 500;
@@ -1095,7 +1076,7 @@
 
 .checkin-contact__summary p {
   margin: 0;
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.1rem, 1.6vw, 1.45rem);
 }
@@ -1112,7 +1093,7 @@
 }
 
 .checkin-contact__summary dt {
-  color: #8c7b65;
+  color: var(--kiosk-ink-soft);
   font-size: 0.74rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1120,12 +1101,12 @@
 
 .checkin-contact__summary dd {
   margin: 0;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   font-size: 0.98rem;
 }
 
 .checkin-contact__summary small {
-  color: rgba(78, 67, 53, 0.78);
+  color: var(--kiosk-ink-muted);
   font-size: 0.88rem;
   line-height: 1.55;
 }
@@ -1143,7 +1124,7 @@
 }
 
 .checkin-contact__form span {
-  color: #8c6b2a;
+  color: var(--kiosk-primary-dark);
   font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1152,10 +1133,10 @@
 .checkin-contact__form input {
   min-height: 52px;
   padding: 0 1rem;
-  border: 1px solid rgba(204, 186, 151, 0.58);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 6px;
-  background: rgba(248, 244, 236, 0.86);
-  color: #2a241b;
+  background: var(--kiosk-surface-overlay);
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1rem;
 }
@@ -1194,7 +1175,7 @@
 
 .checkin-terms__list li h3 {
   margin: 0 0 0.35rem;
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1.25rem;
   font-weight: 500;
@@ -1202,7 +1183,7 @@
 
 .checkin-terms__list li p {
   margin: 0;
-  color: rgba(78, 67, 53, 0.84);
+  color: var(--kiosk-ink-muted);
   line-height: 1.6;
 }
 
@@ -1211,14 +1192,14 @@
   display: grid;
   gap: 0.85rem;
   align-content: start;
-  border-left: 1px solid rgba(220, 204, 176, 0.62);
+  border-left: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-consent {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -1227,7 +1208,7 @@
   width: 1.15rem;
   height: 1.15rem;
   margin-top: 0.1rem;
-  accent-color: #b8860b;
+  accent-color: var(--kiosk-primary);
 }
 
 .checkin-payment {
@@ -1253,10 +1234,10 @@
   min-width: 0;
   max-width: none;
   box-sizing: border-box;
-  border: 1px solid rgba(220, 204, 176, 0.66);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 38px rgba(92, 76, 50, 0.08);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 18px 38px rgba(var(--kiosk-shadow-rgb), 0.08);
   overflow: hidden;
 }
 
@@ -1287,17 +1268,17 @@
   height: 2.8rem;
   flex: 0 0 auto;
   padding: 0.72rem;
-  border: 1px solid rgba(220, 204, 176, 0.72);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 14px;
-  color: #9a7120;
-  background: rgba(250, 247, 240, 0.94);
+  color: var(--kiosk-primary-dark);
+  background: var(--kiosk-surface-overlay);
 }
 
 .checkin-payment__folio-header span,
 .checkin-payment__lines dt,
 .checkin-payment__secure span {
   display: block;
-  color: #8c7b65;
+  color: var(--kiosk-ink-soft);
   font-size: 0.74rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1305,7 +1286,7 @@
 
 .checkin-payment__folio h2 {
   margin: 0.25rem 0 0;
-  color: #201c17;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(2rem, 3vw, 3rem);
   font-weight: 500;
@@ -1324,12 +1305,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.25rem;
-  border-bottom: 1px solid rgba(220, 204, 176, 0.42);
+  border-bottom: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-payment__lines dd {
   margin: 0;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.2rem, 2vw, 1.65rem);
   white-space: nowrap;
@@ -1341,7 +1322,7 @@
 }
 
 .checkin-payment__lines .is-total dd {
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(2rem, 3.8vw, 3.4rem);
   font-weight: 500;
@@ -1351,7 +1332,7 @@
 .checkin-payment__secure strong,
 .checkin-payment__processing small {
   margin: 0;
-  color: rgba(78, 67, 53, 0.78);
+  color: var(--kiosk-ink-muted);
   font-size: 0.95rem;
   line-height: 1.55;
   overflow-wrap: anywhere;
@@ -1368,9 +1349,9 @@
 .checkin-payment__secure {
   min-height: 110px;
   padding: 1rem;
-  border: 1px solid rgba(220, 204, 176, 0.52);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(250, 247, 240, 0.96), rgba(255, 255, 255, 0.82));
+  background: linear-gradient(135deg, var(--kiosk-surface-overlay), var(--kiosk-surface-overlay-strong));
 }
 
 .checkin-payment__methods {
@@ -1385,7 +1366,7 @@
   width: 100%;
   margin: 0;
   padding-top: clamp(1rem, 1.5vw, 1.35rem);
-  border-top: 1px solid rgba(220, 204, 176, 0.52);
+  border-top: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-payment__processing {
@@ -1397,9 +1378,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
-  border: 1px solid rgba(205, 186, 150, 0.58);
+  border: 1px solid var(--kiosk-border);
   border-radius: 14px;
-  background: rgba(250, 246, 238, 0.92);
+  background: var(--kiosk-surface-overlay);
 }
 
 .checkin-payment__actions .checkin-action-button {
@@ -1411,34 +1392,34 @@
 
 .checkin-payment__actions .checkin-action-button--primary {
   min-width: min(100%, 300px);
-  color: #4d3c14;
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  border-color: rgba(165, 139, 95, 0.3);
-  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-button-outline);
+  box-shadow: 0 16px 30px rgba(var(--kiosk-primary-rgb), 0.16);
 }
 
 .checkin-payment__actions .checkin-action-button--primary:hover {
-  background: linear-gradient(180deg, #deb866, #bf9442);
+  background: var(--kiosk-button-fill);
 }
 
 .checkin-payment__actions .checkin-action-button--ghost {
-  color: #4e4335;
-  background: rgba(255, 255, 255, 0.74);
-  border-color: rgba(178, 151, 102, 0.58);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-surface-soft);
+  border-color: var(--kiosk-border);
 }
 
 .checkin-payment__processing > span {
   width: 2rem;
   height: 2rem;
-  border: 2px solid rgba(154, 113, 32, 0.2);
-  border-top-color: #9a7120;
+  border: 2px solid var(--kiosk-border-soft);
+  border-top-color: var(--kiosk-primary);
   border-radius: 999px;
   animation: checkin-spin 0.8s linear infinite;
 }
 
 .checkin-payment__processing strong {
   display: block;
-  color: #2a241b;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1.05rem;
 }
@@ -1460,15 +1441,15 @@
   overflow: hidden;
   display: grid;
   grid-template-rows: 178px 1fr;
-  border: 1px solid rgba(220, 204, 176, 0.66);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 16px 34px rgba(92, 76, 50, 0.08);
+  background: var(--kiosk-surface-soft);
+  box-shadow: 0 16px 34px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-addons__card.is-selected {
-  border-color: rgba(154, 113, 32, 0.78);
-  box-shadow: 0 20px 42px rgba(112, 78, 18, 0.14);
+  border-color: var(--kiosk-border-strong);
+  box-shadow: 0 20px 42px rgba(var(--kiosk-primary-rgb), 0.14);
 }
 
 .checkin-addons__image {
@@ -1476,25 +1457,25 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  color: rgba(255, 246, 230, 0.94);
+  color: var(--kiosk-button-text);
   background:
-    linear-gradient(180deg, rgba(18, 22, 26, 0.06), rgba(22, 18, 12, 0.52)),
-    radial-gradient(circle at 32% 35%, rgba(236, 200, 128, 0.6), transparent 24%),
-    linear-gradient(135deg, #d9c6a4, #6f5632);
+    linear-gradient(180deg, color-mix(in srgb, var(--kiosk-primary-dark) 10%, black), color-mix(in srgb, var(--kiosk-surface) 15%, var(--kiosk-primary-dark) 85%)),
+    radial-gradient(circle at 32% 35%, color-mix(in srgb, var(--kiosk-primary) 60%, var(--kiosk-surface)), transparent 24%),
+    linear-gradient(135deg, var(--kiosk-surface-strong), var(--kiosk-primary-dark));
 }
 
 .checkin-addons__image--room-upgrade {
   background:
-    linear-gradient(180deg, rgba(18, 22, 26, 0.05), rgba(22, 18, 12, 0.55)),
-    radial-gradient(circle at 70% 35%, rgba(221, 179, 92, 0.55), transparent 24%),
-    linear-gradient(135deg, #27353a, #c9b28a 48%, #6f5530);
+    linear-gradient(180deg, color-mix(in srgb, var(--kiosk-primary-dark) 8%, black), color-mix(in srgb, var(--kiosk-surface) 18%, var(--kiosk-primary-dark) 82%)),
+    radial-gradient(circle at 70% 35%, color-mix(in srgb, var(--kiosk-primary) 55%, var(--kiosk-surface)), transparent 24%),
+    linear-gradient(135deg, var(--kiosk-primary-dark), var(--kiosk-surface-strong) 48%, var(--kiosk-primary));
 }
 
 .checkin-addons__image--late-checkout {
   background:
-    linear-gradient(180deg, rgba(18, 22, 26, 0.08), rgba(22, 18, 12, 0.58)),
-    radial-gradient(circle at 62% 28%, rgba(222, 188, 112, 0.45), transparent 20%),
-    linear-gradient(135deg, #1d1d1b, #756348 56%, #d5bd8d);
+    linear-gradient(180deg, color-mix(in srgb, var(--kiosk-primary-dark) 12%, black), color-mix(in srgb, var(--kiosk-surface) 20%, var(--kiosk-primary-dark) 80%)),
+    radial-gradient(circle at 62% 28%, color-mix(in srgb, var(--kiosk-primary) 45%, var(--kiosk-surface)), transparent 20%),
+    linear-gradient(135deg, var(--kiosk-primary-dark), var(--kiosk-surface-soft) 56%, var(--kiosk-primary));
 }
 
 .checkin-addons__image svg {
@@ -1514,7 +1495,7 @@
 .checkin-addons__summary span,
 .checkin-addons__footer span {
   margin: 0;
-  color: #8c7b65;
+  color: var(--kiosk-text-secondary);
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1522,7 +1503,7 @@
 
 .checkin-addons__body h2 {
   margin: 0;
-  color: #1f1b18;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.25rem, 1.7vw, 1.55rem);
   font-weight: 500;
@@ -1530,7 +1511,7 @@
 
 .checkin-addons__body p:not(.checkin-addons__eyebrow) {
   margin: 0;
-  color: rgba(78, 67, 53, 0.84);
+  color: var(--kiosk-ink-muted);
   font-size: 0.92rem;
   line-height: 1.5;
 }
@@ -1541,7 +1522,7 @@
   align-items: end;
   justify-content: space-between;
   gap: 0.9rem;
-  border-top: 1px solid rgba(220, 204, 176, 0.62);
+  border-top: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-addons__footer > div {
@@ -1550,14 +1531,14 @@
 }
 
 .checkin-addons__footer strong {
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1rem;
   font-weight: 500;
 }
 
 .checkin-addons__footer small {
-  color: rgba(78, 67, 53, 0.7);
+  color: var(--kiosk-ink-muted);
   font-size: 0.76rem;
 }
 
@@ -1569,10 +1550,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 1px solid rgba(154, 113, 32, 0.58);
+  border: 1px solid var(--kiosk-border-strong);
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #745414;
+  background: var(--kiosk-surface-soft);
+  color: var(--kiosk-button-text-strong);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.78rem;
   letter-spacing: 0.12em;
@@ -1580,8 +1561,8 @@
 }
 
 .checkin-addons__card.is-selected .checkin-addons__footer button {
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  color: #3f310f;
+  background: var(--kiosk-button-fill);
+  color: var(--kiosk-button-text-strong);
 }
 
 .checkin-addons__footer button svg {
@@ -1601,13 +1582,13 @@
   display: grid;
   align-content: center;
   gap: 0.35rem;
-  border: 1px solid rgba(220, 204, 176, 0.62);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 8px;
-  background: rgba(248, 243, 229, 0.95);
+  background: var(--kiosk-surface-strong);
 }
 
 .checkin-addons__summary strong {
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.15rem, 1.8vw, 1.55rem);
   font-weight: 500;
@@ -1620,7 +1601,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border-top: 1px solid rgba(205, 186, 150, 0.3);
+  border-top: 1px solid var(--kiosk-border-soft);
 }
 
 .checkin-addons__actions > div {
@@ -1669,8 +1650,8 @@
   height: 4.8rem;
   display: grid;
   place-items: center;
-  color: #9a7120;
-  box-shadow: 0 8px 18px rgba(92, 75, 47, 0.08);
+  color: var(--kiosk-primary-dark);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-recovery__icon svg {
@@ -1697,10 +1678,10 @@
   grid-template-rows: 340px minmax(0, 1fr);
   gap: 1rem;
   overflow: visible;
-  border: 1px solid rgba(220, 204, 176, 0.66);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 38px rgba(92, 76, 50, 0.08);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 18px 38px rgba(var(--kiosk-shadow-rgb), 0.08);
 }
 
 .checkin-success__access-visual {
@@ -1711,8 +1692,8 @@
   overflow: hidden;
   border-radius: 14px;
   background:
-    radial-gradient(circle at 50% 42%, rgba(218, 174, 81, 0.28), transparent 17%),
-    linear-gradient(180deg, rgba(20, 28, 34, 0.96), rgba(47, 60, 66, 0.82) 46%, rgba(235, 226, 207, 0.9));
+    radial-gradient(circle at 50% 42%, var(--kiosk-page-glow-strong), transparent 17%),
+    linear-gradient(180deg, var(--kiosk-primary-dark), color-mix(in srgb, var(--kiosk-primary-dark) 76%, var(--kiosk-surface) 24%) 46%, var(--kiosk-surface-strong));
 }
 
 .checkin-success__face {
@@ -1720,11 +1701,11 @@
   height: 9rem;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.64);
+  border: 1px solid var(--kiosk-surface-overlay-strong);
   border-radius: 999px;
-  color: #fff8e8;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.06);
+  color: var(--kiosk-button-text);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 0 0 16px var(--kiosk-page-halo-strong);
   animation: checkin-face-pulse 2.6s ease-in-out infinite;
 }
 
@@ -1736,7 +1717,7 @@
 .checkin-success__scanner {
   position: absolute;
   inset: 17%;
-  border: 1px solid rgba(255, 250, 238, 0.7);
+  border: 1px solid var(--kiosk-surface-overlay-strong);
   border-radius: 20px;
 }
 
@@ -1746,8 +1727,8 @@
   right: 10%;
   top: 50%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(218, 174, 81, 0.95), transparent);
-  box-shadow: 0 0 18px rgba(218, 174, 81, 0.42);
+  background: linear-gradient(90deg, transparent, var(--kiosk-primary), transparent);
+  box-shadow: 0 0 18px var(--kiosk-page-glow-strong);
   animation: checkin-access-scan 2.4s ease-in-out infinite;
 }
 
@@ -1759,11 +1740,11 @@
   height: 4.7rem;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(128, 91, 18, 0.22);
+  border: 1px solid var(--kiosk-border-contrast-strong);
   border-radius: 14px;
-  color: #44330e;
-  background: linear-gradient(135deg, #f5d98e, #c69538);
-  box-shadow: 0 18px 28px rgba(24, 20, 13, 0.22);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  box-shadow: 0 18px 28px rgba(var(--kiosk-shadow-rgb), 0.22);
   transform: rotate(-5deg);
   animation: checkin-card-rise 3s ease-in-out infinite;
 }
@@ -1776,7 +1757,7 @@
 .checkin-success__hero span,
 .checkin-success__details span {
   display: block;
-  color: #8c7b65;
+  color: var(--kiosk-ink-soft);
   font-size: 0.74rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1788,7 +1769,7 @@
   min-height: 2.4em;
   display: grid;
   place-items: center;
-  color: #201c17;
+  color: var(--kiosk-text-primary);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(2.1rem, 3.2vw, 3.35rem);
   font-weight: 500;
@@ -1798,7 +1779,7 @@
   width: min(100%, 620px);
   margin: 0.7rem auto 0;
   min-height: 4.8em;
-  color: rgba(78, 67, 53, 0.82);
+  color: var(--kiosk-ink-muted);
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -1821,10 +1802,10 @@
   display: flex;
   align-items: center;
   gap: 0.95rem;
-  border: 1px solid rgba(220, 204, 176, 0.66);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 28px rgba(92, 76, 50, 0.07);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 14px 28px rgba(var(--kiosk-shadow-rgb), 0.07);
   text-align: left;
   overflow: visible;
 }
@@ -1838,16 +1819,16 @@
   height: 2.2rem;
   flex: 0 0 auto;
   padding: 0.5rem;
-  border: 1px solid rgba(220, 204, 176, 0.72);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 12px;
-  color: #9a7120;
-  background: rgba(250, 247, 240, 0.94);
+  color: var(--kiosk-primary-dark);
+  background: var(--kiosk-surface-overlay);
 }
 
 .checkin-success__details strong {
   display: block;
   margin-top: 0.25rem;
-  color: #8f6a19;
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: clamp(1.25rem, 2vw, 1.85rem);
   font-weight: 500;
@@ -1857,7 +1838,7 @@
 .checkin-success__details small {
   display: block;
   margin-top: 0.3rem;
-  color: rgba(78, 67, 53, 0.7);
+  color: var(--kiosk-ink-muted);
   font-size: 0.82rem;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -1869,37 +1850,37 @@
   margin: 0;
   display: grid;
   place-items: center;
-  color: rgba(78, 67, 53, 0.84);
+  color: var(--kiosk-ink-muted);
   font-size: 1rem;
   line-height: 1.6;
   text-align: center;
 }
 
 .checkin-success__actions .checkin-action-button--primary {
-  color: #4d3c14;
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  border-color: rgba(165, 139, 95, 0.3);
-  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-button-outline);
+  box-shadow: 0 16px 30px rgba(var(--kiosk-primary-rgb), 0.16);
 }
 
 .checkin-success__actions .checkin-action-button--primary:hover {
-  background: linear-gradient(180deg, #deb866, #bf9442);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--kiosk-primary) 88%, var(--kiosk-surface)), color-mix(in srgb, var(--kiosk-accent) 90%, var(--kiosk-surface)));
 }
 
 .checkin-success__actions .btn-primary {
-  --bs-btn-color: #4d3c14;
-  --bs-btn-bg: #c9a04d;
-  --bs-btn-border-color: rgba(165, 139, 95, 0.3);
-  --bs-btn-hover-color: #4d3c14;
-  --bs-btn-hover-bg: #bf9442;
-  --bs-btn-hover-border-color: rgba(153, 113, 32, 0.42);
-  --bs-btn-active-color: #4d3c14;
-  --bs-btn-active-bg: #bf9442;
-  --bs-btn-active-border-color: rgba(153, 113, 32, 0.42);
-  color: #4d3c14;
-  background: linear-gradient(180deg, #d7b062, #c9a04d);
-  border-color: rgba(165, 139, 95, 0.3);
-  box-shadow: 0 16px 30px rgba(151, 112, 35, 0.16);
+  --bs-btn-color: var(--kiosk-button-text-strong);
+  --bs-btn-bg: var(--kiosk-primary);
+  --bs-btn-border-color: var(--kiosk-button-outline);
+  --bs-btn-hover-color: var(--kiosk-button-text-strong);
+  --bs-btn-hover-bg: var(--kiosk-primary-dark);
+  --bs-btn-hover-border-color: var(--kiosk-border-strong);
+  --bs-btn-active-color: var(--kiosk-button-text-strong);
+  --bs-btn-active-bg: var(--kiosk-primary-dark);
+  --bs-btn-active-border-color: var(--kiosk-border-strong);
+  color: var(--kiosk-button-text-strong);
+  background: var(--kiosk-button-fill);
+  border-color: var(--kiosk-button-outline);
+  box-shadow: 0 16px 30px rgba(var(--kiosk-primary-rgb), 0.16);
   font-family: "Georgia", "Times New Roman", serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1907,9 +1888,9 @@
 
 .checkin-success__actions .btn-primary:hover,
 .checkin-success__actions .btn-primary:focus-visible {
-  color: #4d3c14;
-  background: linear-gradient(180deg, #deb866, #bf9442);
-  border-color: rgba(153, 113, 32, 0.42);
+  color: var(--kiosk-button-text-strong);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--kiosk-primary) 88%, var(--kiosk-surface)), color-mix(in srgb, var(--kiosk-accent) 90%, var(--kiosk-surface)));
+  border-color: var(--kiosk-border-strong);
 }
 
 @keyframes checkin-face-pulse {
@@ -2004,7 +1985,7 @@
   .checkin-terms__consents {
     border-left: 0;
     padding-left: 0;
-    border-top: 1px solid rgba(220, 204, 176, 0.62);
+    border-top: 1px solid var(--kiosk-border-soft);
     padding-top: 1rem;
   }
 }
@@ -2180,28 +2161,28 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.15rem;
-  border: 1px solid rgba(220, 204, 176, 0.72);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 18px 42px rgba(60, 45, 25, 0.08);
-  color: var(--color-text-primary);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 18px 42px rgba(var(--kiosk-shadow-rgb), 0.08);
+  color: var(--kiosk-text-primary);
   overflow: hidden;
 }
 
 .checkin-identity__step.is-active {
-  border-color: rgba(170, 124, 31, 0.82);
-  background: rgba(250, 244, 232, 0.92);
-  box-shadow: 0 22px 48px rgba(116, 82, 16, 0.13);
+  border-color: var(--kiosk-border-strong);
+  background: var(--kiosk-surface-overlay-strong);
+  box-shadow: 0 22px 48px rgba(var(--kiosk-primary-rgb), 0.13);
 }
 
 .checkin-identity__step.is-complete {
-  border-color: rgba(157, 126, 60, 0.46);
+  border-color: var(--kiosk-border);
 }
 
 .checkin-identity__step svg {
   width: 42px;
   height: 42px;
-  color: var(--color-accent);
+  color: var(--kiosk-primary-dark);
 }
 
 .checkin-identity__step span,
@@ -2210,7 +2191,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--kiosk-primary-dark);
   font-weight: 700;
 }
 
@@ -2220,7 +2201,7 @@
   line-height: 1.35;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(71, 58, 39, 0.76);
+  color: var(--kiosk-ink-muted);
   min-height: 2.1em;
   overflow: hidden;
 }
@@ -2229,10 +2210,10 @@
   position: relative;
   height: 620px;
   min-height: 620px;
-  border: 1px solid rgba(220, 204, 176, 0.72);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 26px 58px rgba(58, 45, 24, 0.11);
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 26px 58px rgba(var(--kiosk-shadow-rgb), 0.11);
   padding: clamp(1rem, 2vh, 1.35rem);
 }
 
@@ -2247,11 +2228,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  border: 1px solid rgba(205, 187, 149, 0.46);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 999px;
-  background: rgba(255, 253, 249, 0.94);
-  box-shadow: 0 12px 28px rgba(58, 45, 24, 0.12);
-  color: #7f6320;
+  background: var(--kiosk-surface-overlay);
+  box-shadow: 0 12px 28px rgba(var(--kiosk-shadow-rgb), 0.12);
+  color: var(--kiosk-primary-dark);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.78rem;
   letter-spacing: 0.12em;
@@ -2268,9 +2249,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 1px solid rgba(220, 204, 176, 0.72);
+  border: 1px solid var(--kiosk-border-soft);
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(250, 245, 235, 0.76));
+  background: linear-gradient(180deg, var(--kiosk-surface-overlay), var(--kiosk-surface-overlay-strong));
   padding: clamp(1rem, 2vh, 1.5rem);
   overflow: hidden;
 }
@@ -2285,7 +2266,7 @@
 
 .checkin-identity__camera-heading svg,
 .checkin-identity__approved-icon svg {
-  color: var(--color-accent);
+  color: var(--kiosk-primary-dark);
 }
 
 .checkin-identity__camera-heading span {
@@ -2293,7 +2274,7 @@
   font-size: 0.82rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--kiosk-primary-dark);
   font-weight: 700;
 }
 
@@ -2302,7 +2283,7 @@
   margin: 0.35rem auto 0;
   max-width: 560px;
   line-height: 1.45;
-  color: rgba(52, 42, 29, 0.76);
+  color: var(--kiosk-ink-muted);
 }
 
 .checkin-identity__camera-frame {
@@ -2311,9 +2292,9 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 18px;
-  background: rgba(245, 238, 225, 0.88);
-  border: 1px solid rgba(220, 204, 176, 0.88);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 24px 48px rgba(58, 45, 24, 0.12);
+  background: var(--kiosk-surface-overlay);
+  border: 1px solid var(--kiosk-border-soft);
+  box-shadow: inset 0 0 0 1px var(--kiosk-inset-highlight-soft), 0 24px 48px rgba(var(--kiosk-shadow-rgb), 0.12);
 }
 
 .checkin-identity__camera-frame video,
@@ -2327,7 +2308,7 @@
 .checkin-identity__camera-reticle {
   position: absolute;
   inset: 18%;
-  border: 4px solid rgba(255, 255, 255, 0.88);
+  border: 4px solid var(--kiosk-surface-overlay-strong);
   box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
@@ -2336,12 +2317,12 @@
 .checkin-identity__camera-error {
   min-height: 1.4rem;
   margin: 0.85rem 0 0;
-  color: var(--color-accent);
+  color: var(--kiosk-primary-dark);
   font-weight: 700;
 }
 
 .checkin-identity__camera-error {
-  color: #8a4b32;
+  color: var(--kiosk-accent);
 }
 
 .checkin-identity__camera-actions {
@@ -2364,9 +2345,9 @@
   display: grid;
   place-items: center;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(220, 204, 176, 0.72);
-  box-shadow: 0 16px 34px rgba(58, 45, 24, 0.12);
+  background: var(--kiosk-surface-overlay);
+  border: 1px solid var(--kiosk-border-soft);
+  box-shadow: 0 16px 34px rgba(var(--kiosk-shadow-rgb), 0.12);
   margin-bottom: 1.2rem;
 }
 
@@ -2389,15 +2370,15 @@
   margin-top: 0.9rem;
   padding: 1rem 1.1rem;
   border-radius: 16px;
-  border: 1px solid rgba(220, 204, 176, 0.72);
-  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid var(--kiosk-border-soft);
+  background: var(--kiosk-surface-overlay);
   text-align: left;
 }
 
 .checkin-identity__checkbox input {
   width: 22px;
   height: 22px;
-  accent-color: var(--color-accent);
+  accent-color: var(--kiosk-primary);
 }
 
 .checkin-identity__checkbox span {
@@ -2409,7 +2390,7 @@
   max-width: 1060px;
   margin: 0 auto;
   padding-top: 1rem;
-  border-top: 1px solid rgba(220, 204, 176, 0.72);
+  border-top: 1px solid var(--kiosk-border-soft);
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -2457,4 +2438,14 @@
     height: auto;
   }
 }
+
+@media (orientation: landscape) {
+  .checkin-payment > .checkin-step-header .checkin-step-header__rule {
+    display: block;
+    width: min(220px, 30vw);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--kiosk-primary), transparent);
+  }
+}
+
 

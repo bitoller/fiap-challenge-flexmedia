@@ -1,14 +1,13 @@
 import type { Dispatch, SetStateAction } from "react";
 import { formatCurrency } from "../../admin/dashboard";
+import type { AdminCopy } from "../../admin/copy";
 import type { ReservationFormState } from "../../admin/types";
 import type { ReservationSummary } from "../../types";
 
 type ReservationsPageProps = {
   emptyState: string;
-  testAreaLabel: string;
-  testHelpLabel: string;
-  createReservationLabel: string;
-  deleteReservationLabel: string;
+  copy: AdminCopy["reservationsPage"];
+  locale: string;
   reservationForm: ReservationFormState;
   setReservationForm: Dispatch<SetStateAction<ReservationFormState>>;
   reservations: ReservationSummary[];
@@ -18,10 +17,8 @@ type ReservationsPageProps = {
 
 function ReservationsPage({
   emptyState,
-  testAreaLabel,
-  testHelpLabel,
-  createReservationLabel,
-  deleteReservationLabel,
+  copy,
+  locale,
   reservationForm,
   setReservationForm,
   reservations,
@@ -29,69 +26,69 @@ function ReservationsPage({
   onDeleteReservation,
 }: ReservationsPageProps) {
   const reservationDetails = reservations.map((reservation) => [
-    { label: "Reservation ID", value: String(reservation.id) },
-    { label: "Reservation code", value: reservation.code },
-    { label: "Status", value: reservation.status },
-    { label: "Eligibility", value: reservation.eligible ? "Eligible for kiosk check-in" : "Needs reception" },
-    { label: "Hotel", value: reservation.hotelName },
-    { label: "Hotel ID", value: String(reservation.hotelId) },
-    { label: "Arrival date", value: reservation.arrivalDate },
-    { label: "Departure date", value: reservation.departureDate },
-    { label: "Room", value: `${reservation.room.number} (${reservation.room.type})` },
-    { label: "Room status", value: reservation.room.status },
-    { label: "Guest name", value: reservation.guest.fullName },
-    { label: "Guest document", value: `${reservation.guest.documentType} ${reservation.guest.maskedDocument}` },
-    { label: "Guest birth date", value: reservation.guest.birthDate },
-    { label: "Guest email", value: reservation.guest.email },
-    { label: "Guest phone", value: reservation.guest.phone },
-    { label: "Total amount", value: formatCurrency(reservation.totalAmount, reservation.currency) },
-    { label: "Currency", value: reservation.currency },
+    { label: copy.reservationId, value: String(reservation.id) },
+    { label: copy.reservationCode, value: reservation.code },
+    { label: copy.status, value: reservation.status },
+    { label: copy.eligibility, value: reservation.eligible ? copy.readyForKiosk : copy.receptionRequired },
+    { label: copy.hotel, value: reservation.hotelName },
+    { label: copy.hotelId, value: String(reservation.hotelId) },
+    { label: copy.arrivalDate, value: reservation.arrivalDate },
+    { label: copy.departureDate, value: reservation.departureDate },
+    { label: copy.room, value: `${reservation.room.number} (${reservation.room.type})` },
+    { label: copy.roomStatus, value: reservation.room.status },
+    { label: copy.guestName, value: reservation.guest.fullName },
+    { label: copy.guestDocumentLabel, value: `${reservation.guest.documentType} ${reservation.guest.maskedDocument}` },
+    { label: copy.guestBirthDate, value: reservation.guest.birthDate },
+    { label: copy.guestEmail, value: reservation.guest.email },
+    { label: copy.guestPhone, value: reservation.guest.phone },
+    { label: copy.totalAmount, value: formatCurrency(reservation.totalAmount, reservation.currency, locale) },
+    { label: copy.currency, value: reservation.currency },
     {
-      label: "Eligibility reasons",
-      value: reservation.eligibilityReasons.length ? reservation.eligibilityReasons.join(", ") : "No restrictions",
+      label: copy.eligibilityReasons,
+      value: reservation.eligibilityReasons.length ? reservation.eligibilityReasons.join(", ") : copy.noRestrictions,
     },
   ]);
 
   return (
     <section className="admin-panel">
       <div className="admin-card">
-        <h2>{testAreaLabel}</h2>
-        <p className="admin-copy">{testHelpLabel}</p>
+        <h2>{copy.title}</h2>
+        <p className="admin-copy">{copy.help}</p>
         <div className="admin-form-grid">
           <label>
-            <span>Hotel name</span>
+            <span>{copy.hotelName}</span>
             <input
               value={reservationForm.hotelName}
               onChange={(event) => setReservationForm((current) => ({ ...current, hotelName: event.target.value }))}
-              placeholder="Flex Hotel Paulista"
+              placeholder={copy.reservationForm.hotelNamePlaceholder}
             />
           </label>
           <label>
-            <span>Room number</span>
+            <span>{copy.roomNumber}</span>
             <input
               value={reservationForm.roomNumber}
               onChange={(event) => setReservationForm((current) => ({ ...current, roomNumber: event.target.value }))}
-              placeholder="1208"
+              placeholder={copy.reservationForm.roomNumberPlaceholder}
             />
           </label>
           <label>
-            <span>Room type</span>
+            <span>{copy.roomType}</span>
             <input
               value={reservationForm.roomType}
               onChange={(event) => setReservationForm((current) => ({ ...current, roomType: event.target.value }))}
-              placeholder="DELUXE"
+              placeholder={copy.reservationForm.roomTypePlaceholder}
             />
           </label>
           <label>
-            <span>Reservation code</span>
+            <span>{copy.reservationCode}</span>
             <input
               value={reservationForm.reservationCode}
               onChange={(event) => setReservationForm((current) => ({ ...current, reservationCode: event.target.value }))}
-              placeholder="Optional code"
+              placeholder={copy.reservationForm.reservationCodePlaceholder}
             />
           </label>
           <label>
-            <span>Arrival date</span>
+            <span>{copy.arrivalDate}</span>
             <input
               type="date"
               value={reservationForm.arrivalDate}
@@ -99,7 +96,7 @@ function ReservationsPage({
             />
           </label>
           <label>
-            <span>Departure date</span>
+            <span>{copy.departureDate}</span>
             <input
               type="date"
               value={reservationForm.departureDate}
@@ -107,56 +104,64 @@ function ReservationsPage({
             />
           </label>
           <label>
-            <span>Guest name</span>
+            <span>{copy.guestName}</span>
             <input
               value={reservationForm.guestFullName}
               onChange={(event) => setReservationForm((current) => ({ ...current, guestFullName: event.target.value }))}
-              placeholder="Full guest name"
+              placeholder={copy.reservationForm.guestNamePlaceholder}
             />
           </label>
           <label>
-            <span>Guest document</span>
+            <span>{copy.guestDocument}</span>
             <input
               value={reservationForm.guestDocumentNumber}
               onChange={(event) => setReservationForm((current) => ({ ...current, guestDocumentNumber: event.target.value }))}
-              placeholder="Document number"
+              placeholder={copy.reservationForm.guestDocumentPlaceholder}
             />
           </label>
           <label>
-            <span>Guest email</span>
+            <span>{copy.guestEmail}</span>
             <input
               value={reservationForm.guestEmail}
               onChange={(event) => setReservationForm((current) => ({ ...current, guestEmail: event.target.value }))}
-              placeholder="guest@example.com"
+              placeholder={copy.reservationForm.guestEmailPlaceholder}
             />
           </label>
           <label>
-            <span>Total amount</span>
+            <span>{copy.totalAmount}</span>
             <input
               value={String(reservationForm.totalAmount)}
               onChange={(event) => setReservationForm((current) => ({ ...current, totalAmount: Number(event.target.value) }))}
-              placeholder="980"
+              placeholder={copy.reservationForm.totalAmountPlaceholder}
             />
           </label>
         </div>
-        <button className="admin-primary-button" onClick={onCreateReservation}>
-          {createReservationLabel}
+        <button className="admin-primary-button" type="button" onClick={onCreateReservation}>
+          {copy.createReservationLabel}
         </button>
       </div>
       <div className="admin-card">
-        <h2>Reservations</h2>
+        <h2>{copy.reservationsTitle}</h2>
         {reservations.length ? (
           <ul className="admin-reservation-list">
             {reservations.map((reservation, index) => (
               <li key={reservation.id} className="admin-reservation-card">
                 <div className="admin-reservation-card__header">
                   <div>
-                    <p className="admin-reservation-card__kicker">Reservation #{index + 1}</p>
+                    <p className="admin-reservation-card__kicker">
+                      {copy.reservationCardKickerPrefix} #{index + 1}
+                    </p>
                     <strong>{reservation.code}</strong>
                     <span>{reservation.guest.fullName}</span>
                   </div>
-                  <div className={reservation.eligible ? "admin-reservation-card__badge admin-reservation-card__badge--good" : "admin-reservation-card__badge admin-reservation-card__badge--warning"}>
-                    {reservation.eligible ? "Ready for kiosk" : "Reception required"}
+                  <div
+                    className={
+                      reservation.eligible
+                        ? "admin-reservation-card__badge admin-reservation-card__badge--good"
+                        : "admin-reservation-card__badge admin-reservation-card__badge--warning"
+                    }
+                  >
+                    {reservation.eligible ? copy.readyForKiosk : copy.receptionRequired}
                   </div>
                 </div>
 
@@ -171,17 +176,17 @@ function ReservationsPage({
 
                 {reservation.eligibilityReasons.length ? (
                   <div className="admin-reservation-card__reasons">
-                    <span>Eligibility notes</span>
+                    <span>{copy.eligibilityNotes}</span>
                     <p>{reservation.eligibilityReasons.join(", ")}</p>
                   </div>
                 ) : null}
 
                 <div className="admin-reservation-card__footer">
                   <small>
-                    Room {reservation.room.number} - {formatCurrency(reservation.totalAmount, reservation.currency)}
+                    {copy.roomFooterPrefix} {reservation.room.number} - {formatCurrency(reservation.totalAmount, reservation.currency, locale)}
                   </small>
                   <button type="button" className="admin-secondary-button admin-danger-button" onClick={() => onDeleteReservation(reservation.id)}>
-                    {deleteReservationLabel}
+                    {copy.deleteReservationLabel}
                   </button>
                 </div>
               </li>

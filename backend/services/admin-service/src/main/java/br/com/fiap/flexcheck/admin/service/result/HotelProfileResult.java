@@ -19,12 +19,24 @@ public record HotelProfileResult(
         LocalDateTime updatedAt
 ) {
     public record BrandingResult(
-            String logoUrl,
             String primaryColor,
             String secondaryColor,
             String accentColor,
-            String welcomeHeadline,
-            String welcomeSubheadline
+            String surfaceColor,
+            String textColor,
+            String activePresetId,
+            List<PresetResult> presets
+    ) {
+    }
+
+    public record PresetResult(
+            String id,
+            String name,
+            String primaryColor,
+            String secondaryColor,
+            String accentColor,
+            String surfaceColor,
+            String textColor
     ) {
     }
 

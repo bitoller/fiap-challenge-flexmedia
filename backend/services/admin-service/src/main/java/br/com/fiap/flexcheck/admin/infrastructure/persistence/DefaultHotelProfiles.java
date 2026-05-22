@@ -22,12 +22,18 @@ final class DefaultHotelProfiles {
                         120,
                         60,
                         new HotelProfile.Branding(
-                                "https://cdn.flexcheck.local/flex-hotel-paulista/logo.svg",
                                 "#1f2937",
-                                "#d1fae5",
+                                "#f8fafc",
                                 "#f59e0b",
-                                "Welcome to Flex Hotel Paulista",
-                                "Fast, seamless and personalized check-in"
+                                "#faf8f3",
+                                "#1f2937",
+                                "warm-gold",
+                                List.of(
+                                        preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
+                                        flexMediaPreset(),
+                                        preset("warm-gold", "Elegant Warm", "#1f2937", "#f8fafc", "#f59e0b", "#ffffff", "#1f2937"),
+                                        preset("noir-lux", "Noir Luxe", "#0f172a", "#f8fafc", "#c084fc", "#111827", "#f8fafc")
+                                )
                         ),
                         new HotelProfile.Content(
                                 "pt-BR",
@@ -54,12 +60,18 @@ final class DefaultHotelProfiles {
                         90,
                         45,
                         new HotelProfile.Branding(
-                                "https://cdn.flexcheck.local/flex-hotel-ipanema/logo.svg",
                                 "#2b1f3a",
                                 "#f6efe7",
                                 "#b8860b",
-                                "Welcome to Flex Hotel Ipanema",
-                                "Ocean view, premium comfort"
+                                "#faf8f3",
+                                "#2b1f3a",
+                                "coastal-luxe",
+                                List.of(
+                                        preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
+                                        flexMediaPreset(),
+                                        preset("coastal-luxe", "Coastal Luxe", "#2b1f3a", "#f6efe7", "#b8860b", "#fffaf3", "#2b1f3a"),
+                                        preset("sunset-terrace", "Sunset Terrace", "#4a2f19", "#fff4ea", "#ef8d32", "#fffaf4", "#4a2f19")
+                                )
                         ),
                         new HotelProfile.Content(
                                 "pt-BR",
@@ -85,12 +97,18 @@ final class DefaultHotelProfiles {
                         120,
                         60,
                         new HotelProfile.Branding(
-                                "https://cdn.flexcheck.local/flex-hotel-jardim/logo.svg",
                                 "#243447",
                                 "#faf7f0",
                                 "#af8a3d",
-                                "Welcome to Flex Hotel Jardim",
-                                "Garden calm for every stay"
+                                "#ffffff",
+                                "#243447",
+                                "garden-calm",
+                                List.of(
+                                        preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
+                                        flexMediaPreset(),
+                                        preset("garden-calm", "Garden Calm", "#243447", "#faf7f0", "#af8a3d", "#ffffff", "#243447"),
+                                        preset("botanical-soft", "Botanical Soft", "#1f3d33", "#f4f7f3", "#5a8a62", "#ffffff", "#1f3d33")
+                                )
                         ),
                         new HotelProfile.Content(
                                 "pt-BR",
@@ -121,13 +139,18 @@ final class DefaultHotelProfiles {
                 120,
                 60,
                 new HotelProfile.Branding(
-                        "",
                         "#111827",
                         "#ecfeff",
-                        "#f59e0b",
-                        "Welcome",
-                        "Enjoy your stay"
-                ),
+                "#f59e0b",
+                "#faf8f3",
+                "#111827",
+                "default-luxe",
+                List.of(
+                        preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
+                        flexMediaPreset(),
+                        preset("default-luxe", "Default Luxe", "#111827", "#ecfeff", "#f59e0b", "#ffffff", "#111827")
+                )
+        ),
                 new HotelProfile.Content(
                         "pt-BR",
                         List.of("pt-BR"),
@@ -178,6 +201,38 @@ final class DefaultHotelProfiles {
                 active,
                 createdAt,
                 updatedAt
+        );
+    }
+
+    private static HotelProfile.Preset preset(
+            String id,
+            String name,
+            String primaryColor,
+            String secondaryColor,
+            String accentColor,
+            String surfaceColor,
+            String textColor
+    ) {
+        return new HotelProfile.Preset(
+                id,
+                name,
+                primaryColor,
+                secondaryColor,
+                accentColor,
+                surfaceColor,
+                textColor
+        );
+    }
+
+    private static HotelProfile.Preset flexMediaPreset() {
+        return preset(
+                "flexmedia",
+                "FlexMedia",
+                "#49663b",
+                "#f4f7ef",
+                "#5bbd5e",
+                "#ffffff",
+                "#1f2d1d"
         );
     }
 }

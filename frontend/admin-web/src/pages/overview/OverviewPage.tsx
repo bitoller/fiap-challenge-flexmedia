@@ -1,5 +1,6 @@
 import type { DashboardResult, HotelProfile, HotelSummary } from "../../types";
 import type { OverviewMetric, TrendPoint } from "../../admin/types";
+import type { AdminCopy } from "../../admin/copy";
 import { buildActivityFeed, buildMetricCards, buildTrendPath, buildTrendPoints, buildUnits } from "../../admin/dashboard";
 
 type OverviewPageProps = {
@@ -8,18 +9,8 @@ type OverviewPageProps = {
   selectedHotel: HotelSummary | null;
   loading: boolean;
   emptyState: string;
-  loadingLabel: string;
-  noActivityLabel: string;
-  noUnitsLabel: string;
-  liveActivityLabel: string;
-  performanceTitle: string;
-  performanceSubtitle: string;
-  trafficAndDemandLabel: string;
-  trafficAndDemandSubtitle: string;
-  manageFleetLabel: string;
-  viewAllLogsLabel: string;
-  exportDataLabel: string;
-  viewLiveLabel: string;
+  copy: AdminCopy["overviewPage"];
+  locale: string;
   onRefresh: () => void;
   onOpenAudit: () => void;
 };
@@ -30,26 +21,16 @@ function OverviewPage({
   selectedHotel,
   loading,
   emptyState,
-  loadingLabel,
-  noActivityLabel,
-  noUnitsLabel,
-  liveActivityLabel,
-  performanceTitle,
-  performanceSubtitle,
-  trafficAndDemandLabel,
-  trafficAndDemandSubtitle,
-  manageFleetLabel,
-  viewAllLogsLabel,
-  exportDataLabel,
-  viewLiveLabel,
+  copy,
+  locale,
   onRefresh,
   onOpenAudit,
 }: OverviewPageProps) {
-  const metrics: OverviewMetric[] = buildMetricCards(dashboard);
-  const trendPoints: TrendPoint[] = buildTrendPoints(dashboard);
+  const metrics: OverviewMetric[] = buildMetricCards(dashboard, copy.dashboard.metrics, locale);
+  const trendPoints: TrendPoint[] = buildTrendPoints(dashboard, copy.dashboard);
   const trendPath = buildTrendPath(trendPoints);
-  const activity = buildActivityFeed(dashboard, selectedHotel?.id ?? null);
-  const units = buildUnits(dashboard, selectedHotel, hotelProfile);
+  const activity = buildActivityFeed(dashboard, selectedHotel?.id ?? null, copy.dashboard.activity);
+  const units = buildUnits(dashboard, selectedHotel, hotelProfile, copy.dashboard.units, locale);
 
   return (
     <section className="admin-overview">
@@ -67,21 +48,21 @@ function OverviewPage({
         <article className="admin-card admin-card--chart">
           <div className="admin-card__head">
             <div>
-              <h2>{trafficAndDemandLabel}</h2>
-              <p className="admin-copy">{trafficAndDemandSubtitle}</p>
+              <h2>{copy.trafficAndDemandLabel}</h2>
+              <p className="admin-copy">{copy.trafficAndDemandSubtitle}</p>
             </div>
             <div className="admin-card__actions">
               <button className="admin-secondary-button" type="button" onClick={onRefresh}>
-                {exportDataLabel}
+                {copy.exportDataLabel}
               </button>
               <button className="admin-primary-button" type="button" onClick={onRefresh}>
-                {viewLiveLabel}
+                {copy.viewLiveLabel}
               </button>
             </div>
           </div>
 
           {loading ? (
-            <p className="admin-empty">{loadingLabel}</p>
+            <p className="admin-empty">{copy.loadingLabel}</p>
           ) : dashboard ? (
             <div className="admin-trend">
               <svg viewBox="0 0 100 60" className="admin-trend__svg" preserveAspectRatio="none" aria-hidden="true">
@@ -109,7 +90,7 @@ function OverviewPage({
         <aside className="admin-card admin-card--activity">
           <div className="admin-card__head">
             <div>
-              <h2>{liveActivityLabel}</h2>
+              <h2>{copy.liveActivityLabel}</h2>
             </div>
           </div>
 
@@ -126,12 +107,12 @@ function OverviewPage({
                 </article>
               ))
             ) : (
-              <p className="admin-empty">{noActivityLabel}</p>
+              <p className="admin-empty">{copy.noActivityLabel}</p>
             )}
           </div>
 
           <button className="admin-secondary-button admin-card__footer-button" type="button" onClick={onOpenAudit}>
-            {viewAllLogsLabel}
+            {copy.viewAllLogsLabel}
           </button>
         </aside>
       </section>
@@ -139,10 +120,10 @@ function OverviewPage({
       <section className="admin-units">
         <div className="admin-units__head">
           <div>
-            <h2>{performanceTitle}</h2>
-            <p className="admin-copy">{performanceSubtitle}</p>
+            <h2>{copy.performanceTitle}</h2>
+            <p className="admin-copy">{copy.performanceSubtitle}</p>
           </div>
-          <span className="admin-units__hint">{manageFleetLabel}</span>
+          <span className="admin-units__hint">{copy.manageFleetLabel}</span>
         </div>
 
         <div className="admin-unit-grid">
@@ -160,13 +141,13 @@ function OverviewPage({
                   <p className="admin-copy">{unit.subtitle}</p>
                   <div className="admin-unit-card__footer">
                     <small>{unit.detail}</small>
-                    <button type="button">{viewLiveLabel}</button>
+                    <button type="button">{copy.viewLiveLabel}</button>
                   </div>
                 </div>
               </article>
             ))
           ) : (
-            <p className="admin-empty">{noUnitsLabel}</p>
+            <p className="admin-empty">{copy.noUnitsLabel}</p>
           )}
         </div>
       </section>

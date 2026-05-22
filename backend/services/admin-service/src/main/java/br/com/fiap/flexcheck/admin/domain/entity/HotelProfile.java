@@ -18,15 +18,29 @@ public record HotelProfile(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public record Branding(
-            String logoUrl,
-            String primaryColor,
-            String secondaryColor,
-            String accentColor,
-            String welcomeHeadline,
-            String welcomeSubheadline
-    ) {
-    }
+        @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+        public record Branding(
+                String primaryColor,
+                String secondaryColor,
+                String accentColor,
+                String surfaceColor,
+                String textColor,
+                String activePresetId,
+                List<Preset> presets
+        ) {
+        }
+
+        @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+        public record Preset(
+                String id,
+                String name,
+                String primaryColor,
+                String secondaryColor,
+                String accentColor,
+                String surfaceColor,
+                String textColor
+        ) {
+        }
 
     public record Content(
             String languageDefault,

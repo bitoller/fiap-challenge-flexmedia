@@ -13,12 +13,23 @@ export interface AdminSession {
 }
 
 export interface HotelBranding {
-  logoUrl: string;
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
-  welcomeHeadline: string;
-  welcomeSubheadline: string;
+  surfaceColor: string;
+  textColor: string;
+  activePresetId: string;
+  presets: BrandingPreset[];
+}
+
+export interface BrandingPreset {
+  id: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  surfaceColor: string;
+  textColor: string;
 }
 
 export interface HotelContent {

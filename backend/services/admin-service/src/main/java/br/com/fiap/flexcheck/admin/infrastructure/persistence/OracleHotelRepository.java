@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -44,20 +45,32 @@ public class OracleHotelRepository {
 
     public HotelProfileResult updateBranding(Long hotelId, UpdateHotelBrandingCommand command) {
         HotelProfile current = loadOrCreateHotel(hotelId);
+        HotelProfile.Branding branding = new HotelProfile.Branding(
+                command.primaryColor(),
+                command.secondaryColor(),
+                command.accentColor(),
+                command.surfaceColor(),
+                command.textColor(),
+                command.activePresetId(),
+                command.presets() == null ? List.of() : command.presets().stream()
+                        .map(preset -> new HotelProfile.Preset(
+                                preset.id(),
+                                preset.name(),
+                                preset.primaryColor(),
+                                preset.secondaryColor(),
+                                preset.accentColor(),
+                                preset.surfaceColor(),
+                                preset.textColor()
+                        ))
+                        .toList()
+        );
         jdbc.update("""
                 UPDATE fc_hotel
                    SET branding_json = ?,
                        updated_at = ?
                  WHERE id = ?
                 """,
-                toJson(new HotelProfile.Branding(
-                        command.logoUrl(),
-                        command.primaryColor(),
-                        command.secondaryColor(),
-                        command.accentColor(),
-                        command.welcomeHeadline(),
-                        command.welcomeSubheadline()
-                )),
+                toJson(branding),
                 LocalDateTime.now(),
                 hotelId
         );
@@ -185,8 +198,8 @@ public class OracleHotelRepository {
             String contentJson
     ) {
         HotelProfile fallback = DefaultHotelProfiles.findDefault(id);
-        HotelProfile.Branding branding = parse(brandingJson, HotelProfile.Branding.class, fallback.branding());
-        HotelProfile.Content content = parse(contentJson, HotelProfile.Content.class, fallback.content());
+        HotelProfile.Branding branding = normalizeBranding(parse(brandingJson, HotelProfile.Branding.class, fallback.branding()), fallback.branding());
+        HotelProfile.Content content = normalizeContent(parse(contentJson, HotelProfile.Content.class, fallback.content()), fallback.content());
         return new HotelProfile(
                 id,
                 name,
@@ -215,12 +228,23 @@ public class OracleHotelRepository {
                 hotel.earlyCheckinMinutes(),
                 hotel.lateCheckoutMinutes(),
                 new HotelProfileResult.BrandingResult(
-                        hotel.branding().logoUrl(),
                         hotel.branding().primaryColor(),
                         hotel.branding().secondaryColor(),
                         hotel.branding().accentColor(),
-                        hotel.branding().welcomeHeadline(),
-                        hotel.branding().welcomeSubheadline()
+                        hotel.branding().surfaceColor(),
+                        hotel.branding().textColor(),
+                        hotel.branding().activePresetId(),
+                        hotel.branding().presets().stream()
+                                .map(preset -> new HotelProfileResult.PresetResult(
+                                        preset.id(),
+                                        preset.name(),
+                                        preset.primaryColor(),
+                                        preset.secondaryColor(),
+                                        preset.accentColor(),
+                                        preset.surfaceColor(),
+                                        preset.textColor()
+                                ))
+                                .toList()
                 ),
                 new HotelProfileResult.ContentResult(
                         hotel.content().languageDefault(),
@@ -254,6 +278,80 @@ public class OracleHotelRepository {
         }
     }
 
+    private HotelProfile.Branding normalizeBranding(HotelProfile.Branding branding, HotelProfile.Branding fallback) {
+        if (branding == null) {
+            return fallback;
+        }
+        List<HotelProfile.Preset> presets = branding.presets() == null || branding.presets().isEmpty()
+                ? List.of(originalPreset(), flexMediaPreset())
+                : branding.presets().stream()
+                .map(preset -> new HotelProfile.Preset(
+                        coalesce(preset.id(), ""),
+                        canonicalPresetName(coalesce(preset.id(), ""), preset.name()),
+                        canonicalPrimaryColor(coalesce(preset.id(), ""), preset.primaryColor(), fallback.primaryColor()),
+                        canonicalSecondaryColor(coalesce(preset.id(), ""), preset.secondaryColor(), fallback.secondaryColor()),
+                        canonicalAccentColor(coalesce(preset.id(), ""), preset.accentColor(), fallback.accentColor()),
+                        canonicalSurfaceColor(coalesce(preset.id(), ""), preset.surfaceColor(), fallback.surfaceColor()),
+                        canonicalTextColor(coalesce(preset.id(), ""), preset.textColor(), fallback.textColor())
+                ))
+                .toList();
+
+        boolean hasOriginal = presets.stream().anyMatch(preset -> "original".equalsIgnoreCase(preset.id()));
+        if (!hasOriginal) {
+            List<HotelProfile.Preset> nextPresets = new ArrayList<>();
+            nextPresets.add(originalPreset());
+            nextPresets.add(flexMediaPreset());
+            nextPresets.addAll(presets);
+            presets = List.copyOf(nextPresets);
+        } else {
+            boolean hasFlexMedia = presets.stream().anyMatch(preset -> "flexmedia".equalsIgnoreCase(preset.id()));
+            if (!hasFlexMedia) {
+                List<HotelProfile.Preset> nextPresets = new ArrayList<>();
+                nextPresets.add(presets.get(0));
+                nextPresets.add(flexMediaPreset());
+                nextPresets.addAll(presets.stream().skip(1).toList());
+                presets = List.copyOf(nextPresets);
+            }
+        }
+
+        return new HotelProfile.Branding(
+                coalesce(branding.primaryColor(), fallback.primaryColor()),
+                coalesce(branding.secondaryColor(), fallback.secondaryColor()),
+                coalesce(branding.accentColor(), fallback.accentColor()),
+                coalesce(branding.surfaceColor(), fallback.surfaceColor()),
+                coalesce(branding.textColor(), fallback.textColor()),
+                coalesce(branding.activePresetId(), fallback.activePresetId()),
+                presets
+        );
+    }
+
+    private HotelProfile.Content normalizeContent(HotelProfile.Content content, HotelProfile.Content fallback) {
+        if (content == null) {
+            return fallback;
+        }
+        return new HotelProfile.Content(
+                coalesce(content.languageDefault(), fallback.languageDefault()),
+                content.supportedLanguages() == null || content.supportedLanguages().isEmpty()
+                        ? fallback.supportedLanguages()
+                        : List.copyOf(content.supportedLanguages()),
+                content.promotions() == null || content.promotions().isEmpty()
+                        ? fallback.promotions()
+                        : content.promotions().stream()
+                        .map(promotion -> new HotelProfile.Promotion(
+                                coalesce(promotion.title(), "Promotion"),
+                                coalesce(promotion.description(), ""),
+                                promotion.active(),
+                                promotion.order()
+                        ))
+                        .toList(),
+                content.amenities() == null || content.amenities().isEmpty()
+                        ? fallback.amenities()
+                        : List.copyOf(content.amenities()),
+                coalesce(content.mapUrl(), fallback.mapUrl()),
+                coalesce(content.supportMessage(), fallback.supportMessage())
+        );
+    }
+
     private String toJson(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
@@ -264,6 +362,94 @@ public class OracleHotelRepository {
 
     private String fallbackOwner(String ownerName) {
         return ownerName == null || ownerName.isBlank() ? "FlexMedia" : ownerName;
+    }
+
+    private String coalesce(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private String canonicalPresetName(String id, String fallbackName) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "Original";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "FlexMedia";
+        }
+        return coalesce(fallbackName, "Preset");
+    }
+
+    private String canonicalPrimaryColor(String id, String fallbackColor, String fallback) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "#b8860b";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "#49663b";
+        }
+        return coalesce(fallbackColor, fallback);
+    }
+
+    private String canonicalSecondaryColor(String id, String fallbackColor, String fallback) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "#faf8f3";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "#f4f7ef";
+        }
+        return coalesce(fallbackColor, fallback);
+    }
+
+    private String canonicalAccentColor(String id, String fallbackColor, String fallback) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "#8b7355";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "#5bbd5e";
+        }
+        return coalesce(fallbackColor, fallback);
+    }
+
+    private String canonicalSurfaceColor(String id, String fallbackColor, String fallback) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "#faf8f3";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "#ffffff";
+        }
+        return coalesce(fallbackColor, fallback);
+    }
+
+    private String canonicalTextColor(String id, String fallbackColor, String fallback) {
+        if ("original".equalsIgnoreCase(id)) {
+            return "#2c2416";
+        }
+        if ("flexmedia".equalsIgnoreCase(id)) {
+            return "#1f2d1d";
+        }
+        return coalesce(fallbackColor, fallback);
+    }
+
+    private HotelProfile.Preset originalPreset() {
+        return new HotelProfile.Preset(
+                "original",
+                "Original",
+                "#b8860b",
+                "#faf8f3",
+                "#8b7355",
+                "#faf8f3",
+                "#2c2416"
+        );
+    }
+
+    private HotelProfile.Preset flexMediaPreset() {
+        return new HotelProfile.Preset(
+                "flexmedia",
+                "FlexMedia",
+                "#49663b",
+                "#f4f7ef",
+                "#5bbd5e",
+                "#ffffff",
+                "#1f2d1d"
+        );
     }
 
     private boolean isActive(String active) {
