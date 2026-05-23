@@ -18,6 +18,7 @@ import { SummaryPage as CheckoutSummaryPage } from "./presentation/features/chec
 import { SuccessPage as CheckoutSuccessPage } from "./presentation/features/checkout-flow/pages/SuccessPage";
 import { RecoveryPage as CheckoutRecoveryPage } from "./presentation/features/checkout-flow/pages/RecoveryPage";
 import { PrivacyPolicyPage } from "./presentation/features/legal/pages/PrivacyPolicyPage";
+import { ServicesPage } from "./presentation/features/services/pages/ServicesPage";
 
 type FlowName = "checkin" | "services";
 
@@ -83,7 +84,8 @@ export default function App() {
           <Route path="/checkout/receipt" element={<Navigate to="/checkout/success" replace />} />
           <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           <Route path="/checkout/recovery" element={<CheckoutRecoveryPage />} />
-          <Route path="/services" element={<FlowPlaceholderPage flow="services" />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/map" element={<Navigate to="/services?tab=map" replace />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
