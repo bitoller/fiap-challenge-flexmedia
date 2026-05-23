@@ -82,6 +82,7 @@ export interface AuditEvent {
   resourceId: string | null;
   result: string;
   correlationId: string | null;
+  createdAt?: string | null;
 }
 
 export interface KioskDevice {

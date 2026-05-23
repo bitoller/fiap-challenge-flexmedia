@@ -100,6 +100,16 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     @Override
+    public Long findHotelIdBySession(Long sessionId) {
+        return jdbc.queryForObject("""
+                SELECT k.hotel_id
+                  FROM fc_checkin_session s
+                  JOIN fc_kiosk_device k ON k.id = s.kiosk_id
+                 WHERE s.id = ?
+                """, Long.class, sessionId);
+    }
+
+    @Override
     public Long findReservationIdBySession(Long sessionId) {
         return jdbc.queryForObject("""
                 SELECT reservation_id

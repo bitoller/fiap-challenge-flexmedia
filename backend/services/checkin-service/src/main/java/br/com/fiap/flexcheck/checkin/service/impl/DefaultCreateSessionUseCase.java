@@ -7,9 +7,12 @@ import br.com.fiap.flexcheck.checkin.service.CreateSessionUseCase;
 import br.com.fiap.flexcheck.checkin.service.command.CreateSessionCommand;
 import br.com.fiap.flexcheck.checkin.service.result.SessionResult;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class DefaultCreateSessionUseCase implements CreateSessionUseCase {
+    private static final Logger log = LoggerFactory.getLogger(DefaultCreateSessionUseCase.class);
     private final SessionRepository sessionRepository;
     private final AuditServiceClient auditServiceClient;
 
@@ -21,16 +24,20 @@ public class DefaultCreateSessionUseCase implements CreateSessionUseCase {
     @Override
     public SessionResult execute(CreateSessionCommand command) {
         CheckinSession session = sessionRepository.createSession(command.kioskId(), command.flowType(), command.language());
-        auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(
-                command.kioskId(),
-                "KIOSK",
-                String.valueOf(command.kioskId()),
-                "SESSION_STARTED",
-                "CHECKIN_SESSION",
-                String.valueOf(session.id()),
-                "SUCCESS",
-                session.correlationId()
-        ));
+        try {
+            auditServiceClient.record(new br.com.fiap.flexcheck.checkin.domain.entity.AuditEvent(
+                    command.kioskId(),
+                    "KIOSK",
+                    String.valueOf(command.kioskId()),
+                    "SESSION_STARTED",
+                    "CHECKIN_SESSION",
+                    String.valueOf(session.id()),
+                    "SUCCESS",
+                    session.correlationId()
+            ));
+        } catch (Exception exception) {
+            log.warn("Could not record session start audit event for session {}", session.id(), exception);
+        }
         return new SessionResult(session.id(), session.status(), session.expiresAt(), session.correlationId());
     }
 }

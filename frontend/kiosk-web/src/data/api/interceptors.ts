@@ -1,4 +1,5 @@
 import { CheckinAddOnOffer, CheckinAddOnQuote, CompleteCheckinResponse, CheckoutCharge, CheckoutResponse, CheckoutStayPreview, Guest, IdentityVerificationResponse, Reservation, Room, Session, SessionReservation } from "../../domain/models";
+import { KIOSK_CONFIG } from "../../core/constants";
 
 export const checkoutResponseInterceptor = (data: any): CheckoutResponse => {
   return {
@@ -144,7 +145,7 @@ const roomResponseInterceptor = (data: any): Room => {
 
 export const createSessionRequestInterceptor = (flowType: 'CHECKIN' | 'CHECKOUT', language: string = 'en') => {
   return {
-    kioskId: 1,
+    kioskId: KIOSK_CONFIG.KIOSK_ID,
     flowType,
     language,
   };

@@ -8,6 +8,7 @@ public record AuditEvent(
         String resourceType,
         String resourceId,
         String result,
-        String correlationId
+        String correlationId,
+        String createdAt
 ) {
 }

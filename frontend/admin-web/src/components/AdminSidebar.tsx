@@ -19,7 +19,7 @@ function AdminSidebar({ portal, role, labels, logoutLabel, selectedView, onSelec
       </div>
 
       <nav className="admin-nav">
-        {(["overview", "reservations", "devices", "audit", "branding", "identity"] as ViewKey[]).map((view) => (
+        {(["overview", "reservations", "devices", "audit", "branding"] as ViewKey[]).map((view) => (
           <button key={view} type="button" className={selectedView === view ? "is-active" : ""} onClick={() => onSelectView(view)}>
             {labels[view]}
           </button>

@@ -9,10 +9,11 @@ import ReservationsPage from "./pages/reservations/ReservationsPage";
 import BrandingPage from "./pages/branding/BrandingPage";
 import DevicesPage from "./pages/devices/DevicesPage";
 import AuditPage from "./pages/audit/AuditPage";
-import IdentityPage from "./pages/identity/IdentityPage";
 import AdminErrorBoundary from "./components/AdminErrorBoundary";
 
 const ADMIN_LANGUAGE_KEY = "admin-language";
+const ADMIN_SELECTED_VIEW_KEY = "admin-selected-view";
+const ADMIN_SELECTED_HOTEL_KEY = "admin-selected-hotel";
 
 function interpolate(template: string, values: Record<string, string>) {
   return Object.entries(values).reduce((result, [key, value]) => result.replaceAll(`{${key}}`, value), template);
@@ -42,8 +43,36 @@ function readStoredSession(): AdminSession | null {
   }
 }
 
+function readStoredView(): ViewKey {
+  try {
+    const stored = localStorage.getItem(ADMIN_SELECTED_VIEW_KEY);
+    return stored === "overview" ||
+      stored === "reservations" ||
+      stored === "branding" ||
+      stored === "devices" ||
+      stored === "audit"
+      ? stored
+      : "overview";
+  } catch {
+    return "overview";
+  }
+}
+
+function readStoredHotelId(): number | null {
+  try {
+    const stored = localStorage.getItem(ADMIN_SELECTED_HOTEL_KEY);
+    if (!stored) {
+      return null;
+    }
+    const parsed = Number(stored);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function createAvailableRoomNumber() {
-  return `9${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 10)}`;
+  return String(10 + Math.floor(Math.random() * 90));
 }
 
 function App() {
@@ -53,8 +82,8 @@ function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [hotels, setHotels] = useState<HotelSummary[]>(session?.hotels ?? []);
-  const [selectedHotelId, setSelectedHotelId] = useState<number | null>(session?.hotels?.[0]?.id ?? null);
-  const [selectedView, setSelectedView] = useState<ViewKey>("overview");
+  const [selectedHotelId, setSelectedHotelId] = useState<number | null>(() => readStoredHotelId() ?? session?.hotels?.[0]?.id ?? null);
+  const [selectedView, setSelectedView] = useState<ViewKey>(() => readStoredView());
   const [dashboard, setDashboard] = useState<DashboardResult | null>(null);
   const [hotelProfile, setHotelProfile] = useState<HotelProfile | null>(null);
   const [reservations, setReservations] = useState<ReservationSummary[]>([]);
@@ -62,7 +91,6 @@ function App() {
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [sessionCheckTick, setSessionCheckTick] = useState(0);
   const [reservationForm, setReservationForm] = useState<ReservationFormState>({
     hotelName: "",
     roomNumber: createAvailableRoomNumber(),
@@ -133,13 +161,36 @@ function App() {
   }, [language]);
 
   useEffect(() => {
+    try {
+      localStorage.setItem(ADMIN_SELECTED_VIEW_KEY, selectedView);
+    } catch {
+    }
+  }, [selectedView]);
+
+  useEffect(() => {
+    try {
+      if (selectedHotelId === null) {
+        localStorage.removeItem(ADMIN_SELECTED_HOTEL_KEY);
+        return;
+      }
+      localStorage.setItem(ADMIN_SELECTED_HOTEL_KEY, String(selectedHotelId));
+    } catch {
+    }
+  }, [selectedHotelId]);
+
+  useEffect(() => {
     if (session && hotels.length === 0) {
       adminApi.listHotels().then(setHotels).catch(() => setHotels([]));
     }
   }, [hotels.length, session]);
 
   useEffect(() => {
-    if (!selectedHotelId && hotels.length > 0) {
+    if (hotels.length === 0) {
+      return;
+    }
+
+    const hotelExists = selectedHotelId !== null && hotels.some((hotel) => hotel.id === selectedHotelId);
+    if (!hotelExists) {
       setSelectedHotelId(hotels[0].id);
       setReservationForm((current) => ({ ...current, hotelName: hotels[0].name }));
     }
@@ -158,34 +209,71 @@ function App() {
   }, [hotels, selectedHotelId]);
 
   useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setMessage("");
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [message]);
+
+  useEffect(() => {
+    setMessage("");
+  }, [selectedView, selectedHotelId]);
+
+  const refreshData = async (options: { silent?: boolean } = {}) => {
+    if (!selectedHotelId) {
+      return;
+    }
+
+    if (!options.silent) {
+      setLoading(true);
+      setMessage("");
+    }
+
+    try {
+      const [dashboardResult, profileResult, reservationsResult, deviceStatusResult, auditResult] = await Promise.all([
+        adminApi.getDashboard(selectedHotelId),
+        adminApi.getHotel(selectedHotelId),
+        adminApi.listReservations(selectedHotelId),
+        adminApi.getDevices(selectedHotelId),
+        adminApi.getAudit(selectedHotelId),
+      ]);
+
+      setDashboard(dashboardResult);
+      setHotelProfile(profileResult);
+      setReservations(reservationsResult);
+      setDeviceStatus(deviceStatusResult);
+      setAudit(auditResult);
+      if (!options.silent) {
+        setMessage("");
+      }
+    } catch (error) {
+      const nextMessage = resolvePageErrorMessage(error, t.messages.loadPortalData);
+      if (nextMessage === null) {
+        return;
+      }
+      if (!options.silent || !message) {
+        setMessage(nextMessage);
+      }
+    } finally {
+      if (!options.silent) {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
     if (!session || !selectedHotelId) {
       return;
     }
 
-    setLoading(true);
-    Promise.all([
-      adminApi.getDashboard(selectedHotelId),
-      adminApi.getHotel(selectedHotelId),
-      adminApi.listReservations(selectedHotelId),
-      adminApi.getDevices(selectedHotelId),
-      adminApi.getAudit(selectedHotelId),
-    ])
-      .then(([dashboardResult, profileResult, reservationsResult, deviceStatusResult, auditResult]) => {
-        setDashboard(dashboardResult);
-        setHotelProfile(profileResult);
-        setReservations(reservationsResult);
-        setDeviceStatus(deviceStatusResult);
-        setAudit(auditResult);
-        setMessage("");
-      })
-      .catch((error) => {
-        const nextMessage = resolvePageErrorMessage(error, t.messages.loadPortalData);
-        if (nextMessage === null) {
-          return;
-        }
-        setMessage(nextMessage);
-      })
-      .finally(() => setLoading(false));
+    void refreshData();
   }, [selectedHotelId, session, t.messages.loadPortalData]);
 
   useEffect(() => {
@@ -229,7 +317,40 @@ function App() {
       window.removeEventListener("focus", handleFocus);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [session, sessionCheckTick]);
+  }, [session]);
+
+  useEffect(() => {
+    if (!session || !selectedHotelId) {
+      return;
+    }
+
+    if (selectedView === "branding") {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refreshData({ silent: true });
+    }, 5000);
+
+    const handleFocus = () => {
+      void refreshData({ silent: true });
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void refreshData({ silent: true });
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [session, selectedHotelId, language, selectedView]);
 
   const selectedHotel = useMemo(
     () => hotels.find((hotel) => hotel.id === selectedHotelId) ?? null,
@@ -245,8 +366,14 @@ function App() {
       const result = await adminApi.login(username, password);
       setSession(result);
       setHotels(result.hotels);
-      setSelectedHotelId(result.hotels[0]?.id ?? null);
-      setSelectedView("overview");
+      const storedView = readStoredView();
+      const storedHotelId = readStoredHotelId();
+      setSelectedHotelId(
+        storedHotelId !== null && result.hotels.some((hotel) => hotel.id === storedHotelId)
+          ? storedHotelId
+          : result.hotels[0]?.id ?? null
+      );
+      setSelectedView(storedView);
     } catch (error) {
       setMessage(resolveLoginErrorMessage(error));
     } finally {
@@ -266,39 +393,8 @@ function App() {
     setMessage("");
     localStorage.removeItem("admin-session");
     localStorage.removeItem("admin-token");
-  };
-
-  const refreshData = async () => {
-    if (!selectedHotelId) {
-      return;
-    }
-
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const [dashboardResult, profileResult, reservationsResult, deviceStatusResult, auditResult] = await Promise.all([
-        adminApi.getDashboard(selectedHotelId),
-        adminApi.getHotel(selectedHotelId),
-        adminApi.listReservations(selectedHotelId),
-        adminApi.getDevices(selectedHotelId),
-        adminApi.getAudit(selectedHotelId),
-      ]);
-
-      setDashboard(dashboardResult);
-      setHotelProfile(profileResult);
-      setReservations(reservationsResult);
-      setDeviceStatus(deviceStatusResult);
-      setAudit(auditResult);
-    } catch (error) {
-      const nextMessage = resolvePageErrorMessage(error, t.messages.refreshOverviewData);
-      if (nextMessage === null) {
-        return;
-      }
-      setMessage(nextMessage);
-    } finally {
-      setLoading(false);
-    }
+    localStorage.removeItem(ADMIN_SELECTED_VIEW_KEY);
+    localStorage.removeItem(ADMIN_SELECTED_HOTEL_KEY);
   };
 
   const saveBranding = async (brandingOverride?: HotelProfile["branding"]) => {
@@ -309,7 +405,7 @@ function App() {
     try {
       const updated = await adminApi.updateBranding(selectedHotelId, brandingOverride ?? hotelProfile.branding);
       setHotelProfile(updated);
-      await refreshData();
+      await refreshData({ silent: true });
     } catch (error) {
       const nextMessage = resolvePageErrorMessage(error, t.messages.refreshOverviewData);
       if (nextMessage === null) {
@@ -326,7 +422,7 @@ function App() {
     try {
       const updated = await adminApi.updateContent(selectedHotelId, hotelProfile.content);
       setHotelProfile(updated);
-      await refreshData();
+      await refreshData({ silent: true });
     } catch (error) {
       const nextMessage = resolvePageErrorMessage(error, t.messages.refreshOverviewData);
       if (nextMessage === null) {
@@ -430,7 +526,6 @@ function App() {
     branding: t.branding,
     devices: t.devices,
     audit: t.audit,
-    identity: t.identity,
   } satisfies Record<ViewKey, string>;
 
   return (
@@ -468,7 +563,7 @@ function App() {
                   </option>
                 ))}
               </select>
-              <button className="admin-secondary-button" type="button" onClick={refreshData}>
+              <button className="admin-secondary-button" type="button" onClick={() => void refreshData()}>
                 {t.refresh}
               </button>
             </div>
@@ -487,6 +582,7 @@ function App() {
               locale={language}
               onRefresh={refreshData}
               onOpenAudit={() => setSelectedView("audit")}
+              onOpenDevices={() => setSelectedView("devices")}
             />
           ) : null}
 
@@ -526,8 +622,6 @@ function App() {
           ) : null}
 
           {selectedView === "audit" ? <AuditPage audit={audit} emptyState={t.emptyState} copy={t.auditPage} locale={language} onRefresh={refreshData} /> : null}
-
-          {selectedView === "identity" ? <IdentityPage copy={t.identityPage} /> : null}
         </main>
       </div>
     </AdminErrorBoundary>

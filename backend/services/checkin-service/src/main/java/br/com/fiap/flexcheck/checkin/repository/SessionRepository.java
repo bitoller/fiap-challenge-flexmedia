@@ -16,6 +16,8 @@ public interface SessionRepository {
 
     Long findKioskIdBySession(Long sessionId);
 
+    Long findHotelIdBySession(Long sessionId);
+
     Long findReservationIdBySession(Long sessionId);
 
     Long findGuestIdBySession(Long sessionId);

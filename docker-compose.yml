@@ -89,6 +89,8 @@ services:
       context: ./frontend/kiosk-web
       args:
         VITE_API_URL: ${KIOSK_API_URL:-/api/v1}
+        VITE_KIOSK_ID: ${KIOSK_ID:-1}
+        VITE_ACTIVE_HOTEL_ID: ${ACTIVE_HOTEL_ID:-1}
     image: flexcheck/kiosk-web:demo
     container_name: flexcheck-kiosk-web
     restart: unless-stopped

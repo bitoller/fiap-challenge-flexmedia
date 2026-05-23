@@ -1,6 +1,7 @@
 import type { Language } from "./types";
 
 type DashboardCopy = {
+  trendYAxisLabel: string;
   trendLabels: [string, string, string, string, string];
   metrics: {
     activeRoomsTitle: string;
@@ -162,6 +163,7 @@ type AuditCopy = {
   sortBy: string;
   mostRecent: string;
   oldest: string;
+  when: string;
   entry: string;
   referenceId: string;
   category: string;
@@ -285,7 +287,7 @@ type AdminCopyShape = {
 };
 
 const en: AdminCopyShape = {
-  portal: "L'Eclat Administration",
+  portal: "Byte Me",
   loginTitle: "Administrator access",
   loginSubtitle: "Sign in to manage hotels, reservations, and operational views.",
   username: "Username",
@@ -340,11 +342,12 @@ const en: AdminCopyShape = {
     manageFleetLabel: "Manage fleet",
     viewAllLogsLabel: "View all logs",
     exportDataLabel: "Export data",
-    viewLiveLabel: "View live",
+    viewLiveLabel: "View devices",
     loadingLabel: "Loading overview data...",
     noActivityLabel: "No recent operational activity for this hotel yet.",
     noUnitsLabel: "No unit data available for this hotel yet.",
     dashboard: {
+    trendYAxisLabel: "Events",
       trendLabels: ["00:00", "06:00", "12:00", "18:00", "Now"],
       metrics: {
         activeRoomsTitle: "Active rooms",
@@ -488,8 +491,9 @@ const en: AdminCopyShape = {
     sortBy: "Sort by",
     mostRecent: "Most recent",
     oldest: "Oldest",
-    entry: "Entry",
-    referenceId: "Reference ID",
+    when: "When",
+    entry: "Event",
+    referenceId: "Reference",
     category: "Category",
     details: "Details",
     status: "Status",
@@ -559,7 +563,7 @@ const en: AdminCopyShape = {
 };
 
 const ptBR: AdminCopyShape = {
-  portal: "L'Eclat Administration",
+  portal: "Byte Me",
   loginTitle: "Acesso administrativo",
   loginSubtitle: "Entre para gerenciar hotéis, reservas e visões operacionais.",
   username: "Usuário",
@@ -614,11 +618,12 @@ const ptBR: AdminCopyShape = {
     manageFleetLabel: "Gerenciar frota",
     viewAllLogsLabel: "Ver todos os logs",
     exportDataLabel: "Exportar dados",
-    viewLiveLabel: "Ver ao vivo",
+    viewLiveLabel: "Ver dispositivos",
     loadingLabel: "Carregando dados do overview...",
     noActivityLabel: "Nenhuma atividade operacional recente para este hotel.",
     noUnitsLabel: "Nenhum dado de unidade disponível para este hotel.",
     dashboard: {
+    trendYAxisLabel: "Eventos",
       trendLabels: ["00:00", "06:00", "12:00", "18:00", "Agora"],
       metrics: {
         activeRoomsTitle: "Quartos ativos",
@@ -762,8 +767,9 @@ const ptBR: AdminCopyShape = {
     sortBy: "Ordenar por",
     mostRecent: "Mais recentes",
     oldest: "Mais antigas",
-    entry: "Entrada",
-    referenceId: "ID de referência",
+    when: "Quando",
+    entry: "Evento",
+    referenceId: "Referência",
     category: "Categoria",
     details: "Detalhes",
     status: "Status",
@@ -833,7 +839,7 @@ const ptBR: AdminCopyShape = {
 };
 
 const es: AdminCopyShape = {
-  portal: "L'Eclat Administration",
+  portal: "Byte Me",
   loginTitle: "Acceso administrativo",
   loginSubtitle: "Ingrese para gestionar hoteles, reservas y vistas operativas.",
   username: "Usuario",
@@ -888,11 +894,12 @@ const es: AdminCopyShape = {
     manageFleetLabel: "Gestionar flota",
     viewAllLogsLabel: "Ver todos los registros",
     exportDataLabel: "Exportar datos",
-    viewLiveLabel: "Ver en vivo",
+    viewLiveLabel: "Ver dispositivos",
     loadingLabel: "Cargando datos del resumen...",
     noActivityLabel: "Todavía no hay actividad operativa reciente para este hotel.",
     noUnitsLabel: "Todavía no hay datos de unidades para este hotel.",
     dashboard: {
+    trendYAxisLabel: "Eventos",
       trendLabels: ["00:00", "06:00", "12:00", "18:00", "Ahora"],
       metrics: {
         activeRoomsTitle: "Habitaciones activas",
@@ -1036,7 +1043,8 @@ const es: AdminCopyShape = {
     sortBy: "Ordenar por",
     mostRecent: "Más recientes",
     oldest: "Más antiguos",
-    entry: "Entrada",
+    when: "Cuándo",
+    entry: "Evento",
     referenceId: "ID de referencia",
     category: "Categoría",
     details: "Detalles",

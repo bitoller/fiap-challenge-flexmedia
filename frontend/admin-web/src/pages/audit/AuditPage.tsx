@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { formatNumber } from "../../admin/dashboard";
+import { formatEventTimestamp, formatNumber, localizeAction, localizeActorType, localizeResourceType } from "../../admin/dashboard";
 import type { AdminCopy } from "../../admin/copy";
+import type { Language } from "../../admin/types";
 import type { AuditEvent } from "../../types";
 
 type AuditFilter = "all" | "security" | "system" | "ux";
@@ -10,12 +11,21 @@ type AuditPageProps = {
   audit: AuditEvent[];
   emptyState: string;
   copy: AdminCopy["auditPage"];
-  locale: string;
+  locale: Language;
   onRefresh: () => void;
 };
 
 function normalize(value: string | null | undefined, fallback = "—") {
   return value && value.trim() ? value.trim() : fallback;
+}
+
+function toTitleCase(value: string) {
+  return value
+    .replace(/[_-]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 function classifyAudit(event: AuditEvent): AuditFilter {
@@ -57,6 +67,22 @@ function getCategoryLabel(category: AuditFilter, copy: AdminCopy["auditPage"]) {
     default:
       return copy.allEvents;
   }
+}
+
+function humanizeAudit(event: AuditEvent, locale: Language) {
+  const action = localizeAction(normalize(event.action, "Event"), locale);
+  const actor = normalize(event.actorType, "");
+  const resourceType = normalize(event.resourceType, "");
+  const resourceId = normalize(event.resourceId, "");
+  const correlationId = normalize(event.correlationId, "");
+  const when = formatEventTimestamp(event.createdAt, locale) || "—";
+
+  const contextParts = [actor ? localizeActorType(actor, locale) : "", resourceType ? localizeResourceType(resourceType, locale) : "", resourceId].filter(Boolean);
+  const context = contextParts.length ? contextParts.join(" • ") : "—";
+  const reference = resourceId !== "—" ? resourceId : correlationId !== "—" ? correlationId : "—";
+  const referenceLabel = resourceType !== "—" ? localizeResourceType(resourceType, locale) : "—";
+
+  return { action, context, reference, referenceLabel, when, actor };
 }
 
 function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProps) {
@@ -166,38 +192,45 @@ function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProp
 
         <div className="admin-audit__table">
           <div className="admin-audit__head">
+            <span>{copy.when}</span>
             <span>{copy.entry}</span>
             <span>{copy.referenceId}</span>
-            <span>{copy.category}</span>
             <span>{copy.details}</span>
+            <span>{copy.category}</span>
             <span>{copy.status}</span>
           </div>
 
           {filteredEntries.length ? (
-            filteredEntries.map(({ event, category, position }) => (
-              <div key={`${position}-${event.correlationId ?? event.action}-${event.resourceId ?? event.actorId ?? ""}`} className="admin-audit__row">
-                <div className="admin-audit__cell">
-                  <strong>#{formatNumber(position, locale)}</strong>
-                  <small>{normalize(event.actorType, "Kiosk")}</small>
+            filteredEntries.map(({ event, category, position }) => {
+              const human = humanizeAudit(event, locale);
+
+              return (
+                <div key={`${position}-${event.correlationId ?? event.action}-${event.resourceId ?? event.actorId ?? ""}`} className="admin-audit__row">
+                  <div className="admin-audit__cell">
+                    <strong>{human.when}</strong>
+                    <small>{sortOrder === "newest" ? copy.mostRecent : copy.oldest}</small>
+                  </div>
+                  <div className="admin-audit__cell">
+                    <strong>{human.action}</strong>
+                    <small>{human.actor !== "—" ? localizeActorType(human.actor, locale) : "—"}</small>
+                  </div>
+                  <div className="admin-audit__cell">
+                    <strong>{human.reference}</strong>
+                    <small>{human.referenceLabel}</small>
+                  </div>
+                  <div className="admin-audit__cell">
+                    <strong>{human.context}</strong>
+                    <small>{normalize(event.correlationId, copy.noCorrelation)}</small>
+                  </div>
+                  <div className="admin-audit__cell">
+                    <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category, copy)}</span>
+                  </div>
+                  <div className="admin-audit__cell">
+                    <span className={`admin-audit__pill admin-audit__pill--${getTone(event.result)}`}>{event.result}</span>
+                  </div>
                 </div>
-                <div className="admin-audit__cell">
-                  <strong>{normalize(event.resourceId ?? event.actorId, "—")}</strong>
-                  <small>{normalize(event.resourceType, "—")}</small>
-                </div>
-                <div className="admin-audit__cell">
-                  <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category, copy)}</span>
-                </div>
-                <div className="admin-audit__cell">
-                  <strong>{event.action}</strong>
-                  <small>
-                    {normalize(event.resourceType, copy.resource)} • {normalize(event.correlationId, copy.noCorrelation)}
-                  </small>
-                </div>
-                <div className="admin-audit__cell">
-                  <span className={`admin-audit__pill admin-audit__pill--${getTone(event.result)}`}>{event.result}</span>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="admin-empty admin-audit__empty">{emptyState}</p>
           )}

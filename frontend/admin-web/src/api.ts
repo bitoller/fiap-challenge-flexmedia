@@ -80,7 +80,17 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     return undefined as T;
   }
 
-  return (await response.json()) as T;
+  const raw = await response.text();
+  if (!raw.trim()) {
+    return undefined as T;
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    return raw as T;
+  }
+
+  return JSON.parse(raw) as T;
 }
 
 export const adminApi = {

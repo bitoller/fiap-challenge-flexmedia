@@ -29,8 +29,8 @@ public class DefaultAttachReservationUseCase implements AttachReservationUseCase
     @Override
     @Transactional
     public SessionReservationResult execute(Long sessionId, AttachReservationCommand command) {
-        Long kioskId = sessionRepository.findKioskIdBySession(sessionId);
-        var reservation = reservationServiceClient.search(kioskId, command.searchType(), command.searchValue());
+        Long hotelId = sessionRepository.findHotelIdBySession(sessionId);
+        var reservation = reservationServiceClient.search(hotelId, command.searchType(), command.searchValue());
         if (!reservation.eligible()) {
             sessionRepository.failSession(sessionId, "RESERVATION_NOT_ELIGIBLE");
             throw new BusinessException(

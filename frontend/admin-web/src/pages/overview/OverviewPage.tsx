@@ -1,7 +1,7 @@
 import type { DashboardResult, HotelProfile, HotelSummary } from "../../types";
 import type { OverviewMetric, TrendPoint } from "../../admin/types";
 import type { AdminCopy } from "../../admin/copy";
-import { buildActivityFeed, buildMetricCards, buildTrendPath, buildTrendPoints, buildUnits } from "../../admin/dashboard";
+import { buildActivityFeed, buildMetricCards, buildTrendPath, buildTrendPoints, buildUnits, formatNumber } from "../../admin/dashboard";
 
 type OverviewPageProps = {
   dashboard: DashboardResult | null;
@@ -13,6 +13,7 @@ type OverviewPageProps = {
   locale: string;
   onRefresh: () => void;
   onOpenAudit: () => void;
+  onOpenDevices: () => void;
 };
 
 function OverviewPage({
@@ -23,13 +24,15 @@ function OverviewPage({
   emptyState,
   copy,
   locale,
-  onRefresh,
   onOpenAudit,
+  onOpenDevices,
 }: OverviewPageProps) {
   const metrics: OverviewMetric[] = buildMetricCards(dashboard, copy.dashboard.metrics, locale);
   const trendPoints: TrendPoint[] = buildTrendPoints(dashboard, copy.dashboard);
   const trendPath = buildTrendPath(trendPoints);
-  const activity = buildActivityFeed(dashboard, selectedHotel?.id ?? null, copy.dashboard.activity);
+  const trendMax = Math.max(...trendPoints.map((point) => point.value), 1);
+  const trendMid = Math.max(1, Math.round(trendMax / 2));
+  const activity = buildActivityFeed(dashboard, selectedHotel?.id ?? null, copy.dashboard.activity, locale as "en" | "pt-BR" | "es");
   const units = buildUnits(dashboard, selectedHotel, hotelProfile, copy.dashboard.units, locale);
 
   return (
@@ -51,31 +54,31 @@ function OverviewPage({
               <h2>{copy.trafficAndDemandLabel}</h2>
               <p className="admin-copy">{copy.trafficAndDemandSubtitle}</p>
             </div>
-            <div className="admin-card__actions">
-              <button className="admin-secondary-button" type="button" onClick={onRefresh}>
-                {copy.exportDataLabel}
-              </button>
-              <button className="admin-primary-button" type="button" onClick={onRefresh}>
-                {copy.viewLiveLabel}
-              </button>
-            </div>
           </div>
 
           {loading ? (
             <p className="admin-empty">{copy.loadingLabel}</p>
           ) : dashboard ? (
             <div className="admin-trend">
-              <svg viewBox="0 0 100 60" className="admin-trend__svg" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#d8b46d" stopOpacity="0.32" />
-                    <stop offset="100%" stopColor="#f7f2e8" stopOpacity="0.02" />
-                  </linearGradient>
-                </defs>
-                <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.07" />
-                <path d={`${trendPath} L 100 60 L 0 60 Z`} fill="url(#trendFill)" />
-                <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <div className="admin-trend__chart">
+                <div className="admin-trend__y-axis" aria-hidden="true">
+                  <span className="admin-trend__y-axis-label">{copy.dashboard.trendYAxisLabel}</span>
+                  <span className="admin-trend__y-axis-value">{formatNumber(trendMax, locale)}</span>
+                  <span className="admin-trend__y-axis-value admin-trend__y-axis-value--mid">{formatNumber(trendMid, locale)}</span>
+                  <span className="admin-trend__y-axis-value admin-trend__y-axis-value--min">0</span>
+                </div>
+                <svg viewBox="0 0 100 60" className="admin-trend__svg" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#d8b46d" stopOpacity="0.32" />
+                      <stop offset="100%" stopColor="#f7f2e8" stopOpacity="0.02" />
+                    </linearGradient>
+                  </defs>
+                  <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.07" />
+                  <path d={`${trendPath} L 100 60 L 0 60 Z`} fill="url(#trendFill)" />
+                  <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <div className="admin-trend__labels">
                 {trendPoints.map((point) => (
                   <span key={point.label}>{point.label}</span>
@@ -141,7 +144,9 @@ function OverviewPage({
                   <p className="admin-copy">{unit.subtitle}</p>
                   <div className="admin-unit-card__footer">
                     <small>{unit.detail}</small>
-                    <button type="button">{copy.viewLiveLabel}</button>
+                    <button type="button" onClick={onOpenDevices}>
+                      {copy.viewLiveLabel}
+                    </button>
                   </div>
                 </div>
               </article>

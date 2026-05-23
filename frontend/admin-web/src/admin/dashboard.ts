@@ -3,6 +3,13 @@ import type { OverviewActivity, OverviewMetric, OverviewUnit, TrendPoint } from 
 import type { AdminCopy } from "./copy";
 
 type DashboardLabels = AdminCopy["overviewPage"]["dashboard"];
+type LocaleKey = "en" | "pt-BR" | "es";
+
+const INTL_LOCALE: Record<LocaleKey, string> = {
+  en: "en-US",
+  "pt-BR": "pt-BR",
+  es: "es-ES",
+};
 
 export function formatCurrency(value: number, currency: string, locale = "en") {
   return new Intl.NumberFormat(locale, { style: "currency", currency }).format(value);
@@ -43,23 +50,175 @@ function getRecordValue(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-function parseActivity(record: Record<string, unknown>, index: number, hotelId: number | null, labels: DashboardLabels["activity"]): OverviewActivity {
+function resolveDate(value: unknown) {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  if (typeof value === "number") {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  return null;
+}
+
+export function formatEventTimestamp(value: unknown, locale: LocaleKey) {
+  const date = resolveDate(value);
+  if (!date) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+export function localizeAction(action: string, locale: LocaleKey) {
+  const code = action.toUpperCase();
+  const map: Record<LocaleKey, Record<string, string>> = {
+    en: {
+      SESSION_STARTED: "Session started",
+      CHECKIN_COMPLETED: "Check-in completed",
+      CHECKOUT_COMPLETED: "Check-out completed",
+      IDENTITY_VERIFIED: "Identity verified",
+      PAYMENT_APPROVED: "Payment approved",
+      PAYMENT_DECLINED: "Payment declined",
+      RESERVATION_CREATED: "Reservation created",
+      RESERVATION_ATTACHED: "Reservation linked",
+      RESERVATION_CANCELLED: "Reservation cancelled",
+      ROOM_ASSIGNED: "Room assigned",
+      GUEST_DATA_CONFIRMED: "Guest details confirmed",
+      CONSENTS_REGISTERED: "Consents recorded",
+      DOCUMENT_REJECTED: "Document rejected",
+      BIOMETRY_REJECTED: "Biometry rejected",
+    },
+    "pt-BR": {
+      SESSION_STARTED: "Sessão iniciada",
+      CHECKIN_COMPLETED: "Check-in concluído",
+      CHECKOUT_COMPLETED: "Check-out concluído",
+      IDENTITY_VERIFIED: "Identidade verificada",
+      PAYMENT_APPROVED: "Pagamento aprovado",
+      PAYMENT_DECLINED: "Pagamento recusado",
+      RESERVATION_CREATED: "Reserva criada",
+      RESERVATION_ATTACHED: "Reserva vinculada",
+      RESERVATION_CANCELLED: "Reserva cancelada",
+      ROOM_ASSIGNED: "Quarto atribuído",
+      GUEST_DATA_CONFIRMED: "Dados do hóspede confirmados",
+      CONSENTS_REGISTERED: "Consentimentos registrados",
+      DOCUMENT_REJECTED: "Documento recusado",
+      BIOMETRY_REJECTED: "Biometria recusada",
+    },
+    es: {
+      SESSION_STARTED: "Sesión iniciada",
+      CHECKIN_COMPLETED: "Check-in completado",
+      CHECKOUT_COMPLETED: "Check-out completado",
+      IDENTITY_VERIFIED: "Identidad verificada",
+      PAYMENT_APPROVED: "Pago aprobado",
+      PAYMENT_DECLINED: "Pago rechazado",
+      RESERVATION_CREATED: "Reserva creada",
+      RESERVATION_ATTACHED: "Reserva vinculada",
+      RESERVATION_CANCELLED: "Reserva cancelada",
+      ROOM_ASSIGNED: "Habitación asignada",
+      GUEST_DATA_CONFIRMED: "Datos del huésped confirmados",
+      CONSENTS_REGISTERED: "Consentimientos registrados",
+      DOCUMENT_REJECTED: "Documento rechazado",
+      BIOMETRY_REJECTED: "Biometría rechazada",
+    },
+  };
+
+  return map[locale][code] || toTitleCase(action);
+}
+
+export function localizeResourceType(resourceType: string, locale: LocaleKey) {
+  const code = resourceType.toUpperCase();
+  const map: Record<LocaleKey, Record<string, string>> = {
+    en: {
+      CHECKIN_SESSION: "check-in session",
+      STAY: "stay",
+      RESERVATION: "reservation",
+      GUEST: "guest",
+      IDENTITY: "identity",
+      DEVICE: "device",
+      KIOSK: "kiosk",
+      PAYMENT: "payment",
+      DOCUMENT: "document",
+      BIOMETRY: "biometry",
+      CONSENT: "consent",
+    },
+    "pt-BR": {
+      CHECKIN_SESSION: "sessão de check-in",
+      STAY: "estadia",
+      RESERVATION: "reserva",
+      GUEST: "hóspede",
+      IDENTITY: "identidade",
+      DEVICE: "dispositivo",
+      KIOSK: "kiosk",
+      PAYMENT: "pagamento",
+      DOCUMENT: "documento",
+      BIOMETRY: "biometria",
+      CONSENT: "consentimento",
+    },
+    es: {
+      CHECKIN_SESSION: "sesión de check-in",
+      STAY: "estancia",
+      RESERVATION: "reserva",
+      GUEST: "huésped",
+      IDENTITY: "identidad",
+      DEVICE: "dispositivo",
+      KIOSK: "kiosco",
+      PAYMENT: "pago",
+      DOCUMENT: "documento",
+      BIOMETRY: "biometría",
+      CONSENT: "consentimiento",
+    },
+  };
+
+  return map[locale][code] || toTitleCase(resourceType);
+}
+
+export function localizeActorType(actorType: string, locale: LocaleKey) {
+  const code = actorType.toUpperCase();
+  const map: Record<LocaleKey, Record<string, string>> = {
+    en: { KIOSK: "kiosk", ADMIN: "admin", GUEST: "guest" },
+    "pt-BR": { KIOSK: "kiosk", ADMIN: "admin", GUEST: "hóspede" },
+    es: { KIOSK: "kiosco", ADMIN: "administración", GUEST: "huésped" },
+  };
+
+  return map[locale][code] || toTitleCase(actorType);
+}
+
+function parseActivity(
+  record: Record<string, unknown>,
+  index: number,
+  hotelId: number | null,
+  labels: DashboardLabels["activity"],
+  locale: LocaleKey
+): OverviewActivity {
   const action = normalizeText(getRecordValue(record, ["action", "event", "name"]), labels.eventPrefix);
   const resourceType = normalizeText(getRecordValue(record, ["resourceType", "resource_type", "type"]), "");
   const actorType = normalizeText(getRecordValue(record, ["actorType", "actor_type"]), "");
   const result = normalizeText(getRecordValue(record, ["result", "status"]), "OK");
   const resourceId = normalizeText(getRecordValue(record, ["resourceId", "resource_id", "id"]), "");
-  const correlationId = normalizeText(getRecordValue(record, ["correlationId", "correlation_id"]), "");
-  const timestamp = normalizeText(getRecordValue(record, ["createdAt", "created_at", "timestamp", "time"]), "");
+  const timestamp = getRecordValue(record, ["createdAt", "created_at", "timestamp", "time"]);
 
-  const contextBits = [actorType, resourceType, resourceId].filter(Boolean).join(" ");
-  const suffix = correlationId && correlationId !== "—" ? ` • ${correlationId}` : "";
   const hotelLabel = hotelId !== null ? `${labels.hotelPrefix} ${hotelId}` : labels.allHotels;
+  const humanAction = localizeAction(action, locale);
+  const humanActor = actorType && actorType !== "—" ? localizeActorType(actorType, locale) : "";
+  const humanResource = resourceType && resourceType !== "—" ? localizeResourceType(resourceType, locale) : "";
+  const detail = [humanActor, humanResource, resourceId].filter(Boolean).join(" • ");
+  const timestampLabel = formatEventTimestamp(timestamp, locale) || `${labels.eventPrefix} ${index + 1}`;
 
   return {
-    title: `${action}${contextBits ? ` ${contextBits}` : ""}`,
-    subtitle: result === "OK" ? `${hotelLabel} ${labels.operationCompleted}` : `${hotelLabel} ${labels.operationNeedsAttention}`,
-    meta: `${timestamp || `${labels.eventPrefix} ${index + 1}`}${suffix}`,
+    title: humanAction,
+    subtitle: detail || `${hotelLabel} ${result === "OK" ? labels.operationCompleted : labels.operationNeedsAttention}`,
+    meta: timestampLabel,
     tone: result.toUpperCase().includes("FAIL") ? "muted" : index === 0 ? "gold" : "neutral",
   };
 }
@@ -147,9 +306,14 @@ export function buildMetricCards(dashboard: DashboardResult | null, labels: Dash
   ];
 }
 
-export function buildActivityFeed(dashboard: DashboardResult | null, hotelId: number | null, labels: DashboardLabels["activity"]): OverviewActivity[] {
+export function buildActivityFeed(
+  dashboard: DashboardResult | null,
+  hotelId: number | null,
+  labels: DashboardLabels["activity"],
+  locale: LocaleKey
+): OverviewActivity[] {
   const records = dashboard?.recentSessions ?? [];
-  const activities = records.slice(0, 4).map((record, index) => parseActivity(record, index, hotelId, labels));
+  const activities = records.slice(0, 4).map((record, index) => parseActivity(record, index, hotelId, labels, locale));
 
   if (activities.length > 0) {
     return activities;
@@ -194,7 +358,7 @@ export function buildUnits(
     const kiosk = device as KioskDevice;
     const name = normalizeText(kiosk.name, `${labels.selectedHotel} ${index + 1}`);
     const status = normalizeText(kiosk.status, "ONLINE");
-    const uptime = normalizeText(kiosk.lastSeenAt, labels.monitoringActive);
+    const uptime = formatEventTimestamp(kiosk.lastSeenAt, locale as LocaleKey) || normalizeText(kiosk.lastSeenAt, labels.monitoringActive);
     const statusUpper = status.toUpperCase();
 
     return {
@@ -207,7 +371,7 @@ export function buildUnits(
           ? "warning"
           : "good",
       metric: kiosk.batteryLevel === null ? labels.batteryUnavailable : `${kiosk.batteryLevel}% ${labels.batterySuffix}`,
-      detail: `${hotelName} ${index === 0 ? labels.frontLineSuffix : labels.operationsSuffix}`,
+      detail: `${hotelName} • ${index === 0 ? labels.frontLineSuffix : labels.operationsSuffix}`,
       accent: pickAccent(index),
     } satisfies OverviewUnit;
   });

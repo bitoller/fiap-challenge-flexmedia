@@ -30,7 +30,7 @@ public class OracleDashboardRepositoryTest {
                 .thenReturn(4L, 2L, 3L, 1L);
         when(auditRepository.countByResult(1L, "FAILURE")).thenReturn(2L);
         when(auditRepository.recent(1L)).thenReturn(List.of(
-                new AuditEvent(1L, "ADMIN", null, "UPDATE", null, "hotel-1", "SUCCESS", null)
+                new AuditEvent(1L, "ADMIN", null, "UPDATE", null, "hotel-1", "SUCCESS", null, null)
         ));
 
         OracleDashboardRepository repository = new OracleDashboardRepository(jdbc, auditRepository);

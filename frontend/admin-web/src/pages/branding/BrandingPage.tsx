@@ -14,7 +14,7 @@ type BrandingPageProps = {
 
 type BrandingField = "primaryColor" | "secondaryColor" | "accentColor" | "surfaceColor" | "textColor";
 
-const LOCKED_PRESET_IDS = new Set(["original", "flexmedia"]);
+const LOCKED_PRESET_IDS = new Set(["original"]);
 
 const EMPTY_PRESET: BrandingPreset = {
   id: "",
@@ -46,18 +46,23 @@ function getThemeForPreview(branding: HotelProfile["branding"], copy: AdminCopy[
 }
 
 function updateBranding(
-  hotelProfile: HotelProfile,
   setHotelProfile: Dispatch<SetStateAction<HotelProfile | null>>,
   field: BrandingField,
   value: string
 ) {
-  setHotelProfile({
-    ...hotelProfile,
-    branding: {
-      ...hotelProfile.branding,
-      [field]: value,
-      activePresetId: "",
-    },
+  setHotelProfile((current) => {
+    if (!current) {
+      return current;
+    }
+
+    return {
+      ...current,
+      branding: {
+        ...current.branding,
+        [field]: value,
+        activePresetId: "",
+      },
+    };
   });
 }
 
@@ -84,6 +89,7 @@ function BrandingPage({
   }
 
   const theme = previewTheme ?? EMPTY_PRESET;
+  const activePreset = hotelProfile.branding.presets.find((preset) => preset.id === hotelProfile.branding.activePresetId) ?? null;
   const previewStyle = {
     "--preview-primary": theme.primaryColor,
     "--preview-secondary": theme.secondaryColor,
@@ -123,22 +129,25 @@ function BrandingPage({
     setPresetName("");
   };
 
-  const applyPresetAndPersist = (preset: BrandingPreset) => {
-    const branding = {
-      ...hotelProfile.branding,
-      primaryColor: preset.primaryColor,
-      secondaryColor: preset.secondaryColor,
-      accentColor: preset.accentColor,
-      surfaceColor: preset.surfaceColor,
-      textColor: preset.textColor,
-      activePresetId: preset.id,
-    };
+  const selectPreset = (preset: BrandingPreset) => {
+    setHotelProfile((current) => {
+      if (!current) {
+        return current;
+      }
 
-    setHotelProfile({
-      ...hotelProfile,
-      branding,
+      return {
+        ...current,
+        branding: {
+          ...current.branding,
+          primaryColor: preset.primaryColor,
+          secondaryColor: preset.secondaryColor,
+          accentColor: preset.accentColor,
+          surfaceColor: preset.surfaceColor,
+          textColor: preset.textColor,
+          activePresetId: preset.id,
+        },
+      };
     });
-    onSaveBranding(branding);
   };
 
   const removePreset = (presetId: string) => {
@@ -158,20 +167,23 @@ function BrandingPage({
   };
 
   return (
-    <section className="branding-workbench">
-      <div className="branding-workbench__editor">
-        <div className="admin-card branding-panel">
-          <div className="admin-card__head branding-panel__head">
-            <div>
-              <p className="admin-overview-kicker">{copy.titleKicker}</p>
-              <h2>{copy.title}</h2>
-              <p className="admin-copy admin-copy--compact">{copy.intro}</p>
-            </div>
-            <button className="admin-primary-button branding-save-button" type="button" onClick={persistBranding}>
-              {copy.saveBranding}
-            </button>
+    <section className="branding-workbench branding-workbench--single">
+      <div className="admin-card branding-panel branding-panel--hero">
+        <div className="branding-panel__head">
+          <div>
+            <p className="admin-overview-kicker">{copy.titleKicker}</p>
+            <h2>{copy.title}</h2>
+            <p className="admin-copy admin-copy--compact">{copy.intro}</p>
           </div>
+          <div className="branding-panel__head-actions">
+            <div className="branding-current-chip">
+              <span>{copy.currentPalette}</span>
+              <strong>{activePreset?.name ?? copy.customTheme}</strong>
+            </div>
+          </div>
+        </div>
 
+        <div className="branding-step">
           <div className="branding-section-label">
             <strong>{copy.presetsTitle}</strong>
             <p>{copy.presetsIntro}</p>
@@ -184,7 +196,34 @@ function BrandingPage({
               const isLocked = LOCKED_PRESET_IDS.has(preset.id.toLowerCase());
 
               return (
-                <article key={preset.id} className={`branding-preset-card ${isActive ? "is-active" : ""}`}>
+                <article
+                  key={preset.id}
+                  className={`branding-preset-card ${isActive ? "is-active" : ""}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => selectPreset(preset)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      selectPreset(preset);
+                    }
+                  }}
+                  aria-label={preset.name}
+                >
+                  {!isLocked ? (
+                    <button
+                      className="branding-preset-card__remove"
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        removePreset(preset.id);
+                      }}
+                      aria-label={`${copy.remove} ${preset.name}`}
+                      title={copy.remove}
+                    >
+                      ×
+                    </button>
+                  ) : null}
                   <div className="branding-preset-card__swatch" aria-hidden="true">
                     <span style={{ backgroundColor: preset.primaryColor }} />
                     <span style={{ backgroundColor: preset.secondaryColor }} />
@@ -203,44 +242,17 @@ function BrandingPage({
                         </p>
                       </div>
                     </div>
-                    <div className="branding-preset-card__actions">
-                      <button className="admin-secondary-button" type="button" onClick={() => applyPresetAndPersist(preset)}>
-                        {copy.apply}
-                      </button>
-                      {!isLocked ? (
-                        <button className="admin-danger-button" type="button" onClick={() => removePreset(preset.id)}>
-                          {copy.remove}
-                        </button>
-                      ) : null}
-                    </div>
                   </div>
                 </article>
               );
             })}
           </div>
-
-          <div className="branding-preset-builder branding-preset-builder--stacked">
-            <label className="branding-field">
-              <span>{copy.saveCurrentAsPresetLabel}</span>
-              <input
-                value={presetName}
-                onChange={(event) => setPresetName(event.target.value)}
-                placeholder={copy.presetNamePlaceholder}
-              />
-            </label>
-            <button className="admin-secondary-button" type="button" onClick={saveCurrentAsPreset}>
-              {copy.savePreset}
-            </button>
-          </div>
         </div>
 
-        <div className="admin-card branding-panel">
-          <div className="admin-card__head">
-            <div>
-              <p className="admin-overview-kicker">{copy.colorsKicker}</p>
-              <h2>{copy.adjustIdentity}</h2>
-              <p className="admin-copy admin-copy--compact">{copy.colorsIntro}</p>
-            </div>
+        <div className="branding-step">
+          <div className="branding-section-label">
+            <strong>{copy.colorsKicker}</strong>
+            <p>{copy.colorsIntro}</p>
           </div>
 
           <div className="branding-color-grid">
@@ -262,7 +274,7 @@ function BrandingPage({
                     <input
                       type="color"
                       value={value}
-                      onChange={(event) => updateBranding(hotelProfile, setHotelProfile, field, event.target.value)}
+                      onChange={(event) => updateBranding(setHotelProfile, field, event.target.value)}
                       aria-label={label}
                     />
                     <div className="branding-color-control__samples">
@@ -277,6 +289,33 @@ function BrandingPage({
               );
             })}
           </div>
+        </div>
+
+        <div className="branding-step branding-step--footer">
+          <div className="branding-preset-builder branding-preset-builder--stacked branding-preset-builder--boxed">
+            <div className="branding-preset-builder__head">
+              <div>
+                <strong>{copy.saveCurrentAsPresetLabel}</strong>
+                <p>{copy.presetsIntro}</p>
+              </div>
+              <span className="branding-preset-builder__hint">{activePreset?.name ?? copy.customTheme}</span>
+            </div>
+            <label className="branding-field branding-preset-builder__field">
+              <span>{copy.presetNamePlaceholder}</span>
+              <input
+                value={presetName}
+                onChange={(event) => setPresetName(event.target.value)}
+                placeholder={copy.presetNamePlaceholder}
+              />
+            </label>
+            <button className="branding-preset-builder__save" type="button" onClick={saveCurrentAsPreset}>
+              {copy.savePreset}
+            </button>
+          </div>
+
+          <button className="admin-primary-button branding-save-button" type="button" onClick={persistBranding}>
+            {copy.apply}
+          </button>
         </div>
       </div>
 

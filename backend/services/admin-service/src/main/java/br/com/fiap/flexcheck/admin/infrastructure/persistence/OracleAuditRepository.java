@@ -42,18 +42,18 @@ public class OracleAuditRepository {
     public List<AuditEvent> recent(Long hotelId) {
         String sql = hotelId == null
                 ? """
-                SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id
+                SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id, created_at
                   FROM (
-                        SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id
+                        SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id, created_at
                           FROM fc_audit_log
                          ORDER BY created_at DESC, id DESC
                        )
                  WHERE ROWNUM <= 8
                 """
                 : """
-                SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id
+                SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id, created_at
                   FROM (
-                        SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id
+                        SELECT hotel_id, actor_type, actor_id, action, resource_type, resource_id, result, correlation_id, created_at
                           FROM fc_audit_log
                          WHERE hotel_id = ?
                          ORDER BY created_at DESC, id DESC
@@ -93,7 +93,8 @@ public class OracleAuditRepository {
                 rs.getString("resource_type"),
                 rs.getString("resource_id"),
                 rs.getString("result"),
-                rs.getString("correlation_id")
+                rs.getString("correlation_id"),
+                rs.getTimestamp("created_at") == null ? null : rs.getTimestamp("created_at").toInstant().toString()
         );
     }
 }

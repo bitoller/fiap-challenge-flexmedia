@@ -1,4 +1,4 @@
-export type ViewKey = "overview" | "reservations" | "branding" | "devices" | "audit" | "identity";
+export type ViewKey = "overview" | "reservations" | "branding" | "devices" | "audit";
 export type Language = "en" | "pt-BR" | "es";
 
 export type OverviewMetric = {

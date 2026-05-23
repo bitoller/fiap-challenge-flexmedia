@@ -90,6 +90,7 @@ public class OracleDashboardRepository {
                     item.put("resourceId", event.resourceId());
                     item.put("result", event.result());
                     item.put("correlationId", event.correlationId());
+                    item.put("createdAt", event.createdAt());
                     return item;
                 })
                 .toList();
