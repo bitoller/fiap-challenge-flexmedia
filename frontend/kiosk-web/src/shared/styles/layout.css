@@ -58,6 +58,14 @@
   text-transform: uppercase;
 }
 
+.kiosk-hotel-logo {
+  display: block;
+  width: clamp(9rem, 20vw, 18rem);
+  height: clamp(2rem, 4vw, 3rem);
+  object-fit: contain;
+  object-position: left center;
+}
+
 .language-selector {
   display: inline-flex;
   align-items: center;

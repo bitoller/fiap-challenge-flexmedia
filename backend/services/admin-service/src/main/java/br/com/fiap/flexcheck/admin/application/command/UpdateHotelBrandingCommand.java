@@ -8,11 +8,13 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record UpdateHotelBrandingCommand(
+        @NotBlank String hotelName,
         @NotBlank String primaryColor,
         @NotBlank String secondaryColor,
         @NotBlank String accentColor,
         @NotBlank String surfaceColor,
         @NotBlank String textColor,
+        String logoUrl,
         String activePresetId,
         @Valid List<PresetCommand> presets
 ) {

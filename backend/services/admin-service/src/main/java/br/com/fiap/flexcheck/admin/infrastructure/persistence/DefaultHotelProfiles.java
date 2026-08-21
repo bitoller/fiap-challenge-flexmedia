@@ -27,6 +27,7 @@ final class DefaultHotelProfiles {
                                 "#f59e0b",
                                 "#faf8f3",
                                 "#1f2937",
+                                "",
                                 "warm-gold",
                                 List.of(
                                         preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
@@ -65,6 +66,7 @@ final class DefaultHotelProfiles {
                                 "#b8860b",
                                 "#faf8f3",
                                 "#2b1f3a",
+                                "",
                                 "coastal-luxe",
                                 List.of(
                                         preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
@@ -102,6 +104,7 @@ final class DefaultHotelProfiles {
                                 "#af8a3d",
                                 "#ffffff",
                                 "#243447",
+                                "",
                                 "garden-calm",
                                 List.of(
                                         preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),
@@ -144,6 +147,7 @@ final class DefaultHotelProfiles {
                 "#f59e0b",
                 "#faf8f3",
                 "#111827",
+                "",
                 "default-luxe",
                 List.of(
                         preset("original", "Original", "#b8860b", "#faf8f3", "#8b7355", "#faf8f3", "#2c2416"),

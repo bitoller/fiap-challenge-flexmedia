@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { formatEventTimestamp, formatNumber, localizeAction, localizeActorType, localizeResourceType } from "../../admin/dashboard";
 import type { AdminCopy } from "../../admin/copy";
 import type { Language } from "../../admin/types";
+import AdminSelect from "../../components/AdminSelect";
 import type { AuditEvent } from "../../types";
 
 type AuditFilter = "all" | "security" | "system" | "ux";
@@ -15,7 +16,7 @@ type AuditPageProps = {
   onRefresh: () => void;
 };
 
-function normalize(value: string | null | undefined, fallback = "—") {
+function normalize(value: string | null | undefined, fallback = "-") {
   return value && value.trim() ? value.trim() : fallback;
 }
 
@@ -69,20 +70,87 @@ function getCategoryLabel(category: AuditFilter, copy: AdminCopy["auditPage"]) {
   }
 }
 
+const auditNarratives = {
+  en: {
+    supportReference: "Guest support",
+    supportDetail: "A guest requested concierge assistance from the kiosk.",
+    checkoutReference: "Checkout",
+    checkoutDetail: "The stay was closed and the room was released for hotel operations.",
+    checkinReference: "Check-in",
+    checkinDetail: "A guest arrival flow was completed successfully.",
+    identityReference: "Guest identity",
+    identityDetail: "Identity verification was completed for this stay.",
+    reservationReference: "Reservation",
+    reservationDetail: "The reservation was linked to the guest journey.",
+    sessionReference: "Kiosk session",
+    sessionDetail: "A guest session was started at the kiosk.",
+    deviceReference: "Kiosk device",
+    deviceDetail: "A device health or availability event was recorded.",
+    systemReference: "Hotel operations",
+    systemDetail: "An operational event was recorded for the selected hotel.",
+  },
+  "pt-BR": {
+    supportReference: "Suporte ao hóspede",
+    supportDetail: "Um hóspede solicitou assistência da concierge pelo kiosk.",
+    checkoutReference: "Check-out",
+    checkoutDetail: "A estadia foi encerrada e o quarto foi liberado para a operação do hotel.",
+    checkinReference: "Check-in",
+    checkinDetail: "Um fluxo de chegada foi concluído com sucesso.",
+    identityReference: "Identidade do hóspede",
+    identityDetail: "A verificação de identidade foi concluída para esta estadia.",
+    reservationReference: "Reserva",
+    reservationDetail: "A reserva foi vinculada à jornada do hóspede.",
+    sessionReference: "Sessão do kiosk",
+    sessionDetail: "Uma sessão do hóspede foi iniciada no kiosk.",
+    deviceReference: "Dispositivo do kiosk",
+    deviceDetail: "Um evento de integridade ou disponibilidade do dispositivo foi registrado.",
+    systemReference: "Operação do hotel",
+    systemDetail: "Um evento operacional foi registrado para o hotel selecionado.",
+  },
+  es: {
+    supportReference: "Soporte al huésped",
+    supportDetail: "Un huésped solicitó asistencia de concierge desde el kiosco.",
+    checkoutReference: "Check-out",
+    checkoutDetail: "La estancia se cerró y la habitación se liberó para la operación del hotel.",
+    checkinReference: "Check-in",
+    checkinDetail: "Se completó correctamente un flujo de llegada de huésped.",
+    identityReference: "Identidad del huésped",
+    identityDetail: "La verificación de identidad se completó para esta estancia.",
+    reservationReference: "Reserva",
+    reservationDetail: "La reserva se vinculó al recorrido del huésped.",
+    sessionReference: "Sesión del kiosco",
+    sessionDetail: "Se inició una sesión de huésped en el kiosco.",
+    deviceReference: "Dispositivo del kiosco",
+    deviceDetail: "Se registró un evento de disponibilidad o estado del dispositivo.",
+    systemReference: "Operación del hotel",
+    systemDetail: "Se registró un evento operativo para el hotel seleccionado.",
+  },
+};
+
+function describeAudit(event: AuditEvent, locale: Language) {
+  const narrative = auditNarratives[locale === "pt-BR" ? "pt-BR" : locale === "es" ? "es" : "en"];
+  const source = [event.action, event.resourceType, event.actorType].filter(Boolean).join(" ").toUpperCase();
+
+  if (/HELP|CONCIERGE|ASSIST/.test(source)) return { reference: narrative.supportReference, details: narrative.supportDetail };
+  if (/CHECK.?OUT|STAY/.test(source)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
+  if (/CHECK.?IN/.test(source)) return { reference: narrative.checkinReference, details: narrative.checkinDetail };
+  if (/IDENTITY|BIOMETRY|FACE|DOCUMENT/.test(source)) return { reference: narrative.identityReference, details: narrative.identityDetail };
+  if (/RESERVATION/.test(source)) return { reference: narrative.reservationReference, details: narrative.reservationDetail };
+  if (/SESSION/.test(source)) return { reference: narrative.sessionReference, details: narrative.sessionDetail };
+  if (/DEVICE|KIOSK|PRINTER|CAMERA/.test(source)) return { reference: narrative.deviceReference, details: narrative.deviceDetail };
+  return { reference: narrative.systemReference, details: narrative.systemDetail };
+}
+
 function humanizeAudit(event: AuditEvent, locale: Language) {
   const action = localizeAction(normalize(event.action, "Event"), locale);
   const actor = normalize(event.actorType, "");
   const resourceType = normalize(event.resourceType, "");
   const resourceId = normalize(event.resourceId, "");
-  const correlationId = normalize(event.correlationId, "");
-  const when = formatEventTimestamp(event.createdAt, locale) || "—";
+  const when = formatEventTimestamp(event.createdAt, locale) || "-";
+  const description = describeAudit(event, locale);
+  const referenceLabel = resourceId ? `${resourceType ? localizeResourceType(resourceType, locale) : "ID"} ${resourceId}` : actor ? localizeActorType(actor, locale) : "-";
 
-  const contextParts = [actor ? localizeActorType(actor, locale) : "", resourceType ? localizeResourceType(resourceType, locale) : "", resourceId].filter(Boolean);
-  const context = contextParts.length ? contextParts.join(" • ") : "—";
-  const reference = resourceId !== "—" ? resourceId : correlationId !== "—" ? correlationId : "—";
-  const referenceLabel = resourceType !== "—" ? localizeResourceType(resourceType, locale) : "—";
-
-  return { action, context, reference, referenceLabel, when, actor };
+  return { action, ...description, referenceLabel, when, actor };
 }
 
 function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProps) {
@@ -181,13 +249,19 @@ function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProp
             ))}
           </div>
 
-          <label className="admin-audit__sort">
+          <div className="admin-audit__sort">
             <span>{copy.sortBy}</span>
-            <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value as AuditSort)}>
-              <option value="newest">{copy.mostRecent}</option>
-              <option value="oldest">{copy.oldest}</option>
-            </select>
-          </label>
+            <AdminSelect
+              ariaLabel={copy.sortBy}
+              className="admin-select--sort"
+              value={sortOrder}
+              options={[
+                { value: "newest", label: copy.mostRecent },
+                { value: "oldest", label: copy.oldest },
+              ]}
+              onChange={(value) => setSortOrder(value as AuditSort)}
+            />
+          </div>
         </div>
 
         <div className="admin-audit__table">
@@ -212,15 +286,15 @@ function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProp
                   </div>
                   <div className="admin-audit__cell">
                     <strong>{human.action}</strong>
-                    <small>{human.actor !== "—" ? localizeActorType(human.actor, locale) : "—"}</small>
+                    <small>{human.actor !== "-" ? localizeActorType(human.actor, locale) : "-"}</small>
                   </div>
                   <div className="admin-audit__cell">
                     <strong>{human.reference}</strong>
                     <small>{human.referenceLabel}</small>
                   </div>
                   <div className="admin-audit__cell">
-                    <strong>{human.context}</strong>
-                    <small>{normalize(event.correlationId, copy.noCorrelation)}</small>
+                    <strong>{human.details}</strong>
+                    <small>{human.referenceLabel}</small>
                   </div>
                   <div className="admin-audit__cell">
                     <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category, copy)}</span>

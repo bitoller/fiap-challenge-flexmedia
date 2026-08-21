@@ -3,6 +3,7 @@ import { formatCurrency } from "../../admin/dashboard";
 import type { AdminCopy } from "../../admin/copy";
 import type { ReservationFormState } from "../../admin/types";
 import type { ReservationSummary } from "../../types";
+import AdminDatePicker from "../../components/AdminDatePicker";
 
 type ReservationsPageProps = {
   emptyState: string;
@@ -89,18 +90,20 @@ function ReservationsPage({
           </label>
           <label>
             <span>{copy.arrivalDate}</span>
-            <input
-              type="date"
+            <AdminDatePicker
+              ariaLabel={copy.arrivalDate}
+              language={locale as "en" | "pt-BR" | "es"}
               value={reservationForm.arrivalDate}
-              onChange={(event) => setReservationForm((current) => ({ ...current, arrivalDate: event.target.value }))}
+              onChange={(value) => setReservationForm((current) => ({ ...current, arrivalDate: value }))}
             />
           </label>
           <label>
             <span>{copy.departureDate}</span>
-            <input
-              type="date"
+            <AdminDatePicker
+              ariaLabel={copy.departureDate}
+              language={locale as "en" | "pt-BR" | "es"}
               value={reservationForm.departureDate}
-              onChange={(event) => setReservationForm((current) => ({ ...current, departureDate: event.target.value }))}
+              onChange={(value) => setReservationForm((current) => ({ ...current, departureDate: value }))}
             />
           </label>
           <label>

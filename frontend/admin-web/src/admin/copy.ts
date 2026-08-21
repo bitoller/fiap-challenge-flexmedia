@@ -184,6 +184,14 @@ type BrandingCopy = {
   titleKicker: string;
   title: string;
   intro: string;
+  identityTitle: string;
+  identityIntro: string;
+  hotelTitle: string;
+  hotelTitlePlaceholder: string;
+  hotelTitleHelp: string;
+  logoUrl: string;
+  logoUrlPlaceholder: string;
+  logoUrlHelp: string;
   saveBranding: string;
   presetsTitle: string;
   presetsIntro: string;
@@ -239,6 +247,9 @@ type AdminCopyShape = {
   portal: string;
   loginTitle: string;
   loginSubtitle: string;
+  loginSupportTitle: string;
+  loginSupportDescription: string;
+  loginSignals: [string, string, string];
   username: string;
   password: string;
   login: string;
@@ -287,9 +298,12 @@ type AdminCopyShape = {
 };
 
 const en: AdminCopyShape = {
-  portal: "Byte Me",
+  portal: "Flexmedia Operations",
   loginTitle: "Administrator access",
   loginSubtitle: "Sign in to manage hotels, reservations, and operational views.",
+  loginSupportTitle: "Hotel operations, clarified.",
+  loginSupportDescription: "Monitor the guest journey, keep the fleet healthy, and move every property with confidence.",
+  loginSignals: ["Secure access", "Live hotel data", "Fleet visibility"],
   username: "Username",
   password: "Password",
   login: "Sign in",
@@ -511,6 +525,14 @@ const en: AdminCopyShape = {
     titleKicker: "Branding",
     title: "Brand palette",
     intro: "Pick a preset, tweak the palette, and save when the hotel feels right.",
+    identityTitle: "Kiosk identity",
+    identityIntro: "Set the hotel title and an optional logo for the guest-facing kiosk.",
+    hotelTitle: "Hotel title",
+    hotelTitlePlaceholder: "Flex Hotel Paulista",
+    hotelTitleHelp: "Used in the kiosk header and guest-facing flows.",
+    logoUrl: "Logo URL",
+    logoUrlPlaceholder: "https://example.com/hotel-logo.svg",
+    logoUrlHelp: "Use a public image URL. The title stays visible when no logo is provided.",
     saveBranding: "Save branding",
     presetsTitle: "Presets",
     presetsIntro: "Choose a saved palette or store the current one as a new preset.",
@@ -563,9 +585,12 @@ const en: AdminCopyShape = {
 };
 
 const ptBR: AdminCopyShape = {
-  portal: "Byte Me",
+  portal: "Operações Flexmedia",
   loginTitle: "Acesso administrativo",
   loginSubtitle: "Entre para gerenciar hotéis, reservas e visões operacionais.",
+  loginSupportTitle: "Operação hoteleira, com clareza.",
+  loginSupportDescription: "Acompanhe a jornada do hóspede, mantenha a frota saudável e conduza cada propriedade com confiança.",
+  loginSignals: ["Acesso seguro", "Dados hoteleiros ao vivo", "Visibilidade da frota"],
   username: "Usuário",
   password: "Senha",
   login: "Entrar",
@@ -787,6 +812,14 @@ const ptBR: AdminCopyShape = {
     titleKicker: "Branding",
     title: "Paleta da marca",
     intro: "Escolha um preset, ajuste a paleta e salve quando o hotel ficar com a cara certa.",
+    identityTitle: "Identidade do kiosk",
+    identityIntro: "Defina o título do hotel e um logo opcional para o kiosk usado pelos hóspedes.",
+    hotelTitle: "Título do hotel",
+    hotelTitlePlaceholder: "Flex Hotel Paulista",
+    hotelTitleHelp: "Usado no cabeçalho do kiosk e nos fluxos voltados ao hóspede.",
+    logoUrl: "URL do logo",
+    logoUrlPlaceholder: "https://exemplo.com/logo-do-hotel.svg",
+    logoUrlHelp: "Use uma URL pública de imagem. O título continua visível sem logo.",
     saveBranding: "Salvar branding",
     presetsTitle: "Presets",
     presetsIntro: "Escolha uma paleta salva ou guarde a atual como um novo preset.",
@@ -839,9 +872,12 @@ const ptBR: AdminCopyShape = {
 };
 
 const es: AdminCopyShape = {
-  portal: "Byte Me",
+  portal: "Operaciones Flexmedia",
   loginTitle: "Acceso administrativo",
   loginSubtitle: "Ingrese para gestionar hoteles, reservas y vistas operativas.",
+  loginSupportTitle: "Operaciones hoteleras, con claridad.",
+  loginSupportDescription: "Supervise el recorrido del huésped, mantenga la flota saludable y gestione cada propiedad con confianza.",
+  loginSignals: ["Acceso seguro", "Datos hoteleros en vivo", "Visibilidad de la flota"],
   username: "Usuario",
   password: "Contraseña",
   login: "Ingresar",
@@ -1063,6 +1099,14 @@ const es: AdminCopyShape = {
     titleKicker: "Branding",
     title: "Paleta de marca",
     intro: "Elija un preset, ajuste la paleta y guarde cuando el hotel se sienta correcto.",
+    identityTitle: "Identidad del kiosco",
+    identityIntro: "Defina el título del hotel y un logotipo opcional para el kiosco de huéspedes.",
+    hotelTitle: "Título del hotel",
+    hotelTitlePlaceholder: "Flex Hotel Paulista",
+    hotelTitleHelp: "Se utiliza en el encabezado del kiosco y en los flujos para huéspedes.",
+    logoUrl: "URL del logotipo",
+    logoUrlPlaceholder: "https://ejemplo.com/logotipo-del-hotel.svg",
+    logoUrlHelp: "Use una URL pública de imagen. El título sigue visible sin logotipo.",
     saveBranding: "Guardar branding",
     presetsTitle: "Presets",
     presetsIntro: "Elija una paleta guardada o guarde la actual como un nuevo preset.",

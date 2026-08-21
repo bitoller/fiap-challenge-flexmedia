@@ -106,10 +106,10 @@ export const adminApi = {
   getHotel(hotelId: number) {
     return request<HotelProfile>(`/admin/hotels/${hotelId}`);
   },
-  updateBranding(hotelId: number, branding: HotelProfile["branding"]) {
+  updateBranding(hotelId: number, profile: Pick<HotelProfile, "name" | "branding">) {
     return request<HotelProfile>(`/admin/hotels/${hotelId}/branding`, {
       method: "PUT",
-      body: JSON.stringify(branding),
+      body: JSON.stringify({ hotelName: profile.name, ...profile.branding }),
     });
   },
   updateContent(hotelId: number, content: HotelProfile["content"]) {

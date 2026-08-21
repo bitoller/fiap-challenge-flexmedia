@@ -185,6 +185,38 @@ function BrandingPage({
 
         <div className="branding-step">
           <div className="branding-section-label">
+            <strong>{copy.identityTitle}</strong>
+            <p>{copy.identityIntro}</p>
+          </div>
+
+          <div className="branding-identity-grid">
+            <label className="branding-field">
+              <span>{copy.hotelTitle}</span>
+              <input
+                value={hotelProfile.name}
+                onChange={(event) => setHotelProfile((current) => (current ? { ...current, name: event.target.value } : current))}
+                placeholder={copy.hotelTitlePlaceholder}
+              />
+              <small>{copy.hotelTitleHelp}</small>
+            </label>
+            <label className="branding-field">
+              <span>{copy.logoUrl}</span>
+              <input
+                type="url"
+                value={hotelProfile.branding.logoUrl}
+                onChange={(event) => setHotelProfile((current) => (current ? {
+                  ...current,
+                  branding: { ...current.branding, logoUrl: event.target.value, activePresetId: "" },
+                } : current))}
+                placeholder={copy.logoUrlPlaceholder}
+              />
+              <small>{copy.logoUrlHelp}</small>
+            </label>
+          </div>
+        </div>
+
+        <div className="branding-step">
+          <div className="branding-section-label">
             <strong>{copy.presetsTitle}</strong>
             <p>{copy.presetsIntro}</p>
           </div>
@@ -221,7 +253,7 @@ function BrandingPage({
                       aria-label={`${copy.remove} ${preset.name}`}
                       title={copy.remove}
                     >
-                      ×
+                      x
                     </button>
                   ) : null}
                   <div className="branding-preset-card__swatch" aria-hidden="true">
@@ -300,17 +332,19 @@ function BrandingPage({
               </div>
               <span className="branding-preset-builder__hint">{activePreset?.name ?? copy.customTheme}</span>
             </div>
-            <label className="branding-field branding-preset-builder__field">
-              <span>{copy.presetNamePlaceholder}</span>
-              <input
-                value={presetName}
-                onChange={(event) => setPresetName(event.target.value)}
-                placeholder={copy.presetNamePlaceholder}
-              />
-            </label>
-            <button className="branding-preset-builder__save" type="button" onClick={saveCurrentAsPreset}>
-              {copy.savePreset}
-            </button>
+            <div className="branding-preset-builder__action-row">
+              <label className="branding-field branding-preset-builder__field">
+                <span>{copy.presetNamePlaceholder}</span>
+                <input
+                  value={presetName}
+                  onChange={(event) => setPresetName(event.target.value)}
+                  placeholder={copy.presetNamePlaceholder}
+                />
+              </label>
+              <button className="branding-preset-builder__save" type="button" onClick={saveCurrentAsPreset}>
+                {copy.savePreset}
+              </button>
+            </div>
           </div>
 
           <button className="admin-primary-button branding-save-button" type="button" onClick={persistBranding}>
@@ -322,10 +356,10 @@ function BrandingPage({
       <aside className="branding-workbench__preview">
         <div className="admin-card branding-preview" style={previewStyle}>
           <div className="branding-preview__hero">
-            <div className="branding-preview__brand" />
+            {hotelProfile.branding.logoUrl ? <img className="branding-preview__logo" src={hotelProfile.branding.logoUrl} alt={hotelProfile.name} /> : <div className="branding-preview__brand" />}
             <div className="branding-preview__copy">
               <p className="branding-preview__eyebrow">{copy.livePreview}</p>
-              <h3>{theme.name || copy.currentPalette}</h3>
+              <h3>{hotelProfile.name}</h3>
               <p>{copy.previewNote}</p>
             </div>
           </div>

@@ -24,6 +24,7 @@ public record HotelProfileResult(
             String accentColor,
             String surfaceColor,
             String textColor,
+            String logoUrl,
             String activePresetId,
             List<PresetResult> presets
     ) {

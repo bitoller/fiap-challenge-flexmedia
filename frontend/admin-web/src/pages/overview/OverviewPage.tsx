@@ -70,13 +70,13 @@ function OverviewPage({
                 <svg viewBox="0 0 100 60" className="admin-trend__svg" preserveAspectRatio="none" aria-hidden="true">
                   <defs>
                     <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#d8b46d" stopOpacity="0.32" />
-                      <stop offset="100%" stopColor="#f7f2e8" stopOpacity="0.02" />
+                      <stop offset="0%" stopColor="#48a277" stopOpacity="0.34" />
+                      <stop offset="100%" stopColor="#eff7ed" stopOpacity="0.02" />
                     </linearGradient>
                   </defs>
-                  <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.07" />
+                  <path d={trendPath} fill="none" stroke="#27805e" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.07" />
                   <path d={`${trendPath} L 100 60 L 0 60 Z`} fill="url(#trendFill)" />
-                  <path d={trendPath} fill="none" stroke="#9d7724" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={trendPath} fill="none" stroke="#27805e" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="admin-trend__labels">

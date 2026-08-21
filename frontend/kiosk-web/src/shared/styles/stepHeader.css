@@ -1,0 +1,13 @@
+.checkin-step-header__rule,
+.kiosk-recovery-screen__rule {
+  width: min(220px, 30vw) !important;
+  height: 3px !important;
+  min-height: 3px !important;
+  max-height: 3px !important;
+  display: block !important;
+  overflow: visible !important;
+  box-sizing: content-box !important;
+  background: linear-gradient(90deg, transparent, rgba(var(--kiosk-primary-rgb), 0.94), transparent) !important;
+  box-shadow: 0 0 8px rgba(var(--kiosk-primary-rgb), 0.18);
+  pointer-events: none;
+}

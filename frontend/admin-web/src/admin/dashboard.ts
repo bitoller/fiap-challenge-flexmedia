@@ -210,9 +210,46 @@ function parseActivity(
 
   const hotelLabel = hotelId !== null ? `${labels.hotelPrefix} ${hotelId}` : labels.allHotels;
   const humanAction = localizeAction(action, locale);
-  const humanActor = actorType && actorType !== "—" ? localizeActorType(actorType, locale) : "";
-  const humanResource = resourceType && resourceType !== "—" ? localizeResourceType(resourceType, locale) : "";
-  const detail = [humanActor, humanResource, resourceId].filter(Boolean).join(" • ");
+  const source = [action, resourceType, actorType].filter(Boolean).join(" ").toUpperCase();
+  const messages = locale === "pt-BR"
+    ? {
+        support: "A recepção foi avisada de que um hóspede precisa de ajuda.",
+        checkout: "A estadia foi encerrada e o quarto foi liberado.",
+        checkin: "Um hóspede concluiu o check-in com sucesso.",
+        identity: "A verificação de identidade foi concluída.",
+        reservation: "Uma reserva foi vinculada à jornada do hóspede.",
+        session: "Uma nova sessão foi iniciada no kiosk.",
+      }
+    : locale === "es"
+      ? {
+          support: "Recepción fue avisada de que un huésped necesita ayuda.",
+          checkout: "La estancia se cerró y la habitación fue liberada.",
+          checkin: "Un huésped completó el check-in correctamente.",
+          identity: "La verificación de identidad se completó.",
+          reservation: "Una reserva se vinculó al recorrido del huésped.",
+          session: "Se inició una nueva sesión en el kiosco.",
+        }
+      : {
+          support: "Reception was notified that a guest needs assistance.",
+          checkout: "The stay was closed and the room was released.",
+          checkin: "A guest completed check-in successfully.",
+          identity: "Identity verification was completed.",
+          reservation: "A reservation was linked to the guest journey.",
+          session: "A new kiosk session was started.",
+        };
+  const detail = /HELP|CONCIERGE|ASSIST/.test(source)
+    ? messages.support
+    : /CHECK.?OUT|STAY/.test(source)
+      ? messages.checkout
+      : /CHECK.?IN/.test(source)
+        ? messages.checkin
+        : /IDENTITY|BIOMETRY|FACE|DOCUMENT/.test(source)
+          ? messages.identity
+          : /RESERVATION/.test(source)
+            ? messages.reservation
+            : /SESSION/.test(source)
+              ? messages.session
+              : "";
   const timestampLabel = formatEventTimestamp(timestamp, locale) || `${labels.eventPrefix} ${index + 1}`;
 
   return {

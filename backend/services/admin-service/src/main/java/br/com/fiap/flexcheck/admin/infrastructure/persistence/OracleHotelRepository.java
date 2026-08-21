@@ -51,6 +51,7 @@ public class OracleHotelRepository {
                 command.accentColor(),
                 command.surfaceColor(),
                 command.textColor(),
+                command.logoUrl() == null ? "" : command.logoUrl().trim(),
                 command.activePresetId(),
                 command.presets() == null ? List.of() : command.presets().stream()
                         .map(preset -> new HotelProfile.Preset(
@@ -66,10 +67,12 @@ public class OracleHotelRepository {
         );
         jdbc.update("""
                 UPDATE fc_hotel
-                   SET branding_json = ?,
+                   SET name = ?,
+                       branding_json = ?,
                        updated_at = ?
                  WHERE id = ?
                 """,
+                command.hotelName().trim(),
                 toJson(branding),
                 LocalDateTime.now(),
                 hotelId
@@ -233,6 +236,7 @@ public class OracleHotelRepository {
                         hotel.branding().accentColor(),
                         hotel.branding().surfaceColor(),
                         hotel.branding().textColor(),
+                        hotel.branding().logoUrl(),
                         hotel.branding().activePresetId(),
                         hotel.branding().presets().stream()
                                 .map(preset -> new HotelProfileResult.PresetResult(
@@ -320,6 +324,7 @@ public class OracleHotelRepository {
                 coalesce(branding.accentColor(), fallback.accentColor()),
                 coalesce(branding.surfaceColor(), fallback.surfaceColor()),
                 coalesce(branding.textColor(), fallback.textColor()),
+                branding.logoUrl() == null ? fallback.logoUrl() : branding.logoUrl().trim(),
                 coalesce(branding.activePresetId(), fallback.activePresetId()),
                 presets
         );

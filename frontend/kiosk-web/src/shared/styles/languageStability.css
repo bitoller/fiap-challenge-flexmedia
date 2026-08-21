@@ -1,0 +1,75 @@
+.kiosk-layout :is(
+  .home-screen,
+  .action-buttons-container,
+  .action-button,
+  .checkin-identification,
+  .checkin-identification__layout,
+  .checkin-identification__methods,
+  .checkin-identification__entry,
+  .checkin-identity,
+  .checkin-identity__layout,
+  .checkin-identity__steps,
+  .checkin-identity__panel,
+  .checkin-confirmation,
+  .checkin-confirmation__layout,
+  .checkin-confirmation__details,
+  .checkin-confirmation__aside,
+  .checkin-addons,
+  .checkin-addons__grid,
+  .checkin-payment,
+  .checkin-payment__layout,
+  .checkin-success,
+  .checkin-success__layout,
+  .checkout-settlement,
+  .checkout-settlement__layout,
+  .checkout-complete,
+  .checkout-complete__layout
+) {
+  min-width: 0;
+}
+
+.kiosk-layout :is(
+  .action-button-title,
+  .action-button-subtitle,
+  .checkin-method-card__title,
+  .checkin-method-card__subtitle,
+  .checkin-step-header__title,
+  .checkin-step-header__subtitle,
+  .checkin-identity__step span,
+  .checkin-identity__step p,
+  .checkin-confirmation__summary-card-title,
+  .checkin-confirmation__summary-card-copy,
+  .checkin-addons__body h2,
+  .checkin-addons__body p,
+  .checkin-payment__folio h2,
+  .checkin-payment__secure strong,
+  .checkin-success__hero h2,
+  .checkout-settlement__card h2,
+  .checkout-complete__hero-card h2,
+  .checkout-complete__detail-card strong
+) {
+  overflow-wrap: anywhere;
+}
+
+.checkin-method-card__copy {
+  min-width: 0;
+}
+
+.checkin-method-card__title {
+  min-height: 1.35em;
+}
+
+.checkin-method-card__subtitle {
+  min-height: 2.7em;
+}
+
+.action-button-title,
+.action-button-subtitle {
+  overflow: hidden;
+}
+
+@media (orientation: portrait) {
+  .checkin-layout__main > .checkin-identification {
+    width: min(100%, 666px);
+  }
+}

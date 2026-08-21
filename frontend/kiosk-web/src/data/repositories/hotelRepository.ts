@@ -22,6 +22,7 @@ const DEFAULT_HOTEL_PROFILE: HotelProfile = {
     accentColor: "#8b7355",
     surfaceColor: "#faf8f3",
     textColor: "#2c2416",
+    logoUrl: "",
     activePresetId: "original",
     presets: [
       {
@@ -102,6 +103,7 @@ function normalizeHotelProfile(data: any): HotelProfile {
       accentColor: coalesceString(data?.branding?.accentColor, DEFAULT_HOTEL_PROFILE.branding.accentColor),
       surfaceColor: coalesceString(data?.branding?.surfaceColor, DEFAULT_HOTEL_PROFILE.branding.surfaceColor),
       textColor: coalesceString(data?.branding?.textColor, DEFAULT_HOTEL_PROFILE.branding.textColor),
+      logoUrl: coalesceString(data?.branding?.logoUrl, DEFAULT_HOTEL_PROFILE.branding.logoUrl),
       activePresetId: coalesceString(data?.branding?.activePresetId, DEFAULT_HOTEL_PROFILE.branding.activePresetId),
       presets: Array.isArray(data?.branding?.presets)
         ? data.branding.presets.map((preset: any, index: number) => ({

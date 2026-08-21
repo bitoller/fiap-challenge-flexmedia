@@ -18,6 +18,7 @@ export interface HotelBranding {
   accentColor: string;
   surfaceColor: string;
   textColor: string;
+  logoUrl: string;
   activePresetId: string;
   presets: BrandingPreset[];
 }

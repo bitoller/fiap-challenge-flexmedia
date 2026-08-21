@@ -1,15 +1,15 @@
 :root {
-  --admin-bg: #f8f4ec;
-  --admin-bg-soft: #f2ebde;
+  --admin-bg: #f5f7f1;
+  --admin-bg-soft: #eaf0e5;
   --admin-surface: rgba(255, 255, 255, 0.9);
-  --admin-surface-strong: rgba(255, 253, 248, 0.96);
-  --admin-text: #2a241b;
-  --admin-subtle: #786b59;
-  --admin-primary: #8f6a19;
-  --admin-primary-soft: #c8a24f;
-  --admin-border: rgba(167, 139, 84, 0.18);
-  --admin-border-strong: rgba(143, 106, 25, 0.22);
-  --admin-shadow: 0 24px 60px rgba(110, 89, 48, 0.12);
+  --admin-surface-strong: rgba(252, 254, 250, 0.97);
+  --admin-text: #193128;
+  --admin-subtle: #60736a;
+  --admin-primary: #175b45;
+  --admin-primary-soft: #2f8a67;
+  --admin-border: rgba(23, 91, 69, 0.14);
+  --admin-border-strong: rgba(23, 91, 69, 0.28);
+  --admin-shadow: 0 24px 60px rgba(24, 67, 47, 0.12);
 }
 
 * {
@@ -1225,6 +1225,136 @@ button:disabled {
   width: 100%;
 }
 
+.admin-date-picker {
+  position: relative;
+  width: 100%;
+}
+
+.admin-date-picker__trigger {
+  width: 100%;
+  min-height: 2.95rem;
+  padding: 0.7rem 0.85rem 0.7rem 0.95rem;
+  border: 1px solid rgba(23, 91, 69, 0.18);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--admin-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-date-picker__trigger:hover,
+.admin-date-picker__trigger:focus-visible {
+  border-color: rgba(23, 120, 83, 0.56);
+  box-shadow: 0 0 0 3px rgba(46, 135, 101, 0.12);
+  outline: none;
+}
+
+.admin-date-picker__trigger svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  color: #176343;
+  flex: 0 0 auto;
+}
+
+.admin-date-picker__calendar {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.45rem);
+  left: 0;
+  width: min(19.5rem, calc(100vw - 3rem));
+  padding: 0.8rem;
+  border: 1px solid rgba(23, 91, 69, 0.18);
+  border-radius: 1rem;
+  background: #fcfffc;
+  box-shadow: 0 1.15rem 2.5rem rgba(27, 83, 60, 0.18);
+}
+
+.admin-date-picker__toolbar {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.admin-date-picker__toolbar strong {
+  color: #174c39;
+  font-size: 0.9rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.admin-date-picker__toolbar button {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: #176343;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-date-picker__toolbar button:hover,
+.admin-date-picker__toolbar button:focus-visible {
+  background: rgba(46, 135, 101, 0.12);
+  outline: none;
+}
+
+.admin-date-picker__weekdays,
+.admin-date-picker__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.22rem;
+}
+
+.admin-date-picker__weekdays {
+  margin-bottom: 0.32rem;
+}
+
+.admin-date-picker__weekdays span {
+  color: #176343;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.admin-date-picker__days button {
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--admin-text);
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.admin-date-picker__days button:hover,
+.admin-date-picker__days button:focus-visible {
+  background: rgba(46, 135, 101, 0.12);
+  outline: none;
+}
+
+.admin-date-picker__days button.is-outside-month {
+  color: rgba(31, 45, 29, 0.38);
+}
+
+.admin-date-picker__days button.is-today {
+  box-shadow: inset 0 0 0 1px rgba(23, 120, 83, 0.44);
+}
+
+.admin-date-picker__days button.is-selected {
+  background: linear-gradient(135deg, #2e8765, #15563f);
+  color: #f5fff4;
+  box-shadow: 0 0.4rem 0.85rem rgba(21, 86, 63, 0.22);
+}
+
 .admin-panel--two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1440,11 +1570,27 @@ button:disabled {
   height: 64px;
   min-height: 64px;
   padding: 0;
-  border: 1px solid rgba(167, 139, 84, 0.18);
+  border: 0;
   border-radius: 1rem;
   background: transparent;
   overflow: hidden;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.branding-color-control__picker-row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.branding-color-control__picker-row input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: inherit;
+}
+
+.branding-color-control__picker-row input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: inherit;
 }
 
 .branding-color-control__samples {
@@ -2049,5 +2195,1356 @@ button:disabled {
 
   .branding-workbench__preview {
     position: static;
+  }
+}
+
+/* Flexmedia operations refresh */
+.admin-shell--login {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(62, 153, 109, 0.22), transparent 28%),
+    radial-gradient(circle at 84% 88%, rgba(157, 202, 118, 0.24), transparent 26%),
+    linear-gradient(135deg, #0d3025 0%, #123d2d 48%, #1e6349 100%);
+}
+
+.admin-login-layout {
+  width: min(1080px, calc(100vw - 4rem));
+  min-height: 620px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, 0.92fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 32px 90px rgba(2, 20, 13, 0.4);
+  backdrop-filter: blur(20px);
+}
+
+.admin-login-layout,
+.admin-login-card,
+.admin-login-form,
+.admin-login-form label {
+  min-width: 0;
+}
+
+.admin-login-intro {
+  position: relative;
+  display: grid;
+  align-content: center;
+  padding: clamp(2rem, 6vw, 5.5rem);
+  color: #f5fbf4;
+  overflow: hidden;
+}
+
+.admin-login-intro::before,
+.admin-login-intro::after {
+  position: absolute;
+  content: "";
+  border: 1px solid rgba(234, 255, 235, 0.16);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.admin-login-intro::before {
+  width: 28rem;
+  height: 28rem;
+  right: -10rem;
+  bottom: -12rem;
+}
+
+.admin-login-intro::after {
+  width: 14rem;
+  height: 14rem;
+  right: 7rem;
+  top: -7rem;
+}
+
+.admin-login-intro > * {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-login-intro .admin-eyebrow {
+  color: rgba(227, 255, 224, 0.74);
+}
+
+.admin-login-intro h1 {
+  max-width: 8ch;
+  margin: 1.2rem 0 0;
+  font-size: clamp(3rem, 5vw, 5.2rem);
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+
+.admin-login-intro > p:not(.admin-eyebrow) {
+  max-width: 38ch;
+  margin: 1.6rem 0 0;
+  color: rgba(234, 247, 233, 0.76);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.admin-login-intro__mark,
+.admin-login-card__icon {
+  display: inline-grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 1rem;
+}
+
+.admin-login-intro__mark {
+  color: #d7f2c5;
+  border: 1px solid rgba(228, 255, 223, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-login-intro__mark svg,
+.admin-login-card__icon svg,
+.admin-sidebar__mark svg {
+  width: 22px;
+  height: 22px;
+}
+
+.admin-login-intro__signals {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 2.5rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: rgba(234, 247, 233, 0.85);
+}
+
+.admin-login-intro__signals span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.admin-login-intro__signals i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8ee072;
+  box-shadow: 0 0 0 5px rgba(142, 224, 114, 0.1);
+}
+
+.admin-login-card {
+  width: auto;
+  margin: 0;
+  padding: clamp(2rem, 5vw, 4.5rem);
+  border: 0;
+  border-radius: 0;
+  background: rgba(251, 253, 249, 0.97);
+  box-shadow: none;
+}
+
+.admin-login-card .admin-copy,
+.admin-login-intro > p,
+.admin-login-intro__signals span {
+  overflow-wrap: anywhere;
+}
+
+.admin-login-card .admin-login-form input {
+  width: 100%;
+}
+
+.admin-login-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.admin-login-card__icon {
+  color: var(--admin-primary);
+  border: 1px solid rgba(23, 91, 69, 0.15);
+  background: #e8f2e8;
+}
+
+.admin-login-card h2 {
+  margin: 1.35rem 0 0;
+  font-size: clamp(2.2rem, 3vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.admin-login-card .admin-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.admin-login-card .admin-primary-button svg,
+.admin-secondary-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.admin-login-card .admin-language-switcher {
+  margin-top: 1.1rem;
+}
+
+.admin-app {
+  background:
+    radial-gradient(circle at 78% 0%, rgba(75, 155, 108, 0.11), transparent 26%),
+    linear-gradient(180deg, #f9fbf7 0%, #f0f5ee 100%);
+}
+
+.admin-sidebar {
+  padding: 1.5rem 1rem;
+  border-right-color: rgba(23, 91, 69, 0.13);
+  background: rgba(248, 252, 247, 0.82);
+}
+
+.admin-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.admin-sidebar__mark {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #f7fff3;
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, #297455, #154834);
+  box-shadow: 0 10px 22px rgba(23, 91, 69, 0.2);
+}
+
+.admin-brand {
+  color: var(--admin-text);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.admin-role {
+  justify-content: flex-start;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+}
+
+.admin-nav {
+  gap: 0.35rem;
+  margin: 1.25rem 0 auto;
+}
+
+.admin-nav button,
+.admin-sidebar__logout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.admin-nav button svg,
+.admin-sidebar__logout svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.admin-nav button {
+  border-radius: 0.8rem;
+}
+
+.admin-nav button:hover {
+  color: var(--admin-primary);
+  background: rgba(60, 143, 104, 0.06);
+}
+
+.admin-nav button.is-active {
+  color: #0c4b34;
+  border-color: rgba(23, 91, 69, 0.12);
+  background: linear-gradient(90deg, rgba(75, 155, 108, 0.18), rgba(255, 255, 255, 0.76));
+  box-shadow: inset 3px 0 0 #2e8765;
+}
+
+.admin-sidebar__logout {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(23, 91, 69, 0.13);
+  border-radius: 0.8rem;
+  color: #315b4b;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+
+.admin-main {
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem clamp(1.25rem, 4vw, 4.5rem) 3.5rem;
+}
+
+.admin-header {
+  align-items: center;
+  min-height: 92px;
+  padding: 0 0 1.6rem;
+  border-bottom: 1px solid rgba(23, 91, 69, 0.12);
+}
+
+.admin-header h1 {
+  color: var(--admin-text);
+  font-size: clamp(2rem, 2.8vw, 3.4rem);
+}
+
+.admin-toolbar {
+  justify-content: flex-end;
+}
+
+.admin-toolbar select {
+  min-width: 220px;
+  border-color: rgba(23, 91, 69, 0.16);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.admin-language-switcher--toolbar {
+  margin-right: 0.15rem;
+}
+
+.admin-language-switcher button {
+  min-width: 38px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.admin-primary-button,
+.admin-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.admin-primary-button {
+  background: linear-gradient(135deg, #2e8765, #15563f);
+  box-shadow: 0 14px 28px rgba(23, 91, 69, 0.2);
+}
+
+.admin-secondary-button {
+  color: #1b6549;
+  border-color: rgba(23, 91, 69, 0.18);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.admin-card,
+.admin-login-card {
+  border-color: rgba(23, 91, 69, 0.13);
+  box-shadow: 0 18px 45px rgba(30, 80, 54, 0.08);
+}
+
+.admin-card {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.admin-card--metric {
+  position: relative;
+  overflow: hidden;
+  min-height: 146px;
+}
+
+.admin-card--metric::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 1.25rem;
+  width: 38px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2d9369, #9fce78);
+}
+
+.admin-card--metric strong,
+.admin-login-form span,
+.admin-card label span {
+  color: #176343;
+}
+
+.admin-card--metric p,
+.admin-copy,
+.admin-activity-item p,
+.admin-activity-item small {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.admin-live-pill {
+  color: #176343;
+  border-color: rgba(23, 91, 69, 0.16);
+  background: #eff8ef;
+}
+
+.admin-activity-item__dot {
+  background: #48a277;
+  box-shadow: 0 0 0 5px rgba(72, 162, 119, 0.13);
+}
+
+.admin-unit-chip--good,
+.admin-device-pill--good,
+.admin-audit__pill--good {
+  color: #176343;
+  background: rgba(66, 159, 106, 0.12);
+  border-color: rgba(66, 159, 106, 0.2);
+}
+
+.admin-unit-chip--warning,
+.admin-device-pill--warning,
+.admin-audit__pill--warning {
+  color: #82651e;
+  background: rgba(211, 172, 78, 0.13);
+}
+
+.admin-trend__svg path[stroke="#9d7724"] {
+  stroke: #27805e;
+}
+
+.admin-trend__labels span,
+.admin-activity-item,
+.admin-device-card,
+.admin-reservation-card,
+.admin-audit__row {
+  border-color: rgba(23, 91, 69, 0.11);
+}
+
+.admin-unit-card__visual-chip {
+  color: #f3fff1;
+  border-color: rgba(243, 255, 241, 0.34);
+  background: rgba(13, 61, 42, 0.36);
+}
+
+.admin-message {
+  border-color: rgba(185, 78, 78, 0.2);
+  background: #fff8f5;
+}
+
+.admin-overview,
+.admin-devices,
+.admin-audit,
+.admin-panel,
+.branding-workbench {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.admin-overview h2,
+.admin-overview h3,
+.admin-devices h2,
+.admin-devices h3,
+.admin-audit h2,
+.branding-workbench h2,
+.branding-workbench h3,
+.admin-reservation-card h3 {
+  color: var(--admin-text);
+}
+
+.admin-overview-kicker,
+.admin-eyebrow,
+.admin-units__hint,
+.branding-section-label strong,
+.branding-advanced-details summary strong {
+  color: #247355;
+}
+
+.admin-card--chart,
+.admin-card--activity,
+.admin-devices__fleet,
+.admin-audit__panel,
+.branding-panel,
+.branding-preview,
+.admin-reservation-card {
+  border-color: rgba(23, 91, 69, 0.13);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 18px 45px rgba(30, 80, 54, 0.08);
+}
+
+.admin-card__head,
+.admin-devices__fleet-head,
+.admin-audit__toolbar,
+.admin-audit__head,
+.admin-device-card,
+.admin-reservation-card,
+.branding-panel + .branding-panel {
+  border-color: rgba(23, 91, 69, 0.11);
+}
+
+.admin-device-card.is-selected,
+.branding-preset-card.is-active {
+  border-color: rgba(46, 135, 101, 0.48);
+  background: linear-gradient(135deg, rgba(237, 248, 239, 0.94), rgba(255, 255, 255, 0.86));
+  box-shadow: 0 16px 32px rgba(35, 111, 77, 0.1);
+}
+
+.admin-device-module,
+.admin-audit__tabs button,
+.branding-step,
+.branding-color-control,
+.branding-advanced-details,
+.branding-preset-card,
+.branding-preview__swatch,
+.branding-preview__cards article,
+.branding-preview__visual,
+.branding-preview__brand,
+.branding-current-chip {
+  border-color: rgba(23, 91, 69, 0.14);
+}
+
+.admin-audit__tabs button.is-active,
+.branding-preset-builder__save {
+  color: #f5fff4;
+  background: linear-gradient(135deg, #2e8765, #15563f);
+}
+
+.branding-preset-card__badge,
+.branding-color-control__samples small {
+  color: #176343;
+  background: rgba(66, 159, 106, 0.12);
+}
+
+.branding-preset-card__remove,
+.branding-preview__actions button:nth-child(3) {
+  border-color: rgba(23, 91, 69, 0.18);
+  box-shadow: 0 8px 18px rgba(30, 80, 54, 0.08);
+}
+
+.branding-preview {
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--preview-primary) 18%, white), transparent 32%),
+    linear-gradient(180deg, rgba(251, 254, 250, 0.98), rgba(237, 246, 237, 0.94));
+}
+
+.branding-preview__actions button {
+  background: #176343;
+}
+
+.branding-preview__actions button:nth-child(2) {
+  background: #49a579;
+}
+
+@media (max-width: 980px) {
+  .admin-shell {
+    padding: 1rem;
+  }
+
+  .admin-login-layout {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-login-intro {
+    min-height: 290px;
+    padding: 2rem;
+  }
+
+  .admin-login-intro h1 {
+    max-width: 12ch;
+    font-size: clamp(2.7rem, 10vw, 4rem);
+  }
+
+  .admin-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .admin-sidebar__brand {
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  .admin-nav {
+    display: flex;
+    flex: 1;
+    gap: 0.35rem;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .admin-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-nav button {
+    min-width: max-content;
+  }
+
+  .admin-sidebar__logout {
+    width: auto;
+    min-width: 46px;
+    padding: 0.8rem;
+  }
+
+  .admin-sidebar__logout svg {
+    margin: 0;
+  }
+
+  .admin-sidebar__logout {
+    font-size: 0;
+  }
+
+  .admin-main {
+    padding: 1.2rem 1rem 2.5rem;
+  }
+
+  .admin-header {
+    min-height: 0;
+    padding-bottom: 1.1rem;
+  }
+
+  .admin-toolbar {
+    width: 100%;
+  }
+
+  .admin-toolbar select {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .admin-language-switcher--toolbar {
+    order: 3;
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-shell--login {
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .admin-login-layout {
+    width: calc(100vw - 2rem);
+    max-width: calc(100vw - 2rem);
+    border-radius: 1.6rem;
+  }
+
+  .admin-login-intro {
+    display: none;
+  }
+
+  .admin-login-card {
+    width: 100%;
+    padding: 2rem 1.35rem;
+  }
+
+  .admin-sidebar__brand .admin-role,
+  .admin-sidebar__brand .admin-brand {
+    display: none;
+  }
+
+  .admin-nav button {
+    min-width: 46px;
+    justify-content: center;
+    padding: 0.75rem;
+    font-size: 0;
+  }
+
+  .admin-nav button svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.admin-login-intro__signals i {
+  animation: admin-signal-pulse 1.65s ease-in-out infinite;
+}
+
+.admin-login-intro__signals span:nth-child(2) i {
+  animation-delay: 0.18s;
+}
+
+.admin-login-intro__signals span:nth-child(3) i {
+  animation-delay: 0.36s;
+}
+
+.admin-login-card .admin-primary-button,
+.admin-login-card .admin-primary-button span,
+.admin-login-card .admin-primary-button svg {
+  color: #f8fffb;
+}
+
+.admin-message--login {
+  margin: 1rem 0 0;
+}
+
+.admin-language-switcher button {
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.admin-language-switcher button:hover:not(.is-active) {
+  border-color: rgba(24, 112, 78, 0.4);
+  color: #176344;
+  transform: translateY(-1px);
+}
+
+.admin-language-switcher button:active {
+  transform: translateY(0);
+}
+
+.admin-language-switcher button:focus-visible,
+.admin-toolbar select:focus-visible,
+.admin-select-field select:focus-visible {
+  outline: 3px solid rgba(48, 150, 105, 0.25);
+  outline-offset: 2px;
+}
+
+.admin-toolbar select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 3.1rem;
+  background-image: linear-gradient(45deg, transparent 50%, #196645 50%), linear-gradient(135deg, #196645 50%, transparent 50%);
+  background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.82rem) 50%;
+  background-size: 0.36rem 0.36rem, 0.36rem 0.36rem;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 981px) {
+  .admin-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-nav {
+    margin: 2rem 0 0;
+  }
+
+  .admin-sidebar__logout {
+    margin-top: auto;
+  }
+}
+
+.admin-card--activity {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card--activity .admin-activity-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.35rem;
+}
+
+.admin-card--activity .admin-card__footer-button {
+  flex: 0 0 auto;
+  margin-top: 1rem;
+}
+
+.admin-reservation-list {
+  max-height: min(66dvh, 46rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.4rem;
+}
+
+.admin-select-field {
+  position: relative;
+  display: block;
+}
+
+.admin-select-field::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 2px solid #196645;
+  border-bottom: 2px solid #196645;
+  pointer-events: none;
+  transform: translateY(-70%) rotate(45deg);
+}
+
+.admin-audit__sort .admin-select-field select {
+  appearance: none;
+  min-width: 11rem;
+  padding-right: 2.65rem;
+  font: inherit;
+  color: #183d2e;
+  border: 1px solid rgba(27, 99, 69, 0.28);
+  border-radius: 0.7rem;
+  background: #ffffff;
+}
+
+.branding-identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.branding-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.branding-field small {
+  color: #62776d;
+  line-height: 1.45;
+}
+
+.branding-preview__logo {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.55rem;
+}
+
+@keyframes admin-signal-pulse {
+  0%, 100% { opacity: 0.32; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-0.18rem); }
+}
+
+@media (max-width: 620px) {
+  .admin-reservation-list {
+    max-height: 58dvh;
+  }
+
+  .branding-identity-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-login-intro__signals i,
+  .admin-language-switcher button {
+    animation: none;
+    transition: none;
+  }
+}
+
+.admin-select {
+  position: relative;
+  z-index: 5;
+  min-width: 0;
+}
+
+.admin-select__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: var(--admin-control-height);
+  padding: 0.75rem 1rem 0.75rem 1.1rem;
+  border: 1px solid rgba(27, 99, 69, 0.24);
+  border-radius: 0.8rem;
+  color: #183d2e;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.admin-select__trigger:hover,
+.admin-select__trigger:focus-visible {
+  border-color: rgba(46, 135, 101, 0.72);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(48, 150, 105, 0.14);
+  outline: none;
+}
+
+.admin-select__chevron {
+  width: 0.48rem;
+  height: 0.48rem;
+  flex: 0 0 auto;
+  border-right: 2px solid #176344;
+  border-bottom: 2px solid #176344;
+  transform: translateY(-0.15rem) rotate(45deg);
+}
+
+.admin-select__menu {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  left: 0;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.4rem;
+  border: 1px solid rgba(27, 99, 69, 0.2);
+  border-radius: 0.8rem;
+  background: #fbfefc;
+  box-shadow: 0 18px 34px rgba(28, 77, 54, 0.18);
+}
+
+.admin-select__menu button {
+  min-height: 2.55rem;
+  padding: 0.65rem 0.75rem;
+  border: 0;
+  border-radius: 0.55rem;
+  color: #244c3b;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-select__menu button:hover,
+.admin-select__menu button:focus-visible,
+.admin-select__menu button.is-selected {
+  color: #f5fff8;
+  background: linear-gradient(135deg, #2e8765, #15563f);
+  outline: none;
+}
+
+.admin-select--hotel {
+  width: 15.75rem;
+}
+
+.admin-select--sort {
+  width: 11.75rem;
+}
+
+.admin-reservation-list {
+  width: 100%;
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
+  padding: 0 1rem 0.5rem 0;
+  scrollbar-color: rgba(27, 99, 69, 0.5) transparent;
+}
+
+.admin-reservation-list::-webkit-scrollbar,
+.admin-card--activity .admin-activity-feed::-webkit-scrollbar {
+  width: 0.55rem;
+}
+
+.admin-reservation-list::-webkit-scrollbar-thumb,
+.admin-card--activity .admin-activity-feed::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(27, 99, 69, 0.44);
+  background-clip: padding-box;
+}
+
+.branding-preset-builder__action-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.branding-preset-builder__field {
+  margin: 0;
+}
+
+.branding-preset-builder__save {
+  align-self: end;
+  margin-top: 0;
+}
+
+@media (max-width: 620px) {
+  .admin-select--hotel,
+  .admin-select--sort {
+    width: 100%;
+  }
+
+  .branding-preset-builder__action-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .branding-preset-builder__save {
+    width: 100%;
+  }
+}
+
+.admin-shell,
+.admin-app {
+  --admin-control-height: 48px;
+  --admin-language-control-height: 40px;
+  --admin-metric-height: 164px;
+  --admin-device-metric-height: 178px;
+  --admin-audit-metric-height: 178px;
+}
+
+.admin-app :is(
+  .admin-main,
+  .admin-header,
+  .admin-toolbar,
+  .admin-overview,
+  .admin-overview-layout,
+  .admin-card,
+  .admin-devices,
+  .admin-audit,
+  .admin-panel,
+  .branding-workbench,
+  .admin-form-grid,
+  .admin-reservation-card,
+  .admin-device-card,
+  .branding-panel,
+  .branding-preset-card
+) {
+  min-width: 0;
+}
+
+.admin-app :is(
+  .admin-copy,
+  .admin-card h2,
+  .admin-card h3,
+  .admin-card p,
+  .admin-card span,
+  .admin-card strong,
+  .admin-message,
+  .admin-nav button,
+  .admin-sidebar__logout,
+  .branding-panel p,
+  .branding-preset-card p
+) {
+  overflow-wrap: anywhere;
+}
+
+.admin-language-switcher {
+  min-height: var(--admin-language-control-height);
+  align-items: stretch;
+}
+
+.admin-language-switcher button {
+  height: var(--admin-language-control-height);
+  min-height: var(--admin-language-control-height);
+  width: 90px;
+  min-width: 90px;
+  flex: 0 0 90px;
+  white-space: nowrap;
+}
+
+.admin-primary-button,
+.admin-secondary-button,
+.admin-sidebar__logout,
+.admin-nav button {
+  min-height: var(--admin-control-height);
+  line-height: 1.2;
+}
+
+.admin-metrics {
+  grid-auto-rows: var(--admin-metric-height);
+}
+
+.admin-card--metric {
+  min-height: 0;
+  height: 100%;
+}
+
+.admin-devices__metrics {
+  grid-auto-rows: var(--admin-device-metric-height);
+}
+
+.admin-audit__metrics {
+  grid-auto-rows: var(--admin-audit-metric-height);
+}
+
+.admin-card--device-metric,
+.admin-card--audit-metric {
+  min-height: 0;
+  height: 100%;
+}
+
+.admin-overview-layout {
+  grid-auto-rows: 540px;
+}
+
+.admin-card--chart,
+.admin-card--activity {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.admin-card--activity .admin-activity-feed {
+  min-height: 0;
+  overflow: auto;
+}
+
+.admin-unit-grid {
+  grid-auto-rows: 390px;
+}
+
+.admin-unit-card {
+  min-height: 0;
+  height: 100%;
+}
+
+.admin-unit-card__body,
+.admin-reservation-card__field,
+.branding-color-control,
+.branding-preset-card {
+  min-width: 0;
+}
+
+.admin-reservation-card__field {
+  min-height: 100px;
+}
+
+.admin-form-grid,
+.admin-form-grid label,
+.admin-form-grid input,
+.admin-form-grid select,
+.admin-panel,
+.admin-panel > .admin-card,
+.admin-reservation-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-panel,
+.admin-panel > .admin-card {
+  width: 100%;
+}
+
+.admin-form-grid input,
+.admin-form-grid select {
+  min-inline-size: 0;
+}
+
+.admin-devices__hero > .admin-secondary-button,
+.admin-audit__hero > .admin-secondary-button {
+  width: 186px;
+  min-width: 186px;
+}
+
+.branding-color-control {
+  min-height: 238px;
+}
+
+.branding-preset-card {
+  min-height: 218px;
+}
+
+@media (max-width: 980px) {
+  .admin-app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-overview-layout {
+    grid-auto-rows: auto;
+  }
+
+  .admin-card--chart,
+  .admin-card--activity {
+    min-height: 500px;
+    height: auto;
+  }
+
+  .admin-unit-grid {
+    grid-auto-rows: 370px;
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-shell,
+  .admin-app {
+    --admin-control-height: 52px;
+    --admin-language-control-height: 42px;
+    --admin-metric-height: 168px;
+    --admin-device-metric-height: 182px;
+    --admin-audit-metric-height: 182px;
+  }
+
+  .admin-language-switcher {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-language-switcher button {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 0;
+    padding-inline: 0.45rem;
+  }
+
+  .admin-devices__hero > .admin-secondary-button,
+  .admin-audit__hero > .admin-secondary-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-unit-grid {
+    grid-auto-rows: auto;
+  }
+
+  .admin-unit-card {
+    min-height: 360px;
+  }
+
+  .branding-color-control,
+  .branding-preset-card {
+    min-height: 0;
+  }
+}
+
+.admin-login-intro__signals i {
+  animation: admin-signal-pulse 1.65s ease-in-out infinite;
+}
+
+.admin-login-intro__signals span:nth-child(2) i { animation-delay: 0.18s; }
+.admin-login-intro__signals span:nth-child(3) i { animation-delay: 0.36s; }
+
+.admin-login-card .admin-primary-button,
+.admin-login-card .admin-primary-button span,
+.admin-login-card .admin-primary-button svg {
+  color: #f8fffb;
+}
+
+.admin-message--login { margin: 1rem 0 0; }
+
+.admin-language-switcher button {
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.admin-language-switcher button:hover:not(.is-active) {
+  border-color: rgba(24, 112, 78, 0.4);
+  color: #176344;
+  transform: translateY(-1px);
+}
+
+.admin-language-switcher button:active { transform: translateY(0); }
+
+.admin-language-switcher button:focus-visible,
+.admin-toolbar select:focus-visible,
+.admin-select-field select:focus-visible {
+  outline: 3px solid rgba(48, 150, 105, 0.25);
+  outline-offset: 2px;
+}
+
+.admin-toolbar select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 3.1rem;
+  background-image: linear-gradient(45deg, transparent 50%, #196645 50%), linear-gradient(135deg, #196645 50%, transparent 50%);
+  background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.82rem) 50%;
+  background-size: 0.36rem 0.36rem, 0.36rem 0.36rem;
+  background-repeat: no-repeat;
+}
+
+.admin-card--activity {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card--activity .admin-activity-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.35rem;
+}
+
+.admin-card--activity .admin-card__footer-button {
+  flex: 0 0 auto;
+  margin-top: 1rem;
+}
+
+.admin-reservation-list {
+  max-height: min(66dvh, 46rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.4rem;
+}
+
+.admin-select-field {
+  position: relative;
+  display: block;
+}
+
+.admin-select-field::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 2px solid #196645;
+  border-bottom: 2px solid #196645;
+  pointer-events: none;
+  transform: translateY(-70%) rotate(45deg);
+}
+
+.admin-audit__sort .admin-select-field select {
+  appearance: none;
+  min-width: 11rem;
+  padding-right: 2.65rem;
+  font: inherit;
+  color: #183d2e;
+  border: 1px solid rgba(27, 99, 69, 0.28);
+  border-radius: 0.7rem;
+  background: #ffffff;
+}
+
+.branding-identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.branding-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.branding-field small {
+  color: #62776d;
+  line-height: 1.45;
+}
+
+.branding-preview__logo {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.55rem;
+}
+
+@keyframes admin-signal-pulse {
+  0%, 100% { opacity: 0.32; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-0.18rem); }
+}
+
+@media (min-width: 981px) {
+  .admin-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-nav { margin: 2rem 0 0; }
+  .admin-sidebar__logout { margin-top: auto; }
+}
+
+@media (max-width: 620px) {
+  .admin-reservation-list { max-height: 58dvh; }
+  .branding-identity-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-login-intro__signals i,
+  .admin-language-switcher button {
+    animation: none;
+    transition: none;
   }
 }

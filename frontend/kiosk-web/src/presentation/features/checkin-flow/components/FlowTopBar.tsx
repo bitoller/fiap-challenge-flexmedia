@@ -35,7 +35,13 @@ export function FlowTopBar({ rightContent, rightDescription }: FlowTopBarProps) 
 
   return (
     <header className="checkin-topbar">
-      <div className="checkin-topbar__brand">{hotel.name || t("hotelName")}</div>
+      <div className="checkin-topbar__brand">
+        {hotel.branding.logoUrl ? (
+          <img className="checkin-topbar__logo" src={hotel.branding.logoUrl} alt={hotel.name || t("hotelName")} />
+        ) : (
+          hotel.name || t("hotelName")
+        )}
+      </div>
 
       <div className="checkin-topbar__actions" aria-label={rightDescription ?? t("languageLabel")}>
         {rightContent}

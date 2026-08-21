@@ -7,6 +7,8 @@ import "./presentation/features/checkout-flow/checkoutFlow.css";
 import "./presentation/features/map/map.css";
 import "./presentation/features/services/services.css";
 import "./shared/styles/bootstrap.scss";
+import "./shared/styles/stepHeader.css";
+import "./shared/styles/languageStability.css";
 import { Providers } from "./core/providers";
 import App from "./App";
 

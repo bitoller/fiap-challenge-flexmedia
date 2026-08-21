@@ -4,6 +4,8 @@ import type { AdminSession, AuditEvent, DashboardResult, DeviceStatus, HotelProf
 import type { Language, ReservationFormState, ViewKey } from "./admin/types";
 import { COPY } from "./admin/copy";
 import AdminSidebar from "./components/AdminSidebar";
+import AdminIcon from "./components/AdminIcon";
+import AdminSelect from "./components/AdminSelect";
 import OverviewPage from "./pages/overview/OverviewPage";
 import ReservationsPage from "./pages/reservations/ReservationsPage";
 import BrandingPage from "./pages/branding/BrandingPage";
@@ -403,8 +405,15 @@ function App() {
     }
 
     try {
-      const updated = await adminApi.updateBranding(selectedHotelId, brandingOverride ?? hotelProfile.branding);
+      const updated = await adminApi.updateBranding(selectedHotelId, {
+        name: hotelProfile.name,
+        branding: brandingOverride ?? hotelProfile.branding,
+      });
       setHotelProfile(updated);
+      setHotels((current) => current.map((hotel) => (hotel.id === updated.id ? { ...hotel, name: updated.name } : hotel)));
+      setSession((current) => current
+        ? { ...current, hotels: current.hotels.map((hotel) => (hotel.id === updated.id ? { ...hotel, name: updated.name } : hotel)) }
+        : current);
       await refreshData({ silent: true });
     } catch (error) {
       const nextMessage = resolvePageErrorMessage(error, t.messages.refreshOverviewData);
@@ -483,37 +492,45 @@ function App() {
   if (!session) {
     return (
       <div className="admin-shell admin-shell--login">
-        <div className="admin-login-card">
-          <p className="admin-eyebrow">{t.portal}</p>
-          <h1>{t.loginTitle}</h1>
-          <p className="admin-copy">{t.loginSubtitle}</p>
-          <form className="admin-login-form" onSubmit={login}>
-            <label>
-              <span>{t.username}</span>
-              <input value={username} onChange={(event) => setUsername(event.target.value)} />
-            </label>
-            <label>
-              <span>{t.password}</span>
-              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
-            </label>
+        <div className="admin-login-layout">
+          <section className="admin-login-intro" aria-hidden="true">
+            <div className="admin-login-intro__mark"><AdminIcon name="spark" /></div>
+            <p className="admin-eyebrow">{t.portal}</p>
+            <h1>{t.loginSupportTitle}</h1>
+            <p>{t.loginSupportDescription}</p>
+            <div className="admin-login-intro__signals">
+              {t.loginSignals.map((signal) => <span key={signal}><i /> {signal}</span>)}
+            </div>
+          </section>
+          <div className="admin-login-card">
+            <div className="admin-login-card__head">
+              <div className="admin-login-card__icon"><AdminIcon name="shield" /></div>
+              <p className="admin-eyebrow">{t.portal}</p>
+            </div>
+            <h2>{t.loginTitle}</h2>
+            <p className="admin-copy">{t.loginSubtitle}</p>
+            {message ? <p className="admin-message admin-message--login" role="alert">{message}</p> : null}
+            <form className="admin-login-form" onSubmit={login}>
+              <label>
+                <span>{t.username}</span>
+                <input autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} />
+              </label>
+              <label>
+                <span>{t.password}</span>
+                <input autoComplete="current-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+              </label>
+              <button className="admin-primary-button" type="submit" disabled={loading}>
+                <span>{loading ? "..." : t.login}</span><AdminIcon name="shield" />
+              </button>
+            </form>
             <div className="admin-language-switcher" aria-label={t.languageSelectorLabel}>
               {(["en", "pt-BR", "es"] as Language[]).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={language === option ? "is-active" : ""}
-                  onClick={() => setLanguage(option)}
-                  aria-pressed={language === option}
-                >
+                <button key={option} type="button" className={language === option ? "is-active" : ""} onClick={() => setLanguage(option)} aria-pressed={language === option}>
                   {t.languages[option]}
                 </button>
               ))}
             </div>
-            <button className="admin-primary-button" type="submit" disabled={loading}>
-              {loading ? "..." : t.login}
-            </button>
-          </form>
-          {message ? <p className="admin-message">{message}</p> : null}
+          </div>
         </div>
       </div>
     );
@@ -556,15 +573,22 @@ function App() {
               <h1>{selectedHotel?.name ?? t.chooseHotel}</h1>
             </div>
             <div className="admin-toolbar">
-              <select value={selectedHotelId ?? ""} onChange={(event) => setSelectedHotelId(Number(event.target.value))}>
-                {hotels.map((hotel) => (
-                  <option key={hotel.id} value={hotel.id}>
-                    {hotel.name}
-                  </option>
+              <div className="admin-language-switcher admin-language-switcher--toolbar" aria-label={t.languageSelectorLabel}>
+                {(["en", "pt-BR", "es"] as Language[]).map((option) => (
+                  <button key={option} type="button" className={language === option ? "is-active" : ""} onClick={() => setLanguage(option)} aria-pressed={language === option}>
+                    {t.languages[option]}
+                  </button>
                 ))}
-              </select>
+              </div>
+              <AdminSelect
+                ariaLabel={t.chooseHotel}
+                className="admin-select--hotel"
+                value={String(selectedHotelId ?? "")}
+                options={hotels.map((hotel) => ({ value: String(hotel.id), label: hotel.name }))}
+                onChange={(value) => setSelectedHotelId(Number(value))}
+              />
               <button className="admin-secondary-button" type="button" onClick={() => void refreshData()}>
-                {t.refresh}
+                <AdminIcon name="refresh" /> <span>{t.refresh}</span>
               </button>
             </div>
           </header>

@@ -21,7 +21,11 @@ export const Header: React.FC<HeaderProps> = ({ onLanguageChange, currentLanguag
       <div className="container-fluid h-100">
         <div className="row h-100 align-items-center justify-content-between">
           <div className="col-auto">
-            <h1 className="kiosk-hotel-name">{hotel.name || t("hotelName")}</h1>
+            {hotel.branding.logoUrl ? (
+              <img className="kiosk-hotel-logo" src={hotel.branding.logoUrl} alt={hotel.name || t("hotelName")} />
+            ) : (
+              <h1 className="kiosk-hotel-name">{hotel.name || t("hotelName")}</h1>
+            )}
           </div>
           <div className="col-auto">
             <div className="language-selector language-selector--header" aria-label={t("languageLabel")}>
