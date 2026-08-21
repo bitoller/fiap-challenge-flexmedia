@@ -857,12 +857,7 @@
 }
 
 .checkin-confirmation__summary-card::before {
-  content: "";
-  position: absolute;
-  inset: 14px 12px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--kiosk-border-contrast-strong);
-  box-shadow: inset 0 0 0 1px var(--kiosk-border-contrast);
+  content: none;
 }
 
 .checkin-confirmation__summary-card::after {
@@ -2040,9 +2035,12 @@
   }
 
   .checkin-identification__layout {
+    --checkin-method-column: 390px;
+    --checkin-entry-column: 580px;
     --checkin-method-card-height: 124px;
     --checkin-entry-card-height: 620px;
-    gap: 0.9rem;
+    grid-template-columns: minmax(0, var(--checkin-method-column)) minmax(0, var(--checkin-entry-column));
+    gap: 1.15rem;
   }
 
   .checkin-identification__methods {

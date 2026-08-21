@@ -7,8 +7,11 @@ import br.com.fiap.flexcheck.reservation.application.ListReservationsUseCase;
 import br.com.fiap.flexcheck.reservation.application.SearchReservationUseCase;
 import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCommand;
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
+import br.com.fiap.flexcheck.reservation.application.exception.ReservationDeletionException;
 import br.com.fiap.flexcheck.reservation.service.result.ReservationResult;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/reservations")
@@ -100,7 +104,18 @@ public class ReservationController {
     }
 
     @DeleteMapping("/hotels/{hotelId}/{reservationId}")
-    public void deleteReservation(@PathVariable Long hotelId, @PathVariable Long reservationId) {
-        deleteReservationUseCase.execute(hotelId, reservationId);
+    public ResponseEntity<?> deleteReservation(@PathVariable Long hotelId, @PathVariable Long reservationId) {
+        try {
+            deleteReservationUseCase.execute(hotelId, reservationId);
+            return ResponseEntity.noContent().build();
+        } catch (ReservationDeletionException exception) {
+            HttpStatus status = exception.reason() == ReservationDeletionException.Reason.RESERVATION_NOT_FOUND
+                    ? HttpStatus.NOT_FOUND
+                    : HttpStatus.CONFLICT;
+            return ResponseEntity.status(status).body(Map.of(
+                    "code", exception.reason().name(),
+                    "message", exception.getMessage()
+            ));
+        }
     }
 }

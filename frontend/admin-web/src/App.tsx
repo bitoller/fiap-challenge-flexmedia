@@ -119,6 +119,9 @@ function App() {
       return null;
     }
     if (error instanceof ApiError) {
+      if (error.code === "ACTIVE_STAY") {
+        return t.messages.cannotDeleteActiveReservation;
+      }
       if (error.code === "SERVICE_UNAVAILABLE" || error.code === "NETWORK_ERROR" || error.status >= 500) {
         return t.messages.serviceUnavailable;
       }

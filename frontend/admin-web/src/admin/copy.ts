@@ -287,6 +287,7 @@ type AdminCopyShape = {
     confirmDeleteReservation: string;
     reservationDeleted: string;
     deleteReservationFailed: string;
+    cannotDeleteActiveReservation: string;
     networkUnavailable: string;
     sessionExpired: string;
     invalidCredentials: string;
@@ -345,6 +346,7 @@ const en: AdminCopyShape = {
       confirmDeleteReservation: "Do you really want to delete this reservation?",
       reservationDeleted: "Reservation deleted.",
       deleteReservationFailed: "Failed to delete reservation.",
+      cannotDeleteActiveReservation: "This reservation has an active stay and cannot be deleted. Complete checkout first.",
       networkUnavailable: "The admin service is unavailable right now.",
       sessionExpired: "Your session has expired. Please sign in again.",
       invalidCredentials: "The username or password is incorrect.",
@@ -638,6 +640,7 @@ const ptBR: AdminCopyShape = {
       confirmDeleteReservation: "Você realmente quer excluir esta reserva?",
       reservationDeleted: "Reserva excluída.",
       deleteReservationFailed: "Não foi possível excluir a reserva.",
+      cannotDeleteActiveReservation: "Esta reserva possui uma estadia ativa e não pode ser excluída. Conclua o checkout primeiro.",
       networkUnavailable: "O serviço administrativo não está disponível no momento.",
       sessionExpired: "Sua sessão expirou. Entre novamente.",
       invalidCredentials: "Usuário ou senha incorretos.",
@@ -931,6 +934,7 @@ const es: AdminCopyShape = {
       confirmDeleteReservation: "¿Realmente desea eliminar esta reserva?",
       reservationDeleted: "Reserva eliminada.",
       deleteReservationFailed: "No se pudo eliminar la reserva.",
+      cannotDeleteActiveReservation: "Esta reserva tiene una estancia activa y no se puede eliminar. Complete el checkout primero.",
       networkUnavailable: "El servicio administrativo no está disponible ahora.",
       sessionExpired: "Su sesión expiró. Inicie sesión nuevamente.",
       invalidCredentials: "El usuario o la contraseña son incorrectos.",

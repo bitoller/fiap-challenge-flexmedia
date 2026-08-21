@@ -3,6 +3,7 @@ package br.com.fiap.flexcheck.reservation.application.impl;
 import br.com.fiap.flexcheck.reservation.application.DeleteReservationUseCase;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DefaultDeleteReservationUseCase implements DeleteReservationUseCase {
@@ -13,6 +14,7 @@ public class DefaultDeleteReservationUseCase implements DeleteReservationUseCase
     }
 
     @Override
+    @Transactional
     public void execute(Long hotelId, Long reservationId) {
         reservationRepository.deleteReservation(hotelId, reservationId);
     }

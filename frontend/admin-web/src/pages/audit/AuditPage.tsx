@@ -129,11 +129,13 @@ const auditNarratives = {
 
 function describeAudit(event: AuditEvent, locale: Language) {
   const narrative = auditNarratives[locale === "pt-BR" ? "pt-BR" : locale === "es" ? "es" : "en"];
+  const action = event.action.toUpperCase();
   const source = [event.action, event.resourceType, event.actorType].filter(Boolean).join(" ").toUpperCase();
 
+  if (/CHECK.?OUT/.test(action)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
+  if (/CHECK.?IN/.test(action)) return { reference: narrative.checkinReference, details: narrative.checkinDetail };
   if (/HELP|CONCIERGE|ASSIST/.test(source)) return { reference: narrative.supportReference, details: narrative.supportDetail };
-  if (/CHECK.?OUT|STAY/.test(source)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
-  if (/CHECK.?IN/.test(source)) return { reference: narrative.checkinReference, details: narrative.checkinDetail };
+  if (/STAY/.test(source)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
   if (/IDENTITY|BIOMETRY|FACE|DOCUMENT/.test(source)) return { reference: narrative.identityReference, details: narrative.identityDetail };
   if (/RESERVATION/.test(source)) return { reference: narrative.reservationReference, details: narrative.reservationDetail };
   if (/SESSION/.test(source)) return { reference: narrative.sessionReference, details: narrative.sessionDetail };

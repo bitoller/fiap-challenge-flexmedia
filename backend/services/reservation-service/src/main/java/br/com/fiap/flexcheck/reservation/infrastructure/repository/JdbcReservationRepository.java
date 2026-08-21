@@ -2,6 +2,7 @@ package br.com.fiap.flexcheck.reservation.infrastructure.repository;
 
 import br.com.fiap.flexcheck.reservation.application.command.CreateReservationCommand;
 import br.com.fiap.flexcheck.reservation.application.command.GuestConfirmationCommand;
+import br.com.fiap.flexcheck.reservation.application.exception.ReservationDeletionException;
 import br.com.fiap.flexcheck.reservation.domain.entity.Reservation;
 import br.com.fiap.flexcheck.reservation.repository.ReservationRepository;
 import br.com.fiap.flexcheck.reservation.security.SensitiveDataCodec;
@@ -250,11 +251,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """, Integer.class, reservationId, hotelId);
 
         if (hotelMatches == null || hotelMatches == 0) {
-            throw new IllegalStateException("Reservation does not belong to the selected hotel.");
+            throw new ReservationDeletionException(
+                    ReservationDeletionException.Reason.RESERVATION_NOT_FOUND,
+                    "Reservation does not belong to the selected hotel."
+            );
         }
 
         if (stayStatus != null && ("ACTIVE".equalsIgnoreCase(stayStatus) || "PENDING_KEY".equalsIgnoreCase(stayStatus))) {
-            throw new IllegalStateException("Cannot delete a reservation with an active stay.");
+            throw new ReservationDeletionException(
+                    ReservationDeletionException.Reason.ACTIVE_STAY,
+                    "Cannot delete a reservation with an active stay."
+            );
         }
 
         deleteSessionChildren(reservationId);

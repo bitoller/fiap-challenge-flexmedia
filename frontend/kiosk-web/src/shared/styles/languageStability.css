@@ -70,6 +70,6 @@
 
 @media (orientation: portrait) {
   .checkin-layout__main > .checkin-identification {
-    width: min(100%, 666px);
+    width: min(100%, 1000px);
   }
 }
