@@ -1,7 +1,25 @@
 import type { DashboardResult, HotelProfile, HotelSummary } from "../../types";
 import type { OverviewMetric, TrendPoint } from "../../admin/types";
 import type { AdminCopy } from "../../admin/copy";
-import { buildActivityFeed, buildMetricCards, buildTrendPath, buildTrendPoints, buildUnits, formatNumber } from "../../admin/dashboard";
+import { buildActivityFeed, buildMetricCards, buildTrendPath, buildTrendPoints, buildUnits, formatEventTimestamp, formatNumber } from "../../admin/dashboard";
+
+function isSupportRequest(record: Record<string, unknown>) {
+  const source = [record.action, record.event, record.name, record.resourceType, record.resource_type]
+    .filter((value): value is string => typeof value === "string")
+    .join(" ")
+    .toUpperCase();
+
+  return /HELP|CONCIERGE|ASSIST/.test(source) && String(record.result ?? "").toUpperCase() === "SUCCESS";
+}
+
+function isSelectedHotelEvent(record: Record<string, unknown>, hotelId: number | null) {
+  if (hotelId === null) {
+    return true;
+  }
+
+  const eventHotelId = Number(record.hotelId ?? record.hotel_id);
+  return !Number.isFinite(eventHotelId) || eventHotelId === hotelId;
+}
 
 type OverviewPageProps = {
   dashboard: DashboardResult | null;
@@ -12,6 +30,7 @@ type OverviewPageProps = {
   copy: AdminCopy["overviewPage"];
   locale: string;
   onRefresh: () => void;
+  onAcknowledgeSupportRequests: () => void;
   onOpenAudit: () => void;
   onOpenDevices: () => void;
 };
@@ -24,6 +43,7 @@ function OverviewPage({
   emptyState,
   copy,
   locale,
+  onAcknowledgeSupportRequests,
   onOpenAudit,
   onOpenDevices,
 }: OverviewPageProps) {
@@ -34,6 +54,14 @@ function OverviewPage({
   const trendMid = Math.max(1, Math.round(trendMax / 2));
   const activity = buildActivityFeed(dashboard, selectedHotel?.id ?? null, copy.dashboard.activity, locale as "en" | "pt-BR" | "es");
   const units = buildUnits(dashboard, selectedHotel, hotelProfile, copy.dashboard.units, locale);
+  const recentSupportRequests = (dashboard?.recentSessions ?? []).filter(
+    (record) => isSupportRequest(record) && isSelectedHotelEvent(record, selectedHotel?.id ?? null)
+  );
+  const openSupportRequests = dashboard?.openSupportRequests ?? recentSupportRequests.length;
+  const latestSupportRequest = recentSupportRequests[0];
+  const supportRequestTime = latestSupportRequest
+    ? formatEventTimestamp(latestSupportRequest.createdAt ?? latestSupportRequest.created_at ?? latestSupportRequest.timestamp, locale as "en" | "pt-BR" | "es")
+    : "";
 
   return (
     <section className="admin-overview">
@@ -46,6 +74,28 @@ function OverviewPage({
           </article>
         ))}
       </section>
+
+      {openSupportRequests > 0 ? (
+        <section className="admin-support-request" aria-label={copy.supportRequestTitle}>
+          <div className="admin-support-request__signal" aria-hidden="true">
+            <span />
+          </div>
+          <div className="admin-support-request__content">
+            <span>{copy.supportRequestEyebrow}</span>
+            <h2>{copy.supportRequestTitle}</h2>
+            <p>{copy.supportRequestDescription}</p>
+          </div>
+          <div className="admin-support-request__meta">
+            <strong>
+              {openSupportRequests} {openSupportRequests === 1 ? copy.supportRequestCountSingular : copy.supportRequestCountPlural}
+            </strong>
+            {supportRequestTime ? <small>{supportRequestTime}</small> : null}
+          </div>
+          <button className="admin-support-request__action" type="button" onClick={onAcknowledgeSupportRequests}>
+            {copy.supportRequestAcknowledge}
+          </button>
+        </section>
+      ) : null}
 
       <section className="admin-overview-layout">
         <article className="admin-card admin-card--chart">

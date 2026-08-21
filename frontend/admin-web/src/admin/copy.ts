@@ -50,6 +50,12 @@ type DashboardCopy = {
 
 type OverviewCopy = {
   liveActivityLabel: string;
+  supportRequestEyebrow: string;
+  supportRequestTitle: string;
+  supportRequestDescription: string;
+  supportRequestCountSingular: string;
+  supportRequestCountPlural: string;
+  supportRequestAcknowledge: string;
   performanceTitle: string;
   performanceSubtitle: string;
   trafficAndDemandLabel: string;
@@ -349,6 +355,12 @@ const en: AdminCopyShape = {
     },
   overviewPage: {
     liveActivityLabel: "Live activity",
+    supportRequestEyebrow: "Reception attention",
+    supportRequestTitle: "Concierge assistance requested",
+    supportRequestDescription: "A guest used this hotel's kiosk to request help. Review the request and coordinate the reception response.",
+    supportRequestCountSingular: "open request",
+    supportRequestCountPlural: "open requests",
+    supportRequestAcknowledge: "Acknowledge requests",
     performanceTitle: "Performance by unit",
     performanceSubtitle: "Monitoring individual kiosk zones and operational areas.",
     trafficAndDemandLabel: "Traffic and demand",
@@ -636,6 +648,12 @@ const ptBR: AdminCopyShape = {
     },
   overviewPage: {
     liveActivityLabel: "Atividade ao vivo",
+    supportRequestEyebrow: "Atenção da recepção",
+    supportRequestTitle: "Assistência da concierge solicitada",
+    supportRequestDescription: "Um hóspede usou o kiosk deste hotel para pedir ajuda. Revise a solicitação e coordene a resposta da recepção.",
+    supportRequestCountSingular: "solicitação aberta",
+    supportRequestCountPlural: "solicitações abertas",
+    supportRequestAcknowledge: "Confirmar solicitações",
     performanceTitle: "Desempenho por unidade",
     performanceSubtitle: "Monitoramento das zonas e áreas operacionais do hotel.",
     trafficAndDemandLabel: "Tráfego e demanda",
@@ -923,6 +941,12 @@ const es: AdminCopyShape = {
     },
   overviewPage: {
     liveActivityLabel: "Actividad en vivo",
+    supportRequestEyebrow: "Atención de recepción",
+    supportRequestTitle: "Asistencia de concierge solicitada",
+    supportRequestDescription: "Un huésped usó el kiosco de este hotel para pedir ayuda. Revise la solicitud y coordine la respuesta de recepción.",
+    supportRequestCountSingular: "solicitud abierta",
+    supportRequestCountPlural: "solicitudes abiertas",
+    supportRequestAcknowledge: "Confirmar solicitudes",
     performanceTitle: "Rendimiento por unidad",
     performanceSubtitle: "Monitoreo de zonas y áreas operativas del hotel.",
     trafficAndDemandLabel: "Tráfico y demanda",

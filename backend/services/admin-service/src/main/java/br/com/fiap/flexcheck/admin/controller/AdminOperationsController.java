@@ -5,6 +5,8 @@ import br.com.fiap.flexcheck.admin.infrastructure.persistence.OracleAuditReposit
 import br.com.fiap.flexcheck.admin.service.result.DeviceStatusResult;
 import br.com.fiap.flexcheck.admin.domain.entity.AuditEvent;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,5 +32,13 @@ public class AdminOperationsController {
     @GetMapping("/audit")
     public List<AuditEvent> audit(@RequestParam(required = false) Long hotelId) {
         return auditRepository.recent(hotelId);
+    }
+
+    @PostMapping("/hotels/{hotelId}/support-requests/acknowledge")
+    public SupportRequestAcknowledgement acknowledgeSupportRequests(@PathVariable long hotelId) {
+        return new SupportRequestAcknowledgement(auditRepository.acknowledgeOpenSupportRequests(hotelId));
+    }
+
+    public record SupportRequestAcknowledgement(int acknowledgedCount) {
     }
 }

@@ -393,6 +393,111 @@ button:disabled {
   font-size: 0.92rem;
 }
 
+.admin-support-request {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  min-height: 7.4rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(23, 120, 83, 0.24);
+  border-radius: 1.1rem;
+  background: linear-gradient(90deg, rgba(227, 244, 235, 0.96), rgba(255, 255, 255, 0.86));
+  box-shadow: 0 1rem 2.2rem rgba(28, 94, 65, 0.08);
+}
+
+.admin-support-request__signal {
+  width: 3.1rem;
+  height: 3.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 1rem;
+  background: #176343;
+  box-shadow: 0 0.7rem 1.3rem rgba(23, 99, 67, 0.18);
+}
+
+.admin-support-request__signal span {
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 0.2rem solid #f6fff8;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0.42rem rgba(246, 255, 248, 0.25);
+}
+
+.admin-support-request__content span,
+.admin-support-request__meta strong {
+  display: block;
+  color: #176343;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-support-request__content h2 {
+  margin: 0.22rem 0;
+  color: #173e2e;
+  font-size: 1.18rem;
+}
+
+.admin-support-request__content p {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--admin-subtle);
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+
+.admin-support-request__meta {
+  min-width: 8.2rem;
+  display: grid;
+  gap: 0.32rem;
+  text-align: right;
+}
+
+.admin-support-request__meta small {
+  color: var(--admin-subtle);
+  font-size: 0.75rem;
+}
+
+.admin-support-request__action {
+  min-width: 9.8rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #176343;
+  border-radius: 0.75rem;
+  background: #176343;
+  color: #f5fff4;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.admin-support-request__action:hover,
+.admin-support-request__action:focus-visible {
+  background: #0f4e37;
+  box-shadow: 0 0.5rem 1.1rem rgba(23, 99, 67, 0.2);
+  outline: none;
+}
+
+@media (max-width: 760px) {
+  .admin-support-request {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .admin-support-request__meta {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .admin-support-request__action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
 .admin-overview-layout {
   grid-template-columns: minmax(0, 2.2fr) minmax(300px, 1fr);
   align-items: stretch;
@@ -3032,6 +3137,76 @@ button:disabled {
   .admin-language-switcher button {
     animation: none;
     transition: none;
+  }
+}
+
+.admin-login-message-slot {
+  min-height: 5.75rem;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.admin-login-message-slot .admin-message--login {
+  margin: 0;
+}
+
+.admin-shell--login .admin-login-card {
+  display: flex;
+  min-height: 620px;
+  flex-direction: column;
+}
+
+.admin-shell--login .admin-login-card h2 {
+  height: 2.1em;
+}
+
+.admin-shell--login .admin-login-card > .admin-copy {
+  height: 5.1rem;
+}
+
+.admin-shell--login .admin-login-form {
+  margin-top: 0;
+}
+
+.admin-shell--login .admin-language-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.admin-shell--login .admin-language-switcher button {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.4rem;
+  white-space: nowrap;
+}
+
+@media (min-width: 981px) {
+  .admin-shell--login .admin-login-layout {
+    height: clamp(620px, calc(100vh - 4rem), 720px);
+  }
+
+  .admin-shell--login .admin-login-intro {
+    padding: clamp(2rem, 4.5vw, 4.5rem);
+  }
+
+  .admin-shell--login .admin-login-intro h1 {
+    max-width: 15ch;
+    height: 2.82em;
+    font-size: clamp(2.7rem, 4vw, 4.6rem);
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-shell--login .admin-login-card {
+    min-height: 620px;
+  }
+
+  .admin-shell--login .admin-login-card > .admin-copy {
+    height: 6.8rem;
   }
 }
 

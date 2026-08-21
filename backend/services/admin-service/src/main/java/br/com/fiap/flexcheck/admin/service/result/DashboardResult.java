@@ -10,6 +10,7 @@ public record DashboardResult(
         long completedCheckins,
         long completedCheckouts,
         long failedSessions,
+        long openSupportRequests,
         DeviceStatusResult deviceStatus,
         List<Map<String, Object>> recentSessions
 ) {

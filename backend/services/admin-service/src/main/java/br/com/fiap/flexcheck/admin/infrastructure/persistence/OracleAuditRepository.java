@@ -73,6 +73,37 @@ public class OracleAuditRepository {
         return countByColumn("result", hotelId, result);
     }
 
+    public long countOpenSupportRequests(Long hotelId) {
+        String sql = hotelId == null
+                ? """
+                SELECT COUNT(*)
+                  FROM fc_audit_log
+                 WHERE UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                   AND UPPER(result) = 'SUCCESS'
+                """
+                : """
+                SELECT COUNT(*)
+                  FROM fc_audit_log
+                 WHERE hotel_id = ?
+                   AND UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                   AND UPPER(result) = 'SUCCESS'
+                """;
+        Long count = hotelId == null
+                ? jdbc.queryForObject(sql, Long.class)
+                : jdbc.queryForObject(sql, Long.class, hotelId);
+        return count == null ? 0L : count;
+    }
+
+    public int acknowledgeOpenSupportRequests(long hotelId) {
+        return jdbc.update("""
+                UPDATE fc_audit_log
+                   SET action = 'CONCIERGE_HELP_ACKNOWLEDGED'
+                 WHERE hotel_id = ?
+                   AND UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                   AND UPPER(result) = 'SUCCESS'
+                """, hotelId);
+    }
+
     private long countByColumn(String column, Long hotelId, String value) {
         String sql = hotelId == null
                 ? "SELECT COUNT(*) FROM fc_audit_log WHERE UPPER(" + column + ") = UPPER(?)"

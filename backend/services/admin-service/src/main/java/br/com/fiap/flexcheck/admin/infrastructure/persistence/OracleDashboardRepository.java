@@ -79,6 +79,7 @@ public class OracleDashboardRepository {
         );
 
         long failedSessions = auditRepository.countByResult(hotelId, "FAILURE");
+        long openSupportRequests = auditRepository.countOpenSupportRequests(hotelId);
         List<Map<String, Object>> recent = auditRepository.recent(hotelId).stream()
                 .map(event -> {
                     Map<String, Object> item = new HashMap<>();
@@ -102,6 +103,7 @@ public class OracleDashboardRepository {
                 completedCheckins,
                 completedCheckouts,
                 failedSessions,
+                openSupportRequests,
                 new DeviceStatusResult(
                         deviceStatus.totalDevices(),
                         deviceStatus.onlineDevices(),

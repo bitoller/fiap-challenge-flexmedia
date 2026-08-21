@@ -29,6 +29,7 @@ public class OracleDashboardRepositoryTest {
         when(jdbc.queryForObject(anyString(), eq(Long.class), anyLong()))
                 .thenReturn(4L, 2L, 3L, 1L);
         when(auditRepository.countByResult(1L, "FAILURE")).thenReturn(2L);
+        when(auditRepository.countOpenSupportRequests(1L)).thenReturn(0L);
         when(auditRepository.recent(1L)).thenReturn(List.of(
                 new AuditEvent(1L, "ADMIN", null, "UPDATE", null, "hotel-1", "SUCCESS", null, null)
         ));

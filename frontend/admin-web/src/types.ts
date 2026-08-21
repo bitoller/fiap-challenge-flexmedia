@@ -61,6 +61,7 @@ export interface DashboardResult {
   completedCheckins: number;
   completedCheckouts: number;
   failedSessions: number;
+  openSupportRequests: number;
   deviceStatus: DeviceStatus;
   recentSessions: Array<Record<string, unknown>>;
 }

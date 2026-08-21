@@ -127,6 +127,11 @@ export const adminApi = {
   getAudit(hotelId: number) {
     return request<AuditEvent[]>(`/admin/audit?hotelId=${hotelId}`);
   },
+  acknowledgeSupportRequests(hotelId: number) {
+    return request<{ acknowledgedCount: number }>(`/admin/hotels/${hotelId}/support-requests/acknowledge`, {
+      method: "POST",
+    });
+  },
   listReservations(hotelId: number) {
     return request<ReservationSummary[]>(`/reservations/hotels/${hotelId}`);
   },

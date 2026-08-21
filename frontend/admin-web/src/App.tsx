@@ -489,6 +489,22 @@ function App() {
     }
   };
 
+  const acknowledgeSupportRequests = async () => {
+    if (!selectedHotelId) {
+      return;
+    }
+
+    try {
+      await adminApi.acknowledgeSupportRequests(selectedHotelId);
+      await refreshData({ silent: true });
+    } catch (error) {
+      const nextMessage = resolvePageErrorMessage(error, t.messages.refreshOverviewData);
+      if (nextMessage !== null) {
+        setMessage(nextMessage);
+      }
+    }
+  };
+
   if (!session) {
     return (
       <div className="admin-shell admin-shell--login">
@@ -509,7 +525,9 @@ function App() {
             </div>
             <h2>{t.loginTitle}</h2>
             <p className="admin-copy">{t.loginSubtitle}</p>
-            {message ? <p className="admin-message admin-message--login" role="alert">{message}</p> : null}
+            <div className="admin-login-message-slot" aria-live="polite">
+              {message ? <p className="admin-message admin-message--login" role="alert">{message}</p> : null}
+            </div>
             <form className="admin-login-form" onSubmit={login}>
               <label>
                 <span>{t.username}</span>
@@ -605,6 +623,7 @@ function App() {
               copy={t.overviewPage}
               locale={language}
               onRefresh={refreshData}
+              onAcknowledgeSupportRequests={() => void acknowledgeSupportRequests()}
               onOpenAudit={() => setSelectedView("audit")}
               onOpenDevices={() => setSelectedView("devices")}
             />
