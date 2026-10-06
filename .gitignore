@@ -12,6 +12,22 @@ npm-debug.log*
 .npm-cache/
 frontend/admin-web/.npm-cache/
 
+# AI assistants, agent metadata, and generated prompts
+.codex/
+.agents/
+.cursor/
+.claude/
+.windsurf/
+.continue/
+.aider*
+openspec/
+.github/prompts/
+.github/skills/
+*.prompt
+*.prompt.md
+*.ai
+*.ai.json
+
 .idea/
 .vscode/
 
