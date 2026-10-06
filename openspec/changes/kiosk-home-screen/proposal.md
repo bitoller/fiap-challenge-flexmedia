@@ -15,6 +15,7 @@ The FlexCheck Hotel kiosk currently lacks a professional, localized home screen 
 - **10-second API timeout**: Configures reasonable timeout before falling back to mocks; backend remains primary data source
 - **Guest service requests**: Sends typed kiosk requests to the backend and surfaces them in the admin dashboard and audit trail
 - **Detailed guest wayfinding**: Enriches the hotel map with a clear legend, floor transitions, accessible directions, and destination-specific steps while preserving its clean visual zones and established route network
+- **Guest Hub responsive placement**: Gives only the Guest Hub and hotel map explicit portrait and landscape layouts and aligns the home entry-point name with the destination screen
 
 ## Capabilities
 

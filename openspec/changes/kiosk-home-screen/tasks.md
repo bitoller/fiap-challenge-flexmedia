@@ -152,3 +152,10 @@
 - [x] 19.2 Add a map legend, compass, floor journey, and destination-specific step-by-step directions
 - [x] 19.3 Localize all wayfinding details in English, Portuguese, and Spanish with key parity
 - [x] 19.4 Verify destination switching, route reset, and active route guidance in the live kiosk UI
+
+## 20. Guest Hub Orientation and Naming
+
+- [x] 20.1 Rename the visible home entry point to Guest Hub in English, Portuguese, and Spanish
+- [x] 20.2 Add Guest Hub-only portrait placement for navigation, requests, planner, amenities, spotlight, and map details
+- [x] 20.3 Add Guest Hub-only landscape and short-display density rules without modifying other flow layouts
+- [x] 20.4 Verify translation parity, production build, landscape layout, and responsive rule isolation

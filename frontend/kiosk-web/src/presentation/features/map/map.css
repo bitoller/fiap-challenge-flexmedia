@@ -696,3 +696,49 @@
     font-size: 0.6rem;
   }
 }
+
+@media (orientation: portrait) {
+  .services-page .map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .services-page .map-header {
+    flex-direction: column;
+  }
+
+  .services-page .map-header__actions {
+    justify-content: flex-start;
+  }
+
+  .services-page .map-canvas-card,
+  .services-page .map-details {
+    width: 100%;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .services-page .map-spot:not(.is-active) .map-spot__tooltip {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .services-page .map-legend {
+    gap: 0.55rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 820px) {
+  .services-page .map-layout {
+    gap: 1rem;
+  }
+
+  .services-page .map-canvas-card,
+  .services-page .map-details {
+    border-radius: 18px;
+  }
+
+  .services-page .map-details {
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+}

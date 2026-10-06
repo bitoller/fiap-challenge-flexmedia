@@ -210,6 +210,20 @@ Key constraints:
 - Add decorative room fixtures and amenity illustrations inside the zones: introduces visual noise and competes with route guidance; rejected
 - Redraw the route network around a new floor plan: risks changing the familiar interaction and was explicitly out of scope; rejected
 
+### 13. **Orientation Rules Are Scoped to the Guest Hub**
+
+**Decision**: Add portrait, landscape, and short-landscape layout rules only under Guest Hub and hotel-map selectors. Keep the established Home, Check-in, Check-out, and shared kiosk layout rules unchanged. Use “Guest Hub” as the visible entry-point name while retaining `/services` as the internal route.
+
+**Rationale**:
+- Prevents a localized responsive improvement from regressing completed kiosk flows
+- Makes wide portrait kiosks deterministic instead of relying on width breakpoints by coincidence
+- Keeps touch targets and translated text readable across Guest Hub sections
+- Gives the broader destination a name that covers requests, amenities, recommendations, and wayfinding
+
+**Alternatives considered**:
+- Change shared kiosk breakpoints: unnecessary risk to completed screens; rejected
+- Keep the home label as “Services”: understates the destination and creates a naming discontinuity; rejected
+
 ## Risks / Trade-offs
 
 | Risk | Impact | Mitigation |

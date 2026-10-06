@@ -9,13 +9,13 @@ The system SHALL display the hotel name "LUXE GRAND HOTEL" in the header and a "
 - **AND** the main content displays "Welcome Home" and subtitle text
 
 ### Requirement: Home screen displays three action buttons
-The system SHALL display three equally-sized, accessible buttons for Check-in, Check-out, and Services flows. Each button SHALL include an icon and descriptive text.
+The system SHALL display three equally-sized, accessible buttons for Check-in, Check-out, and Guest Hub flows. Each button SHALL include an icon and descriptive text.
 
 #### Scenario: Button layout
 - **WHEN** user views the home screen
 - **THEN** three buttons are displayed vertically in a column
-- **AND** each button contains an icon (🔑 for check-in, 📋 for check-out, 🔔 for services)
-- **AND** each button displays title text ("Check-in", "Check-out", "Services") and subtitle text
+- **AND** each button contains an icon (🔑 for check-in, 📋 for check-out, 🔔 for the Guest Hub)
+- **AND** each button displays title text ("Check-in", "Check-out", "Guest Hub") and subtitle text
 
 #### Scenario: Check-in button click
 - **WHEN** user clicks the Check-in button
@@ -25,9 +25,9 @@ The system SHALL display three equally-sized, accessible buttons for Check-in, C
 - **WHEN** user clicks the Check-out button
 - **THEN** the system navigates to the check-out flow
 
-#### Scenario: Services button click
-- **WHEN** user clicks the Services button
-- **THEN** the system navigates to the services flow
+#### Scenario: Guest Hub button click
+- **WHEN** user clicks the Guest Hub button
+- **THEN** the system navigates to the Guest Hub flow
 
 ### Requirement: Language selector in header
 The system SHALL display language selection options (EN, PT, ES) in the top-right corner of the header as toggle buttons.
@@ -135,3 +135,20 @@ The system SHALL preserve the established clean map zones, route paths, and rout
 - **WHEN** a guest activates route guidance
 - **THEN** the previously established route geometry and animation are used
 - **AND** the destination-specific directions remain visible alongside the active route status
+
+### Requirement: Guest Hub adapts deliberately to kiosk orientation
+The system SHALL apply orientation-specific placement to Guest Hub and hotel-map content without changing the established layouts of Home, Check-in, or Check-out.
+
+#### Scenario: Guest Hub in portrait orientation
+- **WHEN** the Guest Hub is displayed in portrait orientation
+- **THEN** navigation, request cards, planner controls, amenity cards, and map details use portrait-specific stacking
+- **AND** translated content wraps without horizontal overflow
+
+#### Scenario: Guest Hub in landscape orientation
+- **WHEN** the Guest Hub is displayed in landscape orientation
+- **THEN** request and amenity cards use the available horizontal space
+- **AND** short landscape displays use reduced vertical density while preserving touch targets
+
+#### Scenario: Responsive change remains isolated
+- **WHEN** Guest Hub orientation rules are applied
+- **THEN** Home, Check-in, Check-out, and shared kiosk layout selectors are unchanged
