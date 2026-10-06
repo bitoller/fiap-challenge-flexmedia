@@ -22,10 +22,11 @@ export const API_ENDPOINTS = {
   CHECKOUT_LOOKUP: '/stays/lookup',
   CHECKOUT: (stayId: number | string) => `/stays/${stayId}/checkout`,
 
+  GUEST_SERVICE_REQUESTS: '/guest-service-requests',
+
   ADMIN_HOTELS: '/admin/hotels',
   ADMIN_HOTEL_PROFILE: (hotelId: number | string) => `/admin/hotels/${hotelId}`,
   ADMIN_DASHBOARD: '/admin/dashboard',
-  ADMIN_AUDIT_EVENTS: '/admin/audit-events',
 
   PUBLIC_HOTEL_PROFILE: (hotelId: number | string) => `/hotels/${hotelId}`,
 } as const;

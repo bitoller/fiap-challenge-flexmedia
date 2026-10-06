@@ -9,7 +9,8 @@ function isSupportRequest(record: Record<string, unknown>) {
     .join(" ")
     .toUpperCase();
 
-  return /HELP|CONCIERGE|ASSIST/.test(source) && String(record.result ?? "").toUpperCase() === "SUCCESS";
+  return /HELP|CONCIERGE|ASSIST|GUEST_SERVICE|HOUSEKEEPING|AMENIT|DINING/.test(source)
+    && String(record.result ?? "").toUpperCase() === "SUCCESS";
 }
 
 function isSelectedHotelEvent(record: Record<string, unknown>, hotelId: number | null) {

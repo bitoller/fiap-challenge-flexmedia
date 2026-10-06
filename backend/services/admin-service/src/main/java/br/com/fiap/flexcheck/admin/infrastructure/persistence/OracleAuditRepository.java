@@ -78,14 +78,14 @@ public class OracleAuditRepository {
                 ? """
                 SELECT COUNT(*)
                   FROM fc_audit_log
-                 WHERE UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                 WHERE UPPER(action) IN ('CONCIERGE_HELP_REQUESTED', 'GUEST_SERVICE_REQUESTED')
                    AND UPPER(result) = 'SUCCESS'
                 """
                 : """
                 SELECT COUNT(*)
                   FROM fc_audit_log
                  WHERE hotel_id = ?
-                   AND UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                   AND UPPER(action) IN ('CONCIERGE_HELP_REQUESTED', 'GUEST_SERVICE_REQUESTED')
                    AND UPPER(result) = 'SUCCESS'
                 """;
         Long count = hotelId == null
@@ -97,9 +97,12 @@ public class OracleAuditRepository {
     public int acknowledgeOpenSupportRequests(long hotelId) {
         return jdbc.update("""
                 UPDATE fc_audit_log
-                   SET action = 'CONCIERGE_HELP_ACKNOWLEDGED'
+                   SET action = CASE
+                       WHEN UPPER(action) = 'CONCIERGE_HELP_REQUESTED' THEN 'CONCIERGE_HELP_ACKNOWLEDGED'
+                       ELSE 'GUEST_SERVICE_ACKNOWLEDGED'
+                   END
                  WHERE hotel_id = ?
-                   AND UPPER(action) = 'CONCIERGE_HELP_REQUESTED'
+                   AND UPPER(action) IN ('CONCIERGE_HELP_REQUESTED', 'GUEST_SERVICE_REQUESTED')
                    AND UPPER(result) = 'SUCCESS'
                 """, hotelId);
     }

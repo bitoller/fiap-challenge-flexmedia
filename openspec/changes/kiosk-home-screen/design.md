@@ -164,6 +164,52 @@ Key constraints:
 - OOP classes with getters/setters: More boilerplate; rejected
 - Zod/runtime validation: Added complexity; mvp doesn't need it; rejected
 
+### 10. **Guest Service Requests Use the Persisted Audit Workflow**
+
+**Decision**: Submit kiosk service requests through a dedicated public endpoint that validates the service type and records a server-authored `GUEST_SERVICE_REQUESTED` audit event.
+
+**Rationale**:
+- Prevents the kiosk from choosing arbitrary audit actions
+- Preserves hotel, kiosk, route, correlation ID, request type, and timestamp in the existing operational record
+- Makes requests immediately visible to the admin dashboard and audit trail
+- Reuses the existing acknowledgement workflow without introducing a second source of truth
+- Keeps legacy concierge audit entries compatible with the new request count
+
+**Alternatives considered**:
+- Continue posting directly to the generic audit endpoint: weaker validation and allows client-authored audit semantics; rejected
+- Add a separate service-request table immediately: duplicates status and acknowledgement behavior for the current request scope; deferred until room/stay-level fulfillment tracking is required
+
+### 11. **Services Uses Intent-Based Discovery and Explicit Route State**
+
+**Decision**: Make the Guest Hub respond to a guest-selected mood and connect each recommendation to a destination-aware map route. Map highlighting is an explicit on/off state for the currently selected destination rather than a hard-coded SPA action.
+
+**Rationale**:
+- Gives guests a useful discovery path when they do not arrive with a specific request
+- Connects editorial hotel content to a concrete next action
+- Makes route highlighting visibly reversible and understandable
+- Keeps the same interaction usable for every map destination
+- Prevents backend action codes, raw result values, and internal routes from leaking into admin-facing copy
+
+**Alternatives considered**:
+- Add decorative animations without changing behavior: does not improve task completion; rejected
+- Keep a SPA-only highlight button: produces no change when SPA is already selected and cannot scale to other destinations; rejected
+
+### 12. **Map Detail Supports Orientation Without Replacing the Route Network**
+
+**Decision**: Keep the existing destination coordinates, clean abstract zones, route paths, and route animation while adding a legend, floor transitions, and step-by-step accessible directions outside the floor-plan artwork.
+
+**Rationale**:
+- Preserves the route interaction the user already finds successful
+- Keeps the floor plan visually calm and lets the destination labels remain the primary map landmarks
+- Makes vertical movement through lifts and floors explicit
+- Gives every destination actionable instructions instead of a generic route sentence
+- Uses translated labels and directions in all supported kiosk languages
+
+**Alternatives considered**:
+- Replace the map with a geographic or third-party map: does not represent an interior hotel layout and would add unnecessary dependencies; rejected
+- Add decorative room fixtures and amenity illustrations inside the zones: introduces visual noise and competes with route guidance; rejected
+- Redraw the route network around a new floor plan: risks changing the familiar interaction and was explicitly out of scope; rejected
+
 ## Risks / Trade-offs
 
 | Risk | Impact | Mitigation |

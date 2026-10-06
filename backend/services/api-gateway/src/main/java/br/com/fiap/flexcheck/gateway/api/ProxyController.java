@@ -124,6 +124,9 @@ public class ProxyController {
     }
 
     private String resolveServiceBaseUrl(String path) {
+        if (path.startsWith("/api/v1/guest-service-requests")) {
+            return adminServiceUrl;
+        }
         if (path.startsWith("/api/v1/reservations")) {
             return reservationServiceUrl;
         }

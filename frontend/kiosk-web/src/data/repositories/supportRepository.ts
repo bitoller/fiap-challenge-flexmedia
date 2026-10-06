@@ -2,26 +2,34 @@ import { KIOSK_CONFIG } from "../../core/constants";
 import { apiPost } from "../api/client";
 import API_ENDPOINTS, { buildUrl } from "../api/endpoints";
 
+export type GuestServiceType = "HOUSEKEEPING" | "AMENITIES" | "DINING" | "CONCIERGE";
+
 type ConciergeHelpRequest = {
   hotelId: number;
   route: string;
 };
 
-function createCorrelationId(): string {
-  return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+type GuestServiceRequest = ConciergeHelpRequest & {
+  serviceType: GuestServiceType;
+};
+
+function requestGuestService({ hotelId, route, serviceType }: GuestServiceRequest): Promise<void> {
+  return apiPost<void>(buildUrl(API_ENDPOINTS.GUEST_SERVICE_REQUESTS), {
+    hotelId,
+    kioskId: `kiosk-${KIOSK_CONFIG.KIOSK_ID}`,
+    serviceType,
+    route,
+  });
 }
 
 export const supportRepository = {
+  requestGuestService,
+
   requestConciergeHelp({ hotelId, route }: ConciergeHelpRequest): Promise<void> {
-    return apiPost<void>(buildUrl(API_ENDPOINTS.ADMIN_AUDIT_EVENTS), {
+    return requestGuestService({
       hotelId,
-      actorType: "KIOSK",
-      actorId: `kiosk-${KIOSK_CONFIG.KIOSK_ID}`,
-      action: "CONCIERGE_HELP_REQUESTED",
-      resourceType: "KIOSK_SCREEN",
-      resourceId: route,
-      result: "SUCCESS",
-      correlationId: createCorrelationId(),
+      route,
+      serviceType: "CONCIERGE",
     });
   },
 };

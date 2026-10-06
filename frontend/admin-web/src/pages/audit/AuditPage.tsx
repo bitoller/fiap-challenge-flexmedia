@@ -57,6 +57,35 @@ function getTone(result: string) {
   return "good";
 }
 
+function localizeStatus(action: string, result: string, locale: Language) {
+  const normalizedAction = action.toUpperCase();
+  const normalizedResult = result.toUpperCase();
+  const labels = locale === "pt-BR"
+    ? { acknowledged: "Reconhecido", completed: "Concluído", failed: "Falhou", pending: "Pendente" }
+    : locale === "es"
+      ? { acknowledged: "Reconocido", completed: "Completado", failed: "Fallido", pending: "Pendiente" }
+      : { acknowledged: "Acknowledged", completed: "Completed", failed: "Failed", pending: "Pending" };
+
+  if (normalizedAction.includes("ACKNOWLEDGED")) return labels.acknowledged;
+  if (normalizedResult.includes("SUCCESS") || normalizedResult === "OK") return labels.completed;
+  if (normalizedResult.includes("FAIL") || normalizedResult.includes("DENIED")) return labels.failed;
+  return labels.pending;
+}
+
+function formatActorReference(event: AuditEvent, locale: Language) {
+  const actor = normalize(event.actorType, "");
+  const actorId = normalize(event.actorId, "");
+  if (!actor) return "";
+
+  const localizedActor = localizeActorType(actor, locale);
+  if (!actorId) return localizedActor;
+
+  const readableId = actor.toUpperCase() === "KIOSK"
+    ? actorId.replace(/^kiosk-/i, "")
+    : actorId;
+  return `${localizedActor} ${readableId}`;
+}
+
 function getCategoryLabel(category: AuditFilter, copy: AdminCopy["auditPage"]) {
   switch (category) {
     case "security":
@@ -74,6 +103,12 @@ const auditNarratives = {
   en: {
     supportReference: "Guest support",
     supportDetail: "A guest requested concierge assistance from the kiosk.",
+    housekeepingReference: "Housekeeping request",
+    housekeepingDetail: "A guest requested housekeeping from the kiosk.",
+    amenitiesReference: "Amenities request",
+    amenitiesDetail: "A guest requested towels or additional amenities.",
+    diningReference: "Room service request",
+    diningDetail: "A guest requested room service assistance.",
     checkoutReference: "Checkout",
     checkoutDetail: "The stay was closed and the room was released for hotel operations.",
     checkinReference: "Check-in",
@@ -92,6 +127,12 @@ const auditNarratives = {
   "pt-BR": {
     supportReference: "Suporte ao hóspede",
     supportDetail: "Um hóspede solicitou assistência da concierge pelo kiosk.",
+    housekeepingReference: "Solicitação de arrumação",
+    housekeepingDetail: "Um hóspede solicitou arrumação do quarto pelo kiosk.",
+    amenitiesReference: "Solicitação de amenities",
+    amenitiesDetail: "Um hóspede solicitou toalhas ou amenities adicionais.",
+    diningReference: "Solicitação de serviço de quarto",
+    diningDetail: "Um hóspede solicitou atendimento do serviço de quarto.",
     checkoutReference: "Check-out",
     checkoutDetail: "A estadia foi encerrada e o quarto foi liberado para a operação do hotel.",
     checkinReference: "Check-in",
@@ -110,6 +151,12 @@ const auditNarratives = {
   es: {
     supportReference: "Soporte al huésped",
     supportDetail: "Un huésped solicitó asistencia de concierge desde el kiosco.",
+    housekeepingReference: "Solicitud de limpieza",
+    housekeepingDetail: "Un huésped solicitó limpieza de la habitación desde el kiosco.",
+    amenitiesReference: "Solicitud de amenities",
+    amenitiesDetail: "Un huésped solicitó toallas o amenities adicionales.",
+    diningReference: "Solicitud de servicio de habitación",
+    diningDetail: "Un huésped solicitó asistencia de servicio de habitación.",
     checkoutReference: "Check-out",
     checkoutDetail: "La estancia se cerró y la habitación se liberó para la operación del hotel.",
     checkinReference: "Check-in",
@@ -134,6 +181,9 @@ function describeAudit(event: AuditEvent, locale: Language) {
 
   if (/CHECK.?OUT/.test(action)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
   if (/CHECK.?IN/.test(action)) return { reference: narrative.checkinReference, details: narrative.checkinDetail };
+  if (/HOUSEKEEPING/.test(source)) return { reference: narrative.housekeepingReference, details: narrative.housekeepingDetail };
+  if (/AMENIT/.test(source)) return { reference: narrative.amenitiesReference, details: narrative.amenitiesDetail };
+  if (/DINING|ROOM_SERVICE/.test(source)) return { reference: narrative.diningReference, details: narrative.diningDetail };
   if (/HELP|CONCIERGE|ASSIST/.test(source)) return { reference: narrative.supportReference, details: narrative.supportDetail };
   if (/STAY/.test(source)) return { reference: narrative.checkoutReference, details: narrative.checkoutDetail };
   if (/IDENTITY|BIOMETRY|FACE|DOCUMENT/.test(source)) return { reference: narrative.identityReference, details: narrative.identityDetail };
@@ -150,9 +200,20 @@ function humanizeAudit(event: AuditEvent, locale: Language) {
   const resourceId = normalize(event.resourceId, "");
   const when = formatEventTimestamp(event.createdAt, locale) || "-";
   const description = describeAudit(event, locale);
-  const referenceLabel = resourceId ? `${resourceType ? localizeResourceType(resourceType, locale) : "ID"} ${resourceId}` : actor ? localizeActorType(actor, locale) : "-";
+  const isGuestService = /GUEST_SERVICE|CONCIERGE|HOUSEKEEPING|AMENIT|DINING/.test(
+    [event.action, resourceType].filter(Boolean).join(" ").toUpperCase()
+  );
+  const referenceLabel = isGuestService
+    ? localizeResourceType(resourceType || "CONCIERGE", locale)
+    : resourceId
+      ? `${resourceType ? localizeResourceType(resourceType, locale) : "ID"} ${resourceId}`
+      : actor
+        ? localizeActorType(actor, locale)
+        : "-";
+  const contextLabel = formatActorReference(event, locale) || referenceLabel;
+  const status = localizeStatus(event.action, event.result, locale);
 
-  return { action, ...description, referenceLabel, when, actor };
+  return { action, ...description, referenceLabel, contextLabel, status, when, actor };
 }
 
 function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProps) {
@@ -296,13 +357,13 @@ function AuditPage({ audit, emptyState, copy, locale, onRefresh }: AuditPageProp
                   </div>
                   <div className="admin-audit__cell">
                     <strong>{human.details}</strong>
-                    <small>{human.referenceLabel}</small>
+                    <small>{human.contextLabel}</small>
                   </div>
                   <div className="admin-audit__cell">
                     <span className={`admin-audit__pill admin-audit__pill--${category}`}>{getCategoryLabel(category, copy)}</span>
                   </div>
                   <div className="admin-audit__cell">
-                    <span className={`admin-audit__pill admin-audit__pill--${getTone(event.result)}`}>{event.result}</span>
+                    <span className={`admin-audit__pill admin-audit__pill--${getTone(event.result)}`}>{human.status}</span>
                   </div>
                 </div>
               );

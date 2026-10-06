@@ -98,6 +98,10 @@ export function localizeAction(action: string, locale: LocaleKey) {
       CONSENTS_REGISTERED: "Consents recorded",
       DOCUMENT_REJECTED: "Document rejected",
       BIOMETRY_REJECTED: "Biometry rejected",
+      GUEST_SERVICE_REQUESTED: "Guest service requested",
+      GUEST_SERVICE_ACKNOWLEDGED: "Guest service acknowledged",
+      CONCIERGE_HELP_REQUESTED: "Concierge help requested",
+      CONCIERGE_HELP_ACKNOWLEDGED: "Concierge help acknowledged",
     },
     "pt-BR": {
       SESSION_STARTED: "Sessão iniciada",
@@ -114,6 +118,10 @@ export function localizeAction(action: string, locale: LocaleKey) {
       CONSENTS_REGISTERED: "Consentimentos registrados",
       DOCUMENT_REJECTED: "Documento recusado",
       BIOMETRY_REJECTED: "Biometria recusada",
+      GUEST_SERVICE_REQUESTED: "Serviço solicitado pelo hóspede",
+      GUEST_SERVICE_ACKNOWLEDGED: "Solicitação de serviço reconhecida",
+      CONCIERGE_HELP_REQUESTED: "Ajuda da concierge solicitada",
+      CONCIERGE_HELP_ACKNOWLEDGED: "Solicitação da concierge reconhecida",
     },
     es: {
       SESSION_STARTED: "Sesión iniciada",
@@ -130,6 +138,10 @@ export function localizeAction(action: string, locale: LocaleKey) {
       CONSENTS_REGISTERED: "Consentimientos registrados",
       DOCUMENT_REJECTED: "Documento rechazado",
       BIOMETRY_REJECTED: "Biometría rechazada",
+      GUEST_SERVICE_REQUESTED: "Servicio solicitado por el huésped",
+      GUEST_SERVICE_ACKNOWLEDGED: "Solicitud de servicio reconocida",
+      CONCIERGE_HELP_REQUESTED: "Ayuda de conserjería solicitada",
+      CONCIERGE_HELP_ACKNOWLEDGED: "Solicitud de conserjería reconocida",
     },
   };
 
@@ -151,6 +163,10 @@ export function localizeResourceType(resourceType: string, locale: LocaleKey) {
       DOCUMENT: "document",
       BIOMETRY: "biometry",
       CONSENT: "consent",
+      HOUSEKEEPING: "housekeeping",
+      AMENITIES: "towels and amenities",
+      DINING: "room service",
+      CONCIERGE: "concierge",
     },
     "pt-BR": {
       CHECKIN_SESSION: "sessão de check-in",
@@ -164,6 +180,10 @@ export function localizeResourceType(resourceType: string, locale: LocaleKey) {
       DOCUMENT: "documento",
       BIOMETRY: "biometria",
       CONSENT: "consentimento",
+      HOUSEKEEPING: "arrumação do quarto",
+      AMENITIES: "toalhas e amenities",
+      DINING: "serviço de quarto",
+      CONCIERGE: "concierge",
     },
     es: {
       CHECKIN_SESSION: "sesión de check-in",
@@ -177,6 +197,10 @@ export function localizeResourceType(resourceType: string, locale: LocaleKey) {
       DOCUMENT: "documento",
       BIOMETRY: "biometría",
       CONSENT: "consentimiento",
+      HOUSEKEEPING: "limpieza de la habitación",
+      AMENITIES: "toallas y amenities",
+      DINING: "servicio de habitación",
+      CONCIERGE: "conserjería",
     },
   };
 
@@ -237,7 +261,7 @@ function parseActivity(
           reservation: "A reservation was linked to the guest journey.",
           session: "A new kiosk session was started.",
         };
-  const detail = /HELP|CONCIERGE|ASSIST/.test(source)
+  const detail = /HELP|CONCIERGE|ASSIST|GUEST_SERVICE|HOUSEKEEPING|AMENIT|DINING/.test(source)
     ? messages.support
     : /CHECK.?OUT|STAY/.test(source)
       ? messages.checkout

@@ -129,3 +129,26 @@
 - [x] 16.3 Document environment variables (VITE_API_URL, VITE_USE_MOCKS, VITE_MOCK_SCENARIO)
 - [x] 16.4 Document how to add new languages or translations
 - [x] 16.5 Create ARCHITECTURE.md describing layers and component structure
+
+## 17. Guest Service Request Integration
+
+- [x] 17.1 Add a validated public backend endpoint for typed kiosk service requests
+- [x] 17.2 Route guest service requests through the API gateway and persist server-authored audit events
+- [x] 17.3 Connect Services quick requests and footer concierge contact to the backend with sending, success, and error states
+- [x] 17.4 Include current and legacy service requests in admin open counts and acknowledgement
+- [x] 17.5 Localize guest service actions and request types in the admin overview and audit trail
+- [x] 17.6 Verify kiosk/admin production builds and backend/gateway tests
+
+## 18. Services Interaction and Audit Presentation
+
+- [x] 18.1 Replace raw audit results and internal route metadata with localized operational copy
+- [x] 18.2 Add an intent-based stay planner with contextual recommendations
+- [x] 18.3 Replace the SPA-only action with destination-aware animated route guidance and zoom controls
+- [x] 18.4 Verify mood selection, planner-to-map handoff, and route activation in the live kiosk UI
+
+## 19. Detailed Hotel Wayfinding
+
+- [x] 19.1 Preserve the clean zone treatment and route geometry without decorative floor-plan illustrations
+- [x] 19.2 Add a map legend, compass, floor journey, and destination-specific step-by-step directions
+- [x] 19.3 Localize all wayfinding details in English, Portuguese, and Spanish with key parity
+- [x] 19.4 Verify destination switching, route reset, and active route guidance in the live kiosk UI
