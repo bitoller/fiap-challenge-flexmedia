@@ -389,8 +389,10 @@
 }
 
 .services-secondary-action--light {
-  border-color: rgba(255, 255, 255, 0.45);
-  color: var(--kiosk-surface);
+  border-color: var(--kiosk-accent);
+  background: var(--kiosk-accent-soft);
+  color: var(--kiosk-primary-dark);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-accent-rgb), 0.16);
 }
 
 .services-request-success {
