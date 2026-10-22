@@ -7,6 +7,7 @@ public record GuestServiceRequestCommand(
         String kioskId,
         GuestServiceType serviceType,
         String route,
+        String roomNumber,
         String correlationId
 ) {
 }
