@@ -132,7 +132,7 @@ export interface CreateReservationPayload {
   hotelName: string;
   roomNumber: string;
   roomType: string;
-  reservationCode?: string;
+  reservationCode: string;
   arrivalDate: string;
   departureDate: string;
   adults: number;
