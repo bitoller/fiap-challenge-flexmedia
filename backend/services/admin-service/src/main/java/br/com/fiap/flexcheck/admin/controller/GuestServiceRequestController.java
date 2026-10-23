@@ -36,6 +36,7 @@ public class GuestServiceRequestController {
                 request.kioskId(),
                 request.serviceType(),
                 request.route(),
+                request.roomNumber(),
                 correlationId
         ));
     }
@@ -44,7 +45,8 @@ public class GuestServiceRequestController {
             @NotNull @Positive Long hotelId,
             @NotBlank @Size(max = 80) String kioskId,
             @NotNull GuestServiceType serviceType,
-            @NotBlank @Size(max = 500) String route
+            @NotBlank @Size(max = 500) String route,
+            @Size(max = 20) String roomNumber
     ) {
     }
 }

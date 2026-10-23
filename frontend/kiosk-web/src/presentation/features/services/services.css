@@ -354,7 +354,157 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
+}
+
+.services-request-panel__room-field {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  max-width: 20rem;
+  color: var(--kiosk-text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.services-request-panel__room-field input {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--kiosk-border);
+  border-radius: 0.5rem;
+  background: var(--kiosk-surface);
+  color: var(--kiosk-text-primary);
+  font: inherit;
+  letter-spacing: 0.08em;
   flex-wrap: wrap;
+}
+
+.services-request-panel__room-trigger {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--kiosk-border);
+  border-radius: 0.5rem;
+  background: var(--kiosk-surface);
+  color: var(--kiosk-ink-muted);
+  font: inherit;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: none;
+}
+
+.services-request-panel__room-trigger.has-value {
+  color: var(--kiosk-text-primary);
+}
+
+.services-room-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(var(--kiosk-shadow-rgb), 0.48);
+}
+
+.services-room-modal__dialog {
+  width: min(100%, 460px);
+  padding: 1.25rem;
+  border: 1px solid var(--kiosk-border);
+  border-radius: 22px;
+  background: var(--kiosk-surface-overlay-strong);
+  box-shadow: 0 26px 70px rgba(var(--kiosk-shadow-rgb), 0.24);
+}
+
+.services-room-modal__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.services-room-modal__header h3 {
+  margin: 0.3rem 0 0;
+  color: var(--kiosk-text-primary);
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.services-room-modal__description {
+  margin: 0.45rem 0 0;
+  color: var(--kiosk-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.services-room-modal__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--kiosk-border-soft);
+  border-bottom: 1px solid var(--kiosk-border-soft);
+  color: var(--kiosk-text-secondary);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.services-room-modal__meta strong {
+  color: var(--kiosk-primary-dark);
+}
+
+.services-room-modal__instruction {
+  margin: 1rem 0 0.5rem;
+  color: var(--kiosk-text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.services-room-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--kiosk-border);
+  border-radius: 50%;
+  background: var(--kiosk-surface);
+  color: var(--kiosk-primary-dark);
+}
+
+.services-room-modal__display {
+  min-height: 3.5rem;
+  margin: 1rem 0;
+  padding: 0.65rem 1rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--kiosk-border-strong);
+  border-radius: 12px;
+  background: var(--kiosk-surface);
+  color: var(--kiosk-text-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.services-room-modal .checkin-keypad {
+  max-width: none;
+  box-shadow: none;
+}
+
+.services-room-modal__cancel {
+  width: 100%;
+  margin-top: 0.85rem;
+}
+
+.services-room-modal__submit {
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .services-primary-action,
@@ -389,8 +539,10 @@
 }
 
 .services-secondary-action--light {
-  border-color: rgba(255, 255, 255, 0.45);
-  color: var(--kiosk-surface);
+  border-color: var(--kiosk-accent);
+  background: var(--kiosk-accent-soft);
+  color: var(--kiosk-primary-dark);
+  box-shadow: 0 8px 18px rgba(var(--kiosk-accent-rgb), 0.16);
 }
 
 .services-request-success {

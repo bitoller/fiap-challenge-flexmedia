@@ -11,14 +11,16 @@ type ConciergeHelpRequest = {
 
 type GuestServiceRequest = ConciergeHelpRequest & {
   serviceType: GuestServiceType;
+  roomNumber?: string;
 };
 
-function requestGuestService({ hotelId, route, serviceType }: GuestServiceRequest): Promise<void> {
+function requestGuestService({ hotelId, route, serviceType, roomNumber }: GuestServiceRequest): Promise<void> {
   return apiPost<void>(buildUrl(API_ENDPOINTS.GUEST_SERVICE_REQUESTS), {
     hotelId,
     kioskId: `kiosk-${KIOSK_CONFIG.KIOSK_ID}`,
     serviceType,
     route,
+    ...(roomNumber ? { roomNumber } : {}),
   });
 }
 

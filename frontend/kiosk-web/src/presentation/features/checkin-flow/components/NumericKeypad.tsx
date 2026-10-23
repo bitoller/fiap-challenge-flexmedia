@@ -5,6 +5,7 @@ interface NumericKeypadProps {
   onBackspace: () => void;
   onConfirm: () => void;
   confirmDisabled?: boolean;
+  showConfirm?: boolean;
 }
 
 const keys = [
@@ -24,6 +25,7 @@ export function NumericKeypad({
   onBackspace,
   onConfirm,
   confirmDisabled = false,
+  showConfirm = true,
 }: NumericKeypadProps) {
   return (
     <div className="checkin-keypad" aria-label="Numeric keypad">
@@ -45,16 +47,18 @@ export function NumericKeypad({
       <button type="button" className="checkin-keypad__key" onClick={() => onDigit("0")}>
         0
       </button>
-      <button
-        type="button"
-        className={`checkin-keypad__key checkin-keypad__key--confirm ${confirmDisabled ? "is-disabled" : ""}`.trim()}
-        onClick={onConfirm}
-        aria-label="Confirm"
-      >
-        <span className="checkin-keypad__icon" aria-hidden="true">
-          <Check />
-        </span>
-      </button>
+      {showConfirm ? (
+        <button
+          type="button"
+          className={`checkin-keypad__key checkin-keypad__key--confirm ${confirmDisabled ? "is-disabled" : ""}`.trim()}
+          onClick={onConfirm}
+          aria-label="Confirm"
+        >
+          <span className="checkin-keypad__icon" aria-hidden="true">
+            <Check />
+          </span>
+        </button>
+      ) : null}
     </div>
   );
 }

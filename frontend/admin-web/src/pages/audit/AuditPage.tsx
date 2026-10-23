@@ -203,14 +203,19 @@ function humanizeAudit(event: AuditEvent, locale: Language) {
   const isGuestService = /GUEST_SERVICE|CONCIERGE|HOUSEKEEPING|AMENIT|DINING/.test(
     [event.action, resourceType].filter(Boolean).join(" ").toUpperCase()
   );
+  const roomLabel = locale === "pt-BR" ? "Quarto" : locale === "es" ? "Habitación" : "Room";
   const referenceLabel = isGuestService
-    ? localizeResourceType(resourceType || "CONCIERGE", locale)
+    ? resourceId
+      ? `${localizeResourceType(resourceType || "CONCIERGE", locale)}`
+      : localizeResourceType(resourceType || "CONCIERGE", locale)
     : resourceId
       ? `${resourceType ? localizeResourceType(resourceType, locale) : "ID"} ${resourceId}`
       : actor
         ? localizeActorType(actor, locale)
         : "-";
-  const contextLabel = formatActorReference(event, locale) || referenceLabel;
+  const contextLabel = isGuestService && resourceId
+    ? `${roomLabel} ${resourceId}`
+    : formatActorReference(event, locale) || referenceLabel;
   const status = localizeStatus(event.action, event.result, locale);
 
   return { action, ...description, referenceLabel, contextLabel, status, when, actor };

@@ -41,7 +41,7 @@ export function IdentificationPage() {
   const { t } = useTranslation("checkout");
   const navigate = useNavigate();
   const { lookupStay, lookupStayByFace, isLoading, setFlowStep, setRecovery, resetError } = useCheckoutFlow();
-  const [method, setMethod] = useState<CheckoutLookupMethod>("document");
+  const [method, setMethod] = useState<CheckoutLookupMethod>("face");
   const [documentNumber, setDocumentNumber] = useState("");
   const documentDigits = documentNumber.replace(/\D/g, "");
   const canConfirm = method === "document" && documentDigits.length === 11;
@@ -49,7 +49,7 @@ export function IdentificationPage() {
   useEffect(() => {
     setFlowStep("identification");
     resetError();
-    setMethod("document");
+    setMethod("face");
     setDocumentNumber("");
   }, [resetError, setFlowStep]);
 
@@ -108,18 +108,18 @@ export function IdentificationPage() {
         <div className="checkin-identification__layout">
           <div className="checkin-identification__methods">
             <MethodOptionCard
-              title={t("documentMethodTitle")}
-              subtitle={t("documentMethodCaption")}
-              icon={<Fingerprint />}
-              selected={method === "document"}
-              onClick={() => setMethod("document")}
-            />
-            <MethodOptionCard
               title={t("faceMethodTitle")}
               subtitle={t("faceMethodCaption")}
               icon={<ScanFace />}
               selected={method === "face"}
               onClick={() => setMethod("face")}
+            />
+            <MethodOptionCard
+              title={t("documentMethodTitle")}
+              subtitle={t("documentMethodCaption")}
+              icon={<Fingerprint />}
+              selected={method === "document"}
+              onClick={() => setMethod("document")}
             />
           </div>
 

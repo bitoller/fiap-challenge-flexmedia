@@ -22,8 +22,10 @@ import {
   UtensilsCrossed,
   Waves,
   Wifi,
+  X,
 } from "lucide-react";
 import { KioskLayout } from "../../../components/layouts/KioskLayout";
+import { NumericKeypad } from "../../checkin-flow/components/NumericKeypad";
 import { KIOSK_CONFIG } from "../../../../core/constants";
 import { useHotelBranding } from "../../../../core/hotelBranding";
 import { supportRepository } from "../../../../data/repositories/supportRepository";
@@ -102,6 +104,9 @@ export function ServicesPage() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [requestedServiceId, setRequestedServiceId] = useState<string | null>(null);
   const [requestState, setRequestState] = useState<"idle" | "sending" | "error">("idle");
+  const [roomNumber, setRoomNumber] = useState("");
+  const [isRoomNumberModalOpen, setIsRoomNumberModalOpen] = useState(false);
+  const [roomNumberDraft, setRoomNumberDraft] = useState("");
 
   const setTab = (tab: ServicesTab) => {
     setActiveTab(tab);
@@ -370,10 +375,19 @@ export function ServicesPage() {
     setSelectedRequestId(requestId);
     setRequestedServiceId(null);
     setRequestState("idle");
+    setRoomNumber("");
+    setRoomNumberDraft("");
+    setIsRoomNumberModalOpen(true);
   };
 
   const confirmRequest = async () => {
     if (!selectedRequest || requestState === "sending") {
+      return;
+    }
+
+    const normalizedRoomNumber = (roomNumberDraft || roomNumber).trim();
+    if (!normalizedRoomNumber) {
+      setRequestState("error");
       return;
     }
 
@@ -384,9 +398,11 @@ export function ServicesPage() {
         hotelId: hotel.id || KIOSK_CONFIG.ACTIVE_HOTEL_ID,
         route: `${location.pathname}${location.search}${location.hash}`,
         serviceType: selectedRequest.type,
+        roomNumber: normalizedRoomNumber,
       });
       setRequestedServiceId(selectedRequest.id);
       setRequestState("idle");
+      setIsRoomNumberModalOpen(false);
     } catch {
       setRequestState("error");
     }
@@ -445,29 +461,50 @@ export function ServicesPage() {
           })}
         </div>
 
-        {selectedRequest && requestedServiceId !== selectedRequest.id ? (
-          <section className="services-request-panel" aria-live="polite" aria-busy={requestState === "sending"} aria-labelledby="services-request-panel-title">
-            <div>
-              <p className="services-request-panel__eyebrow">{t("servicesRequestPanelEyebrow")}</p>
-              <h3 id="services-request-panel-title">{selectedRequest.title}</h3>
-              <p>{t("servicesRequestPanelCopy")}</p>
-            </div>
-            <div className="services-request-panel__meta">
-              <span>{t("servicesRequestEtaLabel")}</span>
-              <strong>{selectedRequest.eta}</strong>
-            </div>
-            <div className="services-request-panel__actions">
-              <button type="button" className="services-primary-action" onClick={() => void confirmRequest()} disabled={requestState === "sending"}>
+        {isRoomNumberModalOpen && selectedRequest ? (
+          <div className="services-room-modal" role="presentation" onClick={() => setIsRoomNumberModalOpen(false)}>
+            <section
+              className="services-room-modal__dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="services-room-modal-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="services-room-modal__header">
+                <div>
+                  <p className="services-request-panel__eyebrow">{t("servicesRequestPanelEyebrow")}</p>
+                  <h3 id="services-room-modal-title">{selectedRequest.title}</h3>
+                  <p className="services-room-modal__description">{selectedRequest.description}</p>
+                </div>
+                <button type="button" className="services-room-modal__close" onClick={() => setIsRoomNumberModalOpen(false)} aria-label={t("servicesRequestRoomModalClose")}>
+                  <X size={22} aria-hidden="true" />
+                </button>
+              </div>
+              <div className="services-room-modal__meta">
+                <span>{t("servicesRequestEtaLabel")}</span>
+                <strong>{selectedRequest.eta}</strong>
+              </div>
+              <p className="services-room-modal__instruction">{t("servicesRequestRoomModalTitle")}</p>
+              <div className="services-room-modal__display" aria-live="polite">
+                {roomNumberDraft || "—"}
+              </div>
+              <NumericKeypad
+                onDigit={(digit) => setRoomNumberDraft((current) => current.length < 20 ? `${current}${digit}` : current)}
+                onBackspace={() => setRoomNumberDraft((current) => current.slice(0, -1))}
+                onConfirm={() => undefined}
+                showConfirm={false}
+              />
+              <button type="button" className="services-primary-action services-room-modal__submit" onClick={() => void confirmRequest()} disabled={requestState === "sending" || !roomNumberDraft}>
                 {requestState === "sending" ? t("servicesRequestSending") : t("servicesRequestPanelConfirm")}
               </button>
-              <button type="button" className="services-secondary-action" onClick={() => setSelectedRequestId(null)} disabled={requestState === "sending"}>
+              {requestState === "error" ? (
+                <p className="services-request-panel__error" role="alert">{t("servicesRequestError")}</p>
+              ) : null}
+              <button type="button" className="services-secondary-action services-room-modal__cancel" onClick={() => setIsRoomNumberModalOpen(false)}>
                 {t("servicesRequestPanelCancel")}
               </button>
-            </div>
-            {requestState === "error" ? (
-              <p className="services-request-panel__error" role="alert">{t("servicesRequestError")}</p>
-            ) : null}
-          </section>
+            </section>
+          </div>
         ) : null}
 
         {selectedRequest && requestedServiceId === selectedRequest.id ? (

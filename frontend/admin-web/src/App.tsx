@@ -3,6 +3,7 @@ import { ApiError, adminApi, isUnauthorizedError } from "./api";
 import type { AdminSession, AuditEvent, DashboardResult, DeviceStatus, HotelProfile, HotelSummary, ReservationSummary } from "./types";
 import type { Language, ReservationFormState, ViewKey } from "./admin/types";
 import { COPY } from "./admin/copy";
+import { isValidReservationCode } from "./admin/reservationCode";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminIcon from "./components/AdminIcon";
 import AdminSelect from "./components/AdminSelect";
@@ -449,11 +450,16 @@ function App() {
       return;
     }
 
+    if (!isValidReservationCode(reservationForm.reservationCode)) {
+      setMessage(t.reservationsPage.reservationForm.reservationCodeInvalid);
+      return;
+    }
+
     try {
       const created = await adminApi.createReservation(selectedHotelId, {
         ...reservationForm,
         hotelName: reservationForm.hotelName || selectedHotel.name,
-        reservationCode: reservationForm.reservationCode || undefined,
+        reservationCode: reservationForm.reservationCode,
       });
       setReservations((current) => [created, ...current]);
       setReservationForm((current) => ({

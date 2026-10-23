@@ -2186,9 +2186,19 @@
 }
 
 .checkin-identity__step.is-active {
-  border-color: var(--kiosk-border-strong);
-  background: var(--kiosk-surface-overlay-strong);
+  border-color: var(--kiosk-primary-dark);
+  background: var(--kiosk-button-fill);
   box-shadow: 0 22px 48px rgba(var(--kiosk-primary-rgb), 0.13);
+  color: var(--kiosk-button-text-strong);
+}
+
+.checkin-identity__step.is-active svg,
+.checkin-identity__step.is-active span {
+  color: var(--kiosk-button-text-strong);
+}
+
+.checkin-identity__step.is-active p {
+  color: var(--kiosk-button-text-strong);
 }
 
 .checkin-identity__step.is-complete {
@@ -2454,6 +2464,5 @@
     height: auto;
   }
 }
-
 
 

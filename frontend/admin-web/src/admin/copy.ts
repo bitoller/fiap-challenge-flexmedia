@@ -109,6 +109,8 @@ type ReservationsCopy = {
     roomNumberPlaceholder: string;
     roomTypePlaceholder: string;
     reservationCodePlaceholder: string;
+    reservationCodeHint: string;
+    reservationCodeInvalid: string;
     guestNamePlaceholder: string;
     guestDocumentPlaceholder: string;
     guestEmailPlaceholder: string;
@@ -460,7 +462,9 @@ const en: AdminCopyShape = {
       hotelNamePlaceholder: "Flex Hotel Paulista",
       roomNumberPlaceholder: "1208",
       roomTypePlaceholder: "DELUXE",
-      reservationCodePlaceholder: "Optional code",
+      reservationCodePlaceholder: "RSV-2026-0115",
+      reservationCodeHint: "Required format: RSV-YYYY-NNNN.",
+      reservationCodeInvalid: "Enter four digits for the year and four digits for the reservation number.",
       guestNamePlaceholder: "Full guest name",
       guestDocumentPlaceholder: "Document number",
       guestEmailPlaceholder: "guest@example.com",
@@ -754,7 +758,9 @@ const ptBR: AdminCopyShape = {
       hotelNamePlaceholder: "Flex Hotel Paulista",
       roomNumberPlaceholder: "1208",
       roomTypePlaceholder: "DELUXE",
-      reservationCodePlaceholder: "Código opcional",
+      reservationCodePlaceholder: "RSV-2026-0115",
+      reservationCodeHint: "Formato obrigatório: RSV-AAAA-NNNN.",
+      reservationCodeInvalid: "Informe quatro dígitos para o ano e quatro para o número da reserva.",
       guestNamePlaceholder: "Nome completo do hóspede",
       guestDocumentPlaceholder: "Número do documento",
       guestEmailPlaceholder: "hospede@exemplo.com",
@@ -1048,7 +1054,9 @@ const es: AdminCopyShape = {
       hotelNamePlaceholder: "Flex Hotel Paulista",
       roomNumberPlaceholder: "1208",
       roomTypePlaceholder: "DELUXE",
-      reservationCodePlaceholder: "Código opcional",
+      reservationCodePlaceholder: "RSV-2026-0115",
+      reservationCodeHint: "Formato obligatorio: RSV-AAAA-NNNN.",
+      reservationCodeInvalid: "Ingrese cuatro dígitos para el año y cuatro para el número de reserva.",
       guestNamePlaceholder: "Nombre completo del huésped",
       guestDocumentPlaceholder: "Número de documento",
       guestEmailPlaceholder: "huesped@ejemplo.com",

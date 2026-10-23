@@ -4,6 +4,7 @@ import type { AdminCopy } from "../../admin/copy";
 import type { ReservationFormState } from "../../admin/types";
 import type { ReservationSummary } from "../../types";
 import AdminDatePicker from "../../components/AdminDatePicker";
+import { formatReservationCodeInput, isValidReservationCode } from "../../admin/reservationCode";
 
 type ReservationsPageProps = {
   emptyState: string;
@@ -26,6 +27,8 @@ function ReservationsPage({
   onCreateReservation,
   onDeleteReservation,
 }: ReservationsPageProps) {
+  const reservationCodeIsValid = isValidReservationCode(reservationForm.reservationCode);
+  const showReservationCodeError = reservationForm.reservationCode.length > 0 && !reservationCodeIsValid;
   const reservationDetails = reservations.map((reservation) => [
     { label: copy.status, value: reservation.status },
     { label: copy.eligibility, value: reservation.eligible ? copy.readyForKiosk : copy.receptionRequired },
@@ -84,9 +87,26 @@ function ReservationsPage({
             <span>{copy.reservationCode}</span>
             <input
               value={reservationForm.reservationCode}
-              onChange={(event) => setReservationForm((current) => ({ ...current, reservationCode: event.target.value }))}
+              onChange={(event) => setReservationForm((current) => ({
+                ...current,
+                reservationCode: formatReservationCodeInput(event.target.value),
+              }))}
               placeholder={copy.reservationForm.reservationCodePlaceholder}
+              inputMode="numeric"
+              maxLength={13}
+              autoComplete="off"
+              aria-invalid={showReservationCodeError}
+              aria-describedby="reservation-code-guidance"
+              required
             />
+            <small
+              id="reservation-code-guidance"
+              className={showReservationCodeError ? "admin-field-guidance admin-field-guidance--error" : "admin-field-guidance"}
+            >
+              {showReservationCodeError
+                ? copy.reservationForm.reservationCodeInvalid
+                : copy.reservationForm.reservationCodeHint}
+            </small>
           </label>
           <label>
             <span>{copy.arrivalDate}</span>
@@ -139,7 +159,12 @@ function ReservationsPage({
             />
           </label>
         </div>
-        <button className="admin-primary-button" type="button" onClick={onCreateReservation}>
+        <button
+          className="admin-primary-button admin-create-reservation-button"
+          type="button"
+          onClick={onCreateReservation}
+          disabled={!reservationCodeIsValid}
+        >
           {copy.createReservationLabel}
         </button>
       </div>
