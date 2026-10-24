@@ -5,6 +5,7 @@
   "english": "English",
   "portuguese": "Portuguese",
   "spanish": "Spanish",
+  "switchLanguage": "Switch to {{language}}",
   "error": "Error",
   "success": "Success",
   "loading": "Loading...",
@@ -15,6 +16,9 @@
   "submit": "Submit",
   "continue": "Continue",
   "confirm": "Confirm",
+  "keypadLabel": "Numeric keypad",
+  "deleteEntry": "Delete last digit",
+  "confirmEntry": "Confirm entry",
   "close": "Close",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
@@ -24,5 +28,5 @@
   "conciergeHelpSending": "Notifying reception...",
   "conciergeHelpErrorTitle": "Could not notify reception",
   "conciergeHelpErrorBody": "Please try again or ask for help at the front desk.",
-  "copyright": "© 2024 {{hotelName}}"
+  "copyright": "© {{year}} {{hotelName}}"
 }

@@ -11,9 +11,9 @@ export const Header: React.FC<HeaderProps> = ({ onLanguageChange, currentLanguag
   const { t } = useTranslation("common");
   const { hotel } = useHotelBranding();
   const languages = [
-    { code: "en", label: "EN" },
-    { code: "pt-BR", label: "PT" },
-    { code: "es", label: "ES" },
+    { code: "en", label: "EN", nameKey: "english" },
+    { code: "pt-BR", label: "PT", nameKey: "portuguese" },
+    { code: "es", label: "ES", nameKey: "spanish" },
   ];
 
   return (
@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ onLanguageChange, currentLanguag
                     className={`lang-btn ${currentLanguage === language.code ? "active" : ""}`.trim()}
                     onClick={() => onLanguageChange?.(language.code)}
                     aria-pressed={currentLanguage === language.code}
-                    aria-label={`Switch to ${language.label}`}
+                    aria-label={t("switchLanguage", { language: t(language.nameKey) })}
                   >
                     {language.label}
                   </button>

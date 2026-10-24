@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, BedDouble, Check, Clock3, Coffee, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, BedDouble, Check, Clock3, Coffee, Plus } from "lucide-react";
 import { CheckinAddOnOffer } from "../../../../domain/models";
 import { formatCurrency } from "../../../../shared/formatters/currency";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
@@ -13,6 +13,16 @@ const ADD_ON_ICONS = {
   ROOM_UPGRADE: BedDouble,
   LATE_CHECKOUT: Clock3,
 } as const;
+
+const KNOWN_ADD_ON_CODES = new Set(Object.keys(ADD_ON_ICONS));
+const KNOWN_PRICING_TYPES = new Set(["PER_PERSON", "PER_NIGHT", "ONE_TIME"]);
+
+function humanizeCode(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
 
 function imageClassName(code: string) {
   return `checkin-addons__image checkin-addons__image--${code.toLowerCase().replace(/_/g, "-")}`;
@@ -89,6 +99,13 @@ export function AddOnsPage() {
           {(addOnQuote?.offers ?? []).map((offer) => {
             const selected = selectedCodes.includes(offer.code);
             const Icon = ADD_ON_ICONS[offer.code as keyof typeof ADD_ON_ICONS] ?? Plus;
+            const isKnownOffer = KNOWN_ADD_ON_CODES.has(offer.code);
+            const eyebrow = isKnownOffer ? t(`addOns.items.${offer.code}.eyebrow`) : t("addOns.genericEyebrow");
+            const title = isKnownOffer ? t(`addOns.items.${offer.code}.title`) : humanizeCode(offer.code);
+            const description = isKnownOffer ? t(`addOns.items.${offer.code}.description`) : t("addOns.genericDescription");
+            const pricingLabel = KNOWN_PRICING_TYPES.has(offer.pricingType)
+              ? t(`addOns.pricing.${offer.pricingType}`)
+              : humanizeCode(offer.pricingType);
 
             return (
               <article key={offer.code} className={`checkin-addons__card ${selected ? "is-selected" : ""}`}>
@@ -96,12 +113,12 @@ export function AddOnsPage() {
                   <Icon />
                 </div>
                 <div className="checkin-addons__body">
-                  <p className="checkin-addons__eyebrow">{t(`addOns.items.${offer.code}.eyebrow`)}</p>
-                  <h2>{t(`addOns.items.${offer.code}.title`)}</h2>
-                  <p>{t(`addOns.items.${offer.code}.description`)}</p>
+                  <p className="checkin-addons__eyebrow">{eyebrow}</p>
+                  <h2>{title}</h2>
+                  <p>{description}</p>
                   <div className="checkin-addons__footer">
                     <div>
-                      <span>{t(`addOns.pricing.${offer.pricingType}`)}</span>
+                      <span>{pricingLabel}</span>
                       <strong>{formatCurrency(offer.unitAmount, currency, i18n.language)}</strong>
                       {offer.quantity > 1 && <small>{t("addOns.quantity", { count: offer.quantity })}</small>}
                     </div>
@@ -133,6 +150,7 @@ export function AddOnsPage() {
 
         <div className="checkin-addons__actions">
           <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={() => navigate("/checkin/identity")}>
+            <ArrowLeft aria-hidden="true" />
             {t("back")}
           </button>
           <div>

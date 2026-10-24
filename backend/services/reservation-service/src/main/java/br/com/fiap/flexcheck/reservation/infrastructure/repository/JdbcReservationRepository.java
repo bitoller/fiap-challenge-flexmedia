@@ -41,6 +41,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         String kioskClause = kioskId == null ? "" : " AND k.id = ?";
         String hotelClause = hotelId == null ? "" : " AND r.hotel_id = ?";
+        String reservationStatusClause = switch (normalizedType) {
+            case "CPF", "DOCUMENT", "PASSPORT" -> " AND UPPER(r.status) <> 'CHECKED_OUT'";
+            default -> "";
+        };
 
         String sql = """
                 SELECT r.id,
@@ -70,9 +74,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                   JOIN fc_reservation_guest rg ON rg.reservation_id = r.id AND rg.is_primary = 'Y'
                   JOIN fc_guest g ON g.id = rg.guest_id
                   LEFT JOIN fc_kiosk_device k ON k.hotel_id = h.id
-                 WHERE %s%s%s
+                 WHERE %s%s%s%s
+                 ORDER BY CASE WHEN UPPER(r.status) = 'CONFIRMED' THEN 0 ELSE 1 END,
+                          CASE WHEN UPPER(room.status) = 'AVAILABLE' THEN 0 ELSE 1 END,
+                          CASE
+                              WHEN TRUNC(r.arrival_date) BETWEEN TRUNC(CURRENT_DATE) - 1 AND TRUNC(CURRENT_DATE) + 1 THEN 0
+                              ELSE 1
+                          END,
+                          ABS(TRUNC(r.arrival_date) - TRUNC(CURRENT_DATE)),
+                          r.id DESC
                  FETCH FIRST 1 ROWS ONLY
-                """.formatted(where, kioskClause, hotelClause);
+                """.formatted(where, kioskClause, hotelClause, reservationStatusClause);
 
         List<Object> args = new ArrayList<>();
         if (normalizedType.equals("QR_TOKEN")) {

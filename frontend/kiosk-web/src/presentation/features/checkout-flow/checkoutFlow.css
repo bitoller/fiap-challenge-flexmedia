@@ -74,7 +74,7 @@
   min-height: 58px;
   min-width: 220px;
   padding: 0.75rem 1.1rem;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 0.8rem;
   letter-spacing: 0.14em;
 }
@@ -502,6 +502,65 @@
   .checkout-settlement__balance-card h2,
   .checkout-settlement__payment-card h2 {
     min-height: 5.4rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 1100px) and (min-width: 1000px) {
+  .checkout-identification__identity-panel {
+    gap: 0.55rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__panel {
+    height: 590px;
+    min-height: 590px;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-card {
+    min-height: calc(590px - 2.7rem);
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-frame {
+    width: min(100%, 520px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 820px) and (min-width: 1000px) {
+  .checkout-identification__identity-panel .checkin-identity__panel {
+    height: var(--checkin-entry-card-height, 472px);
+    min-height: var(--checkin-entry-card-height, 472px);
+    padding: 0.7rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-card {
+    min-height: calc(var(--checkin-entry-card-height, 472px) - 1.4rem);
+    padding: 0.75rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-heading {
+    min-height: 56px;
+    margin-bottom: 0.45rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-heading p {
+    min-height: auto;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-frame {
+    width: min(100%, 390px);
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-status,
+  .checkout-identification__identity-panel .checkin-identity__camera-error {
+    margin-top: 0.4rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-actions {
+    margin-top: 0.45rem;
+  }
+
+  .checkout-identification__identity-panel .checkin-identity__camera-actions .checkin-action-button {
+    height: 48px;
+    min-height: 48px;
   }
 }
 

@@ -1,4 +1,5 @@
 import { Check, Delete } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface NumericKeypadProps {
   onDigit: (digit: string) => void;
@@ -27,8 +28,10 @@ export function NumericKeypad({
   confirmDisabled = false,
   showConfirm = true,
 }: NumericKeypadProps) {
+  const { t } = useTranslation("common");
+
   return (
-    <div className="checkin-keypad" aria-label="Numeric keypad">
+    <div className="checkin-keypad" aria-label={t("keypadLabel")}>
       {keys.map((digit) => (
         <button key={digit} type="button" className="checkin-keypad__key" onClick={() => onDigit(digit)}>
           {digit}
@@ -38,7 +41,7 @@ export function NumericKeypad({
         type="button"
         className="checkin-keypad__key checkin-keypad__key--soft"
         onClick={onBackspace}
-        aria-label="Delete entry"
+        aria-label={t("deleteEntry")}
       >
         <span className="checkin-keypad__icon" aria-hidden="true">
           <Delete />
@@ -52,7 +55,8 @@ export function NumericKeypad({
           type="button"
           className={`checkin-keypad__key checkin-keypad__key--confirm ${confirmDisabled ? "is-disabled" : ""}`.trim()}
           onClick={onConfirm}
-          aria-label="Confirm"
+          disabled={confirmDisabled}
+          aria-label={t("confirmEntry")}
         >
           <span className="checkin-keypad__icon" aria-hidden="true">
             <Check />

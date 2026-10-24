@@ -801,7 +801,7 @@ export function ServicesPage() {
     <KioskLayout>
       <section className={`services-page ${isMapTab ? "services-page--map" : "services-page--info"}`.trim()} aria-label={t("servicesPageTitle")}>
         <div className="services-toolbar">
-          <button type="button" className="services-sidebar__home" onClick={() => navigate("/")}>
+          <button type="button" className="services-sidebar__home" onClick={() => navigate("/home")}>
             <House size={18} strokeWidth={1.8} />
             <span>{t("backToHome")}</span>
           </button>

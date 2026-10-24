@@ -5,6 +5,14 @@ import type { ReservationFormState } from "../../admin/types";
 import type { ReservationSummary } from "../../types";
 import AdminDatePicker from "../../components/AdminDatePicker";
 import { formatReservationCodeInput, isValidReservationCode } from "../../admin/reservationCode";
+import {
+  formatCurrencyLabel,
+  formatEligibilityReason,
+  formatLocalDate,
+  formatReservationStatus,
+  formatRoomStatus,
+  formatRoomType,
+} from "../../admin/reservationDisplay";
 
 type ReservationsPageProps = {
   emptyState: string;
@@ -30,27 +38,21 @@ function ReservationsPage({
   const reservationCodeIsValid = isValidReservationCode(reservationForm.reservationCode);
   const showReservationCodeError = reservationForm.reservationCode.length > 0 && !reservationCodeIsValid;
   const reservationDetails = reservations.map((reservation) => [
-    { label: copy.status, value: reservation.status },
+    { label: copy.status, value: formatReservationStatus(reservation.status, locale) },
     { label: copy.eligibility, value: reservation.eligible ? copy.readyForKiosk : copy.receptionRequired },
     { label: copy.reservationCode, value: reservation.code },
-    { label: copy.reservationId, value: String(reservation.id) },
     { label: copy.guestName, value: reservation.guest.fullName },
     { label: copy.guestDocumentLabel, value: `${reservation.guest.documentType} ${reservation.guest.maskedDocument}` },
     { label: copy.hotel, value: reservation.hotelName },
-    { label: copy.hotelId, value: String(reservation.hotelId) },
-    { label: copy.room, value: `${reservation.room.number} (${reservation.room.type})` },
-    { label: copy.roomStatus, value: reservation.room.status },
-    { label: copy.arrivalDate, value: reservation.arrivalDate },
-    { label: copy.departureDate, value: reservation.departureDate },
-    { label: copy.guestBirthDate, value: reservation.guest.birthDate },
+    { label: copy.room, value: `${reservation.room.number} (${formatRoomType(reservation.room.type, locale)})` },
+    { label: copy.roomStatus, value: formatRoomStatus(reservation.room.status, locale) },
+    { label: copy.arrivalDate, value: formatLocalDate(reservation.arrivalDate, locale) },
+    { label: copy.departureDate, value: formatLocalDate(reservation.departureDate, locale) },
+    { label: copy.guestBirthDate, value: formatLocalDate(reservation.guest.birthDate, locale) },
     { label: copy.guestEmail, value: reservation.guest.email },
     { label: copy.guestPhone, value: reservation.guest.phone },
     { label: copy.totalAmount, value: formatCurrency(reservation.totalAmount, reservation.currency, locale) },
-    { label: copy.currency, value: reservation.currency },
-    {
-      label: copy.eligibilityReasons,
-      value: reservation.eligibilityReasons.length ? reservation.eligibilityReasons.join(", ") : copy.noRestrictions,
-    },
+    { label: copy.currency, value: formatCurrencyLabel(reservation.currency, locale) },
   ]);
 
   return (
@@ -205,7 +207,7 @@ function ReservationsPage({
                 {reservation.eligibilityReasons.length ? (
                   <div className="admin-reservation-card__reasons">
                     <span>{copy.eligibilityNotes}</span>
-                    <p>{reservation.eligibilityReasons.join(", ")}</p>
+                    <p>{reservation.eligibilityReasons.map((reason) => formatEligibilityReason(reason, locale)).join(" ")}</p>
                   </div>
                 ) : null}
 

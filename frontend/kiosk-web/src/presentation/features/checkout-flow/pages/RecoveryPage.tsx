@@ -27,6 +27,15 @@ export function RecoveryPage() {
 
   const code = currentRecovery?.code;
 
+  const copy =
+    code === "PAYMENT_DECLINED"
+      ? { title: t("recoveryPaymentTitle"), body: t("recoveryPaymentBody") }
+      : code === "STAY_NOT_FOUND"
+        ? { title: t("recoveryStayTitle"), body: t("recoveryStayBody") }
+        : code === "STAY_ALREADY_CHECKED_OUT"
+          ? { title: t("recoveryClosedTitle"), body: t("recoveryClosedBody") }
+          : { title: t("recoveryGenericTitle"), body: t("recoveryGenericBody") };
+
   if (!currentRecovery) {
     return null;
   }
@@ -40,15 +49,15 @@ export function RecoveryPage() {
 
   const goHome = () => {
     clearFlow();
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   return (
     <CheckoutFlowLayout className="checkout-layout--recovery">
       <RecoveryScreen
         eyebrow={t("stepRecovery")}
-        title={t("sharedRecoveryTitle")}
-        body={t("sharedRecoveryBody")}
+        title={copy.title}
+        body={copy.body}
         primaryAction={{
           label: t("retryLookup"),
           onClick: retry,

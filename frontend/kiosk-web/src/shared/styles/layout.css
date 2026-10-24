@@ -642,3 +642,25 @@
     transition: none;
   }
 }
+
+@media (orientation: landscape) and (max-height: 820px) and (min-width: 1000px) {
+  .kiosk-header {
+    height: 56px;
+  }
+
+  .kiosk-hotel-logo {
+    height: 2rem;
+  }
+
+  .kiosk-main {
+    padding: 0.45rem 1.25rem;
+  }
+
+  .kiosk-footer {
+    padding: 0.35rem 0;
+  }
+
+  .kiosk-footer .row {
+    min-height: 26px;
+  }
+}

@@ -7,6 +7,7 @@ import { RecoveryScreen } from "../../../components/common/RecoveryScreen";
 
 interface ReservationNotFoundState {
   code?: string;
+  searchType?: string;
 }
 
 export function ReservationNotFoundPage() {
@@ -16,7 +17,15 @@ export function ReservationNotFoundPage() {
   const { error, clearFlow } = useCheckinFlow();
   const state = (location.state ?? {}) as ReservationNotFoundState;
   const currentError = error ?? (state.code ? { code: state.code, message: "" } : null);
-  const title = t("sharedRecoveryTitle");
+  const title = state.searchType === "QR_TOKEN" ? t("qrNotFoundTitle") : t("notFoundTitle");
+  const body =
+    state.searchType === "CPF"
+      ? t("notFoundCpfBody")
+      : state.searchType === "RESERVATION_CODE"
+        ? t("notFoundReservationBody")
+        : state.searchType === "QR_TOKEN"
+          ? t("qrNotFoundBody")
+          : t("notFoundBody");
 
   useEffect(() => {
     if (!currentError) {
@@ -31,7 +40,7 @@ export function ReservationNotFoundPage() {
 
   const goHome = () => {
     clearFlow();
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   return (
@@ -39,7 +48,7 @@ export function ReservationNotFoundPage() {
       <RecoveryScreen
         eyebrow={t("stepRecovery")}
         title={title}
-        body={t("sharedRecoveryBody")}
+        body={body}
         primaryAction={{
           label: t("retryLookup"),
           onClick: retry,

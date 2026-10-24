@@ -57,7 +57,7 @@ export const Footer: React.FC = () => {
         <div className="row align-items-center justify-content-between">
           <div className="col-auto">
             <p className="copyright-text">
-              {t("copyright", { hotelName: hotel.name || t("hotelName") })}
+              {t("copyright", { year: new Date().getFullYear(), hotelName: hotel.name || t("hotelName") })}
             </p>
           </div>
           <div className="col-auto">

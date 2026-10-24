@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../admin/dashboard";
 import type { AdminCopy } from "../../admin/copy";
+import { formatDeviceStatus } from "../../admin/reservationDisplay";
 import type { DeviceStatus, KioskDevice } from "../../types";
 
 type DevicesPageProps = {
@@ -142,11 +143,11 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, copy, locale, onRefr
                 <div className="admin-device-card__row">
                   <div className="admin-device-card__identity">
                     <strong>{device.name}</strong>
-                    <span>
-                      ID: {device.deviceCode} - Hotel {device.hotelId}
-                    </span>
+                    <span>{copy.deviceCode}: {device.deviceCode}</span>
                   </div>
-                  <div className={`admin-device-pill admin-device-pill--${statusTone(device.status)}`}>{device.status}</div>
+                  <div className={`admin-device-pill admin-device-pill--${statusTone(device.status)}`}>
+                    {formatDeviceStatus(device.status, locale)}
+                  </div>
                 </div>
 
                 <div className="admin-device-card__row admin-device-card__row--modules">
@@ -176,7 +177,7 @@ function DevicesPage({ deviceStatus, hotelName, emptyState, copy, locale, onRefr
                     </div>
                     <div>
                       <span>{copy.status}</span>
-                      <strong>{device.status}</strong>
+                      <strong>{formatDeviceStatus(device.status, locale)}</strong>
                     </div>
                     <div>
                       <span>{copy.batteryLevel}</span>

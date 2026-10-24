@@ -6,6 +6,7 @@ import "./presentation/features/checkin-flow/checkinFlow.css";
 import "./presentation/features/checkout-flow/checkoutFlow.css";
 import "./presentation/features/map/map.css";
 import "./presentation/features/services/services.css";
+import "./presentation/features/attract/attract.css";
 import "./shared/styles/bootstrap.scss";
 import "./shared/styles/stepHeader.css";
 import "./shared/styles/languageStability.css";

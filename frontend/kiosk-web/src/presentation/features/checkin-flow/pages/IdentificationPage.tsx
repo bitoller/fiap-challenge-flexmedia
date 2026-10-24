@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Fingerprint, QrCode, Ticket } from "lucide-react";
+import { ArrowLeft, Fingerprint, QrCode, Ticket } from "lucide-react";
 import { ApiError } from "../../../../domain/errors";
 import { CheckinMethod, CheckinSearchType } from "../../../../domain/types";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
@@ -106,6 +106,9 @@ export function IdentificationPage() {
         ? digits.length === 11
         : normalizedValue.length > 0;
 
+  const validationMessage =
+    method === "reservation-code" ? t("reservationValidationError") : t("cpfValidationError");
+
   const helperLabel =
     method === "reservation-code"
       ? t("reservationLabel")
@@ -142,7 +145,15 @@ export function IdentificationPage() {
       const nextSearchType = buildSearchType(nextMethod);
       const nextSearchValue = buildSearchValue(nextMethod, nextValue);
 
-      if (nextMethod !== "qr-code" && !nextSearchValue) {
+      const nextDigits = stripDigits(nextValue);
+      const nextIsValid =
+        nextMethod === "reservation-code"
+          ? nextDigits.length === 8
+          : nextMethod === "cpf"
+            ? nextDigits.length === 11
+            : nextSearchValue.length > 0;
+
+      if (!nextIsValid) {
         setSubmittedOnce(true);
         return;
       }
@@ -235,12 +246,15 @@ export function IdentificationPage() {
               <>
                 <div className="checkin-identification__field-label">{helperLabel}</div>
                 <div className={`checkin-identification__field ${submittedOnce && !isValid ? "is-invalid" : ""}`.trim()}>
-                  <input readOnly value={displayValue} aria-label={helperLabel} />
+                  <input readOnly value={displayValue} aria-label={helperLabel} aria-invalid={submittedOnce && !isValid} />
                   <span className="checkin-identification__field-icon" aria-hidden="true">
                     {method === "reservation-code" ? <Ticket /> : <Fingerprint />}
                   </span>
                 </div>
                 <p className="checkin-identification__helper">{helperCopy}</p>
+                {submittedOnce && !isValid ? (
+                  <p className="checkin-identification__validation" role="alert">{validationMessage}</p>
+                ) : null}
                 {isLoading ? (
                   <div className="checkin-identification__loading" role="status" aria-live="polite">
                     <span className="checkin-identification__loading-spinner" aria-hidden="true" />
@@ -260,10 +274,10 @@ export function IdentificationPage() {
               <button
                 type="button"
                 className="checkin-action-button checkin-action-button--secondary"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/home")}
               >
                 <span className="checkin-action-button__icon" aria-hidden="true">
-                  <ArrowRight />
+                  <ArrowLeft />
                 </span>
                 <span>{t("backToHome")}</span>
               </button>
