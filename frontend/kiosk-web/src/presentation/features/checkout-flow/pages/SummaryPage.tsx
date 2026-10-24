@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CreditCard, QrCode, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CreditCard, QrCode, ShieldCheck } from "lucide-react";
 import { formatCurrency } from "../../../../shared/formatters/currency";
 import { useCheckoutFlow } from "../context/CheckoutFlowContext";
 import { CheckinFlowLayout } from "../../checkin-flow/components/CheckinFlowLayout";
@@ -13,7 +13,12 @@ function getChargeLabel(code: string, description: string, translate: (key: stri
     return translate("settlementLateCheckout");
   }
 
-  return description;
+  const friendlyCode = code
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  return friendlyCode || description;
 }
 
 export function SummaryPage() {
@@ -109,7 +114,7 @@ export function SummaryPage() {
               {hasBalance ? t("settlementPaymentCopy") : t("settlementNoPaymentCopy")}
             </p>
 
-            <div className="checkout-settlement__methods">
+            {hasBalance ? <div className="checkout-settlement__methods">
               <MethodOptionCard
                 title={t("paymentCardTitle")}
                 subtitle={t("paymentCardSubtitle")}
@@ -124,7 +129,7 @@ export function SummaryPage() {
                 selected={paymentMethod === "PIX"}
                 onClick={() => setPaymentMethod("PIX")}
               />
-            </div>
+            </div> : null}
           </article>
         </div>
 
@@ -142,6 +147,7 @@ export function SummaryPage() {
             onClick={() => navigate("/checkout")}
             disabled={isLoading || isProcessing}
           >
+            <ArrowLeft aria-hidden="true" />
             {t("back")}
           </button>
           <button

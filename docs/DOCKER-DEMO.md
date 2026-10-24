@@ -36,6 +36,24 @@ ADMIN_PASSWORD=change_me_admin_password
 
 ## Start The Stack
 
+For a guided startup with environment validation and readiness checks, use the presentation launcher:
+
+Windows:
+
+```powershell
+.\scripts\start-demo.ps1
+```
+
+macOS:
+
+```bash
+bash scripts/start-demo.sh
+```
+
+See [`docs/PRESENTATION-RUNBOOK.md`](PRESENTATION-RUNBOOK.md) for presentation-day instructions and the faster restart mode.
+
+To start Compose directly:
+
 ```bash
 docker compose up --build
 ```

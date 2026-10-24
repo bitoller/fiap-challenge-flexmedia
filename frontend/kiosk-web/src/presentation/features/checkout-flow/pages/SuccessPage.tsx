@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CreditCard, MailCheck, ReceiptText, RotateCcw, Sparkles } from "lucide-react";
@@ -11,7 +11,6 @@ export function SuccessPage() {
   const { t, i18n } = useTranslation("checkout");
   const navigate = useNavigate();
   const { checkoutResult, stayPreview, clearFlow, setFlowStep } = useCheckoutFlow();
-  const [receiptConfirmed, setReceiptConfirmed] = useState(false);
 
   useEffect(() => {
     if (!checkoutResult || !stayPreview) {
@@ -79,13 +78,6 @@ export function SuccessPage() {
         <p className="checkout-complete__copy">{t("successCopy")}</p>
 
         <div className="checkin-payment__actions checkout-complete__actions">
-          <button
-            type="button"
-            className="checkin-action-button checkin-action-button--secondary"
-            onClick={() => setReceiptConfirmed(true)}
-          >
-            {receiptConfirmed ? t("successReceiptSent") : t("successSendReceipt")}
-          </button>
           <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={conclude}>
             {t("successEndButton")}
           </button>

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BadgeCheck, FileScan, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeCheck, FileScan, ShieldCheck, Sparkles } from "lucide-react";
 import { CheckinRecoveryCode } from "../../../../domain/types";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
 import { CameraCapturePanel } from "../components/CameraCapturePanel";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 
-type VerificationStage = "document" | "selfie" | "consent";
+type VerificationStage = "consent" | "document" | "selfie" | "complete";
 type VerificationStatus = "document" | "selfie" | "confirmation";
 
 export function IdentityVerificationPage() {
@@ -24,7 +24,7 @@ export function IdentityVerificationPage() {
     setFlowStep,
     setRecovery,
   } = useCheckinFlow();
-  const [stage, setStage] = useState<VerificationStage>("document");
+  const [stage, setStage] = useState<VerificationStage>("consent");
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [biometricConsentAccepted, setBiometricConsentAccepted] = useState(false);
@@ -35,9 +35,10 @@ export function IdentityVerificationPage() {
     }
   }, [navigate, reservation]);
 
+  const canStart = useMemo(() => termsAccepted && biometricConsentAccepted, [biometricConsentAccepted, termsAccepted]);
   const canConfirm = useMemo(() => {
-    return stage === "consent" && termsAccepted && biometricConsentAccepted && Boolean(identityVerification?.canContinue);
-  }, [biometricConsentAccepted, identityVerification?.canContinue, stage, termsAccepted]);
+    return stage === "complete" && canStart && Boolean(identityVerification?.canContinue);
+  }, [canStart, identityVerification?.canContinue, stage]);
 
   if (!reservation) {
     return null;
@@ -76,7 +77,7 @@ export function IdentityVerificationPage() {
     try {
       const result = await verifyIdentitySelfie(imageBase64, mimeType);
       if (result.canContinue) {
-        setStage("consent");
+        setStage("complete");
         return;
       }
 
@@ -86,6 +87,31 @@ export function IdentityVerificationPage() {
     } finally {
       setVerificationStatus(null);
     }
+  };
+
+  const startVerification = () => {
+    if (canStart) {
+      setStage("document");
+    }
+  };
+
+  const goBack = () => {
+    if (stage === "consent") {
+      navigate("/checkin/confirmation");
+      return;
+    }
+
+    if (stage === "document") {
+      setStage("consent");
+      return;
+    }
+
+    if (stage === "selfie") {
+      setStage("document");
+      return;
+    }
+
+    setStage("selfie");
   };
 
   const continueToPayment = async () => {
@@ -122,6 +148,13 @@ export function IdentityVerificationPage() {
 
         <div className="checkin-identity__layout">
           <aside className="checkin-identity__steps" aria-label={t("identityProgressLabel")}>
+            <div className={`checkin-identity__step ${stage === "consent" ? "is-active" : ""} ${stage !== "consent" ? "is-complete" : ""}`}>
+              <ShieldCheck aria-hidden="true" />
+              <div>
+                <span>{t("identityConsentStep")}</span>
+                <p>{t("identityConsentStepBody")}</p>
+              </div>
+            </div>
             <div className={`checkin-identity__step ${stage === "document" ? "is-active" : ""} ${identityVerification?.documentStatus === "APPROVED" ? "is-complete" : ""}`}>
               <FileScan aria-hidden="true" />
               <div>
@@ -134,13 +167,6 @@ export function IdentityVerificationPage() {
               <div>
                 <span>{t("identitySelfieStep")}</span>
                 <p>{t("identitySelfieStepBody")}</p>
-              </div>
-            </div>
-            <div className={`checkin-identity__step ${stage === "consent" ? "is-active" : ""}`}>
-              <ShieldCheck aria-hidden="true" />
-              <div>
-                <span>{t("identityConsentStep")}</span>
-                <p>{t("identityConsentStepBody")}</p>
               </div>
             </div>
           </aside>
@@ -158,6 +184,7 @@ export function IdentityVerificationPage() {
                 label={t("identityDocumentTitle")}
                 instruction={t("identityDocumentInstruction")}
                 captureLabel={t("identityCaptureDocument")}
+                confirmCaptureLabel={t("identityUsePhoto")}
                 retakeLabel={t("identityRetake")}
                 readyLabel={t("identityCameraReady")}
                 startingLabel={t("identityCameraStarting")}
@@ -173,6 +200,7 @@ export function IdentityVerificationPage() {
                 label={t("identitySelfieTitle")}
                 instruction={t("identitySelfieInstruction")}
                 captureLabel={t("identityCaptureSelfie")}
+                confirmCaptureLabel={t("identityUsePhoto")}
                 retakeLabel={t("identityRetake")}
                 readyLabel={t("identityCameraReady")}
                 startingLabel={t("identityCameraStarting")}
@@ -185,12 +213,10 @@ export function IdentityVerificationPage() {
 
             {stage === "consent" && (
               <article className="checkin-identity__consent-card">
-                <div className="checkin-identity__approved-icon">
-                  <BadgeCheck aria-hidden="true" />
-                </div>
-                <p className="checkin-identity__eyebrow">{t("identityApprovedEyebrow")}</p>
-                <h2>{identityVerification?.fallbackUsed ? t("identityFallbackTitle") : t("identityApprovedTitle")}</h2>
-                <p>{identityVerification?.fallbackUsed ? t("identityFallbackBody") : t("identityApprovedBody")}</p>
+                <div className="checkin-identity__approved-icon"><ShieldCheck aria-hidden="true" /></div>
+                <p className="checkin-identity__eyebrow">{t("identityConsentEyebrow")}</p>
+                <h2>{t("identityConsentTitle")}</h2>
+                <p>{t("identityConsentBody")}</p>
 
                 <label className="checkin-identity__checkbox">
                   <input
@@ -210,16 +236,35 @@ export function IdentityVerificationPage() {
                 </label>
               </article>
             )}
+
+            {stage === "complete" && (
+              <article className="checkin-identity__consent-card">
+                <div className="checkin-identity__approved-icon"><BadgeCheck aria-hidden="true" /></div>
+                <p className="checkin-identity__eyebrow">{t("identityApprovedEyebrow")}</p>
+                <h2>{identityVerification?.fallbackUsed ? t("identityFallbackTitle") : t("identityApprovedTitle")}</h2>
+                <p>{identityVerification?.fallbackUsed ? t("identityFallbackBody") : t("identityApprovedBody")}</p>
+              </article>
+            )}
           </div>
         </div>
 
         <div className="checkin-identity__actions">
-          <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={() => navigate("/checkin/confirmation")}>
+          <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={goBack}>
+            <ArrowLeft aria-hidden="true" />
             {t("back")}
           </button>
-          <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={continueToPayment} disabled={!canConfirm || isLoading}>
-            {t("confirmReservation")}
-          </button>
+          {stage === "consent" ? (
+            <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={startVerification} disabled={!canStart || isLoading}>
+              {t("identityStartVerification")}
+              <ArrowRight aria-hidden="true" />
+            </button>
+          ) : null}
+          {stage === "complete" ? (
+            <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={continueToPayment} disabled={!canConfirm || isLoading}>
+              {t("identityContinue")}
+              <ArrowRight aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
       </section>
     </CheckinFlowLayout>

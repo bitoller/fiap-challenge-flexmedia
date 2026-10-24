@@ -5,6 +5,7 @@
   "english": "Inglés",
   "portuguese": "Portugués",
   "spanish": "Español",
+  "switchLanguage": "Cambiar a {{language}}",
   "error": "Error",
   "success": "Éxito",
   "loading": "Cargando...",
@@ -15,6 +16,9 @@
   "submit": "Enviar",
   "continue": "Continuar",
   "confirm": "Confirmar",
+  "keypadLabel": "Teclado numérico",
+  "deleteEntry": "Borrar último dígito",
+  "confirmEntry": "Confirmar entrada",
   "close": "Cerrar",
   "privacyPolicy": "Política de Privacidad",
   "termsOfService": "Términos de Servicio",
@@ -24,5 +28,5 @@
   "conciergeHelpSending": "Notificando a recepción...",
   "conciergeHelpErrorTitle": "No fue posible notificar a recepción",
   "conciergeHelpErrorBody": "Inténtelo de nuevo o solicite ayuda directamente en recepción.",
-  "copyright": "© 2024 {{hotelName}}"
+  "copyright": "© {{year}} {{hotelName}}"
 }

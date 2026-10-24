@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BadgeCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeCheck } from "lucide-react";
 import { useCheckinFlow } from "../context/CheckinFlowContext";
 import { CheckinFlowLayout } from "../components/CheckinFlowLayout";
 import { FlowStepHeader } from "../components/FlowStepHeader";
@@ -51,6 +51,13 @@ function getStayNights(arrivalDate: string, departureDate: string) {
   }
 
   return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
+}
+
+function humanizeCode(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 export function ReservationConfirmationPage() {
@@ -130,7 +137,7 @@ export function ReservationConfirmationPage() {
 
             <div className="checkin-confirmation__field">
               <span>{t("roomLabel")}</span>
-              <strong>{reservation.room.type}</strong>
+               <strong>{t(`roomTypes.${reservation.room.type}`, { defaultValue: humanizeCode(reservation.room.type) })}</strong>
               <small>{t("roomNumber", { number: reservation.room.number })}</small>
             </div>
 
@@ -170,10 +177,12 @@ export function ReservationConfirmationPage() {
 
         <div className="checkin-confirmation__actions">
           <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={() => navigate("/checkin")}>
+            <ArrowLeft aria-hidden="true" />
             {t("back")}
           </button>
           <button type="button" className="checkin-action-button checkin-action-button--primary checkin-action-button--wide" onClick={confirmReservation}>
             {t("confirmReservation")}
+            <ArrowRight aria-hidden="true" />
           </button>
         </div>
       </section>

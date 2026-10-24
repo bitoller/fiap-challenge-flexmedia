@@ -463,6 +463,14 @@
   line-height: 1.5;
 }
 
+.checkin-identification__validation {
+  margin: -0.35rem 0 0;
+  color: var(--kiosk-primary-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .checkin-identification__entry-footer {
   display: flex;
   justify-content: flex-end;
@@ -472,7 +480,7 @@
 .checkin-identification__entry-footer .checkin-action-button {
   min-height: 58px;
   padding: 0.85rem 1.15rem;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 0.8rem;
   letter-spacing: 0.12em;
 }
@@ -623,7 +631,7 @@
 }
 
 .checkin-keypad__key:disabled {
-  cursor: wait;
+  cursor: not-allowed;
   opacity: 0.7;
 }
 
@@ -669,14 +677,14 @@
 }
 
 .checkin-action-button {
-  min-height: 88px;
+  min-height: 64px;
   padding: 1rem 1.6rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   border: 1px solid var(--kiosk-border);
-  border-radius: 4px;
+  border-radius: 12px;
   color: var(--kiosk-button-text-strong);
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 0.94rem;
@@ -728,6 +736,17 @@
 .checkin-action-button__icon svg {
   width: 100%;
   height: 100%;
+}
+
+.checkin-action-button > svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+}
+
+.checkin-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 @keyframes checkin-spin {
@@ -2355,6 +2374,8 @@
   margin-top: 1rem;
   display: flex;
   justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .checkin-identity__camera-actions .checkin-action-button {
@@ -2462,6 +2483,80 @@
   .checkin-payment__folio,
   .checkin-payment__side {
     height: auto;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 820px) and (min-width: 1000px) {
+  .checkin-layout__main {
+    padding-block: 0.25rem;
+  }
+
+  .checkin-step-header {
+    gap: 0.15rem;
+  }
+
+  .checkin-step-header__title {
+    font-size: clamp(1.65rem, 2.35vw, 2.25rem);
+  }
+
+  .checkin-step-header__subtitle {
+    margin-top: 0;
+    line-height: 1.35;
+  }
+
+  .checkin-identification {
+    gap: 0.55rem;
+  }
+
+  .checkin-identification__layout {
+    --checkin-method-card-height: 82px;
+    --checkin-entry-card-height: 472px;
+  }
+
+  .checkin-method-card {
+    height: var(--checkin-method-card-height);
+    min-height: var(--checkin-method-card-height);
+    padding-block: 0.55rem;
+  }
+
+  .checkin-method-card__icon {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .checkin-method-card__title {
+    min-height: auto;
+  }
+
+  .checkin-method-card__subtitle {
+    min-height: auto;
+  }
+
+  .checkin-identification__entry {
+    gap: 0.5rem;
+    padding: 0.7rem;
+  }
+
+  .checkin-identification__entry.is-lookup .checkin-identification__helper {
+    min-height: 2.3rem;
+  }
+
+  .checkin-identification__field {
+    min-height: 48px;
+  }
+
+  .checkin-keypad {
+    gap: 0.35rem;
+    padding: 0.4rem;
+  }
+
+  .checkin-keypad__key {
+    min-height: 46px;
+  }
+
+  .checkin-identification__entry-footer .checkin-action-button {
+    min-height: 48px;
+    padding-block: 0.55rem;
   }
 }
 

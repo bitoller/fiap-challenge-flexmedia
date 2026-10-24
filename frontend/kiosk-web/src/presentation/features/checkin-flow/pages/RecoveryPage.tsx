@@ -11,8 +11,20 @@ interface RecoveryLocationState {
   message?: string;
 }
 
-function getRecoveryTitle(code: CheckinRecoveryCode | undefined, t: (key: string) => string) {
-  return t("sharedRecoveryTitle");
+function getRecoveryCopy(code: CheckinRecoveryCode | undefined, t: (key: string) => string) {
+  if (code === "PAYMENT_DECLINED") {
+    return { title: t("recoveryPaymentTitle"), body: t("recoveryPaymentBody") };
+  }
+  if (code === "BIOMETRY_REJECTED") {
+    return { title: t("recoveryBiometryTitle"), body: t("recoveryBiometryBody") };
+  }
+  if (code === "DOCUMENT_REJECTED") {
+    return { title: t("recoveryDocumentTitle"), body: t("recoveryDocumentBody") };
+  }
+  if (code === "RESERVATION_NOT_ELIGIBLE") {
+    return { title: t("recoveryReservationTitle"), body: t("recoveryReservationBody") };
+  }
+  return { title: t("recoveryGenericTitle"), body: t("recoveryGenericBody") };
 }
 
 export function RecoveryPage() {
@@ -30,8 +42,7 @@ export function RecoveryPage() {
   }, [currentRecovery, navigate]);
 
   const code = currentRecovery?.code;
-  const title = getRecoveryTitle(code, t);
-  const body = t("sharedRecoveryBody");
+  const { title, body } = getRecoveryCopy(code, t);
 
   if (!currentRecovery) {
     return null;
@@ -58,7 +69,7 @@ export function RecoveryPage() {
 
   const goHome = () => {
     clearFlow();
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   return (

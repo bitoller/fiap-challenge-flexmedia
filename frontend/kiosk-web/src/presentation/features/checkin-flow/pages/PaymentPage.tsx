@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CreditCard, QrCode, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, CreditCard, QrCode, ShieldCheck, Sparkles } from "lucide-react";
 import { ApiError } from "../../../../domain/errors";
 import { CheckinPaymentMethod } from "../../../../domain/types";
 import { formatCurrency } from "../../../../shared/formatters/currency";
@@ -141,6 +141,7 @@ export function PaymentPage() {
             className="checkin-action-button checkin-action-button--ghost"
             onClick={() => navigate("/checkin/add-ons")}
           >
+            <ArrowLeft aria-hidden="true" />
             {t("back")}
           </button>
           <button

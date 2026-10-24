@@ -81,7 +81,7 @@ export function SuccessPage() {
               <CreditCard aria-hidden="true" />
               <div>
                 <span>{t("successCardLabel")}</span>
-                <strong>{checkinResult.key.value}</strong>
+                <strong>{t("successCardValue")}</strong>
                 <small>{t("successCardHint")}</small>
               </div>
             </article>

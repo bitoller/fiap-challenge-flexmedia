@@ -19,6 +19,8 @@ import { SuccessPage as CheckoutSuccessPage } from "./presentation/features/chec
 import { RecoveryPage as CheckoutRecoveryPage } from "./presentation/features/checkout-flow/pages/RecoveryPage";
 import { PrivacyPolicyPage } from "./presentation/features/legal/pages/PrivacyPolicyPage";
 import { ServicesPage } from "./presentation/features/services/pages/ServicesPage";
+import { FlowInactivityGuard } from "./presentation/components/common/FlowInactivityGuard";
+import { AttractPage } from "./presentation/features/attract/pages/AttractPage";
 
 type FlowName = "checkin" | "services";
 
@@ -52,7 +54,7 @@ function FlowPlaceholderPage({ flow }: { flow: FlowName }) {
           <h1 className="home-placeholder-title">{t(copy.titleKey)}</h1>
           <p className="home-placeholder-copy">{t(copy.bodyKey)}</p>
           <div className="home-placeholder-actions">
-            <Button variant="secondary" size="lg" onClick={() => navigate("/")}>
+            <Button variant="secondary" size="lg" onClick={() => navigate("/home")}>
               {t("backToHome")}
             </Button>
           </div>
@@ -66,8 +68,10 @@ export default function App() {
   return (
     <CheckoutFlowProvider>
       <CheckinFlowProvider>
+        <FlowInactivityGuard />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<AttractPage />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/checkin" element={<IdentificationPage />} />
           <Route path="/checkin/not-found" element={<ReservationNotFoundPage />} />
           <Route path="/checkin/confirmation" element={<ReservationConfirmationPage />} />

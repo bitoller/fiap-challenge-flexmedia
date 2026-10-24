@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Fingerprint, ScanFace } from "lucide-react";
+import { ArrowLeft, Fingerprint, ScanFace } from "lucide-react";
 import { useCheckoutFlow } from "../context/CheckoutFlowContext";
 import { CameraCapturePanel } from "../../checkin-flow/components/CameraCapturePanel";
 import { CheckinFlowLayout } from "../../checkin-flow/components/CheckinFlowLayout";
@@ -30,7 +30,7 @@ function CheckoutHomeButton({ label, onClick }: CheckoutHomeButtonProps) {
   return (
     <button type="button" className="checkin-action-button checkin-action-button--secondary" onClick={onClick}>
       <span className="checkin-action-button__icon" aria-hidden="true">
-        <ArrowRight />
+        <ArrowLeft />
       </span>
       <span>{label}</span>
     </button>
@@ -40,7 +40,7 @@ function CheckoutHomeButton({ label, onClick }: CheckoutHomeButtonProps) {
 export function IdentificationPage() {
   const { t } = useTranslation("checkout");
   const navigate = useNavigate();
-  const { lookupStay, lookupStayByFace, isLoading, setFlowStep, setRecovery, resetError } = useCheckoutFlow();
+  const { lookupStay, lookupStayByFace, isLoading, setFlowStep, resetError } = useCheckoutFlow();
   const [method, setMethod] = useState<CheckoutLookupMethod>("face");
   const [documentNumber, setDocumentNumber] = useState("");
   const documentDigits = documentNumber.replace(/\D/g, "");
@@ -71,11 +71,6 @@ export function IdentificationPage() {
 
   const handleConfirm = async () => {
     if (!canConfirm) {
-      setRecovery("STAY_NOT_FOUND", t("lookupValidationError"));
-      navigate("/checkout/recovery", {
-        replace: true,
-        state: { code: "STAY_NOT_FOUND", message: t("lookupValidationError") },
-      });
       return;
     }
 
@@ -146,7 +141,7 @@ export function IdentificationPage() {
                 confirmDisabled={isLoading || !canConfirm}
               />
               <div className="checkin-identification__entry-footer">
-                <CheckoutHomeButton label={t("home")} onClick={() => navigate("/")} />
+                <CheckoutHomeButton label={t("home")} onClick={() => navigate("/home")} />
               </div>
             </div>
           ) : (
@@ -156,6 +151,7 @@ export function IdentificationPage() {
                   label={t("faceCameraLabel")}
                   instruction={t("faceCameraInstruction")}
                   captureLabel={t("faceCapture")}
+                  confirmCaptureLabel={t("faceUsePhoto")}
                   retakeLabel={t("faceRetake")}
                   readyLabel={t("faceCameraReady")}
                   startingLabel={t("faceCameraStarting")}
@@ -166,7 +162,7 @@ export function IdentificationPage() {
                 />
               </div>
               <div className="checkin-identification__entry-footer">
-                <CheckoutHomeButton label={t("home")} onClick={() => navigate("/")} />
+                <CheckoutHomeButton label={t("home")} onClick={() => navigate("/home")} />
               </div>
             </div>
           )}

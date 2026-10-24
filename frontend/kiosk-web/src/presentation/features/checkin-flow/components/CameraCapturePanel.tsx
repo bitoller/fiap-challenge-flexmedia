@@ -5,6 +5,7 @@ interface CameraCapturePanelProps {
   label: string;
   instruction: string;
   captureLabel: string;
+  confirmCaptureLabel: string;
   retakeLabel: string;
   readyLabel: string;
   startingLabel: string;
@@ -18,6 +19,7 @@ export function CameraCapturePanel({
   label,
   instruction,
   captureLabel,
+  confirmCaptureLabel,
   retakeLabel,
   readyLabel,
   startingLabel,
@@ -29,6 +31,7 @@ export function CameraCapturePanel({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [capturedImage, setCapturedImage] = useState<{ imageBase64: string; mimeType: string } | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cameraError, setCameraError] = useState(false);
@@ -72,7 +75,7 @@ export function CameraCapturePanel({
     };
   }, [disabled, preview]);
 
-  const capture = async () => {
+  const capture = () => {
     if (!videoRef.current || disabled || isSubmitting) {
       return;
     }
@@ -91,10 +94,17 @@ export function CameraCapturePanel({
     const dataUrl = canvas.toDataURL("image/jpeg", 0.86);
     const imageBase64 = dataUrl.replace(/^data:image\/jpeg;base64,/, "");
     setPreview(dataUrl);
-    setIsSubmitting(true);
+    setCapturedImage({ imageBase64, mimeType: "image/jpeg" });
+  };
 
+  const submitCapture = async () => {
+    if (!capturedImage || disabled || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      await onCapture(imageBase64, "image/jpeg");
+      await onCapture(capturedImage.imageBase64, capturedImage.mimeType);
     } finally {
       setIsSubmitting(false);
     }
@@ -102,6 +112,7 @@ export function CameraCapturePanel({
 
   const retake = () => {
     setPreview(null);
+    setCapturedImage(null);
   };
 
   return (
@@ -128,10 +139,16 @@ export function CameraCapturePanel({
 
       <div className="checkin-identity__camera-actions">
         {preview ? (
-          <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={retake} disabled={isSubmitting}>
-            <RotateCcw aria-hidden="true" />
-            {retakeLabel}
-          </button>
+          <>
+            <button type="button" className="checkin-action-button checkin-action-button--ghost" onClick={retake} disabled={isSubmitting}>
+              <RotateCcw aria-hidden="true" />
+              {retakeLabel}
+            </button>
+            <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={submitCapture} disabled={disabled || isSubmitting}>
+              <Camera aria-hidden="true" />
+              {isSubmitting ? processingLabel : confirmCaptureLabel}
+            </button>
+          </>
         ) : (
           <button type="button" className="checkin-action-button checkin-action-button--primary" onClick={capture} disabled={disabled || !isCameraReady || isSubmitting}>
             <Camera aria-hidden="true" />
