@@ -1,5 +1,0 @@
-- [x] Redesign the kiosk payment page with reservation, services, and total summary.
-- [x] Add a visual payment processing state while check-in completion runs.
-- [x] Redesign the check-in success page around room access, facial entry, and physical card fallback.
-- [x] Add localized copy for English, Portuguese, and Spanish.
-- [x] Verify the kiosk frontend build.
